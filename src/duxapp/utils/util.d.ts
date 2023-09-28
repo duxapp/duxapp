@@ -1,0 +1,32 @@
+interface TimeOutTask extends Promise<TimeOutTask> {
+  /** 清除定时器 */
+  clear(): void
+}
+
+/**
+ * 显示一个提示
+ * @param title 提示内容
+ */
+export function toast(title: string): void
+
+/**
+ * 判断是不是有刘海的机型
+ */
+export function isIphoneX(): boolean
+
+/**
+ * 定时器的Promise用法
+ * @param timeout 定时时间
+ */
+export function asyncTimeOut(timeout: number): TimeOutTask
+
+/**
+ * 一个空函数
+ */
+export function noop(): void
+
+/**
+ * 阻止事件冒泡，将点击或者其他事件的参数传入此函数，多端调用这个函数不会报错
+ * @param event 原生事件参数
+ */
+export function stopPropagation(event: EventTarget | any): void

@@ -1,0 +1,14 @@
+diff --git a/node_modules/@tarojs/runtime-rn/dist/page.js b/node_modules/@tarojs/runtime-rn/dist/page.js
+index aab7542..473fe81 100644
+--- a/node_modules/@tarojs/runtime-rn/dist/page.js
++++ b/node_modules/@tarojs/runtime-rn/dist/page.js
+@@ -423,8 +423,7 @@ export function createPageConfig(Page, pageConfig) {
+                 return h(ScrollView, Object.assign(Object.assign({ style: [{ flex: 1 }, (bgColor ? { backgroundColor: bgColor } : {})], contentContainerStyle: useNativeStack ? {} : { minHeight: '100%' }, ref: this.pageScrollView, scrollEventThrottle: 8 }, refresh), { onScroll: (e) => this.onPageScroll(e), onMomentumScrollEnd: (e) => this.onReachBottom(e) }), this.createPage());
+             }
+             render() {
+-                const { disableScroll = false } = pageConfig;
+-                return (!disableScroll ? this.createScrollPage() : this.createPage());
++                return this.createPage();
+             }
+         };
+     };

@@ -1,0 +1,169 @@
+diff --git a/node_modules/react-native-video-cache/android/src/main/java/com/reactnative/videocache/VideoCacheModule.java b/node_modules/react-native-video-cache/android/src/main/java/com/reactnative/videocache/VideoCacheModule.java
+index 665193d..125b07d 100644
+--- a/node_modules/react-native-video-cache/android/src/main/java/com/reactnative/videocache/VideoCacheModule.java
++++ b/node_modules/react-native-video-cache/android/src/main/java/com/reactnative/videocache/VideoCacheModule.java
+@@ -1,40 +1,80 @@
+ package com.reactnative.videocache;
+
++import android.os.Build;
++import android.util.Log;
++
+ import com.danikula.videocache.HttpProxyCacheServer;
++import com.danikula.videocache.headers.HeaderInjector;
+ import com.facebook.react.bridge.Promise;
+ import com.facebook.react.bridge.ReactApplicationContext;
+ import com.facebook.react.bridge.ReactContextBaseJavaModule;
+ import com.facebook.react.bridge.ReactMethod;
++import com.facebook.react.bridge.ReadableMap;
++
++import java.util.HashMap;
++import java.util.Map;
++import java.util.Set;
+
+ public class VideoCacheModule extends ReactContextBaseJavaModule {
+
+     private final ReactApplicationContext reactContext;
+     private HttpProxyCacheServer proxy;
++    private  UserAgentHeadersInjector userAgentHeaders;
+
+     public VideoCacheModule(ReactApplicationContext reactContext) {
+         super(reactContext);
+         this.reactContext = reactContext;
+     }
+
++    public class UserAgentHeadersInjector implements HeaderInjector {
++
++        ReadableMap headers = null;
++
++        public UserAgentHeadersInjector(ReadableMap headers) {
++          this.headers = headers;
++        }
++
++        @Override
++        public Map<String, String> addHeaders(String url) {
++          HashMap<String, String> list = new HashMap<String, String>();
++          if(this.headers != null) {
++            Map map = this.headers.toHashMap();
++            Set<String> keySet = map.keySet();
++            for(String key : keySet){
++              String value = map.get(key).toString();
++              list.put(key, value);
++            }
++          }
++          return list;
++        }
++    }
++
++    public HttpProxyCacheServer getProxy(ReadableMap params) {
++        if (this.proxy == null) {
++            this.userAgentHeaders = new UserAgentHeadersInjector(params.getMap("headers"));
++            this.proxy = new HttpProxyCacheServer.Builder(this.reactContext)
++              .maxCacheFilesCount(80)       // 80个文件
++              .headerInjector(this.userAgentHeaders)
++              .build();
++        } else {
++          this.userAgentHeaders.headers = params.getMap("headers");
++        }
++        return this.proxy;
++    }
++
+     @Override
+     public String getName() {
+         return "VideoCache";
+     }
+
+     @ReactMethod(isBlockingSynchronousMethod = true)
+-    public String convert(String url) {
+-        if (this.proxy == null) {
+-            this.proxy = new HttpProxyCacheServer(this.reactContext);
+-        }
+-        return this.proxy.getProxyUrl(url);
++    public String convert(String url, ReadableMap params) {
++        return this.getProxy(params).getProxyUrl(url);
+     }
+
+     @ReactMethod
+-    public void convertAsync(String url, Promise promise) {
+-        if (this.proxy == null) {
+-            this.proxy = new HttpProxyCacheServer(this.reactContext);
+-        }
+-        promise.resolve(this.proxy.getProxyUrl(url));
++    public void convertAsync(String url, ReadableMap params, Promise promise) {
++        promise.resolve(this.getProxy(params).getProxyUrl(url));
+     }
+
+ }
+diff --git a/node_modules/react-native-video-cache/index.js b/node_modules/react-native-video-cache/index.js
+index 25182b2..fec67d2 100644
+--- a/node_modules/react-native-video-cache/index.js
++++ b/node_modules/react-native-video-cache/index.js
+@@ -1,11 +1,23 @@
+ import { NativeModules } from 'react-native';
+
+-export default (url) => {
++export default (url, params = {}) => {
+   if (!global.nativeCallSyncHook) {
+     return url
+   }
+-  return NativeModules.VideoCache.convert(url)
++  if(params === false) {
++    return NativeModules.VideoCache.convert(url)
++  }
++  return NativeModules.VideoCache.convert(url, {
++    headers: params.headers || {}
++  })
+ };
+
+-export const convertAsync = NativeModules.VideoCache.convertAsync;
++export const convertAsync = (url, params) => {
++  if(params === false) {
++    return NativeModules.VideoCache.convertAsync(url)
++  }
++  NativeModules.VideoCache.convertAsync(url, {
++    headers: params.headers || {}
++  })
++};
+
+diff --git a/node_modules/react-native-video-cache/ios/VideoCache.m b/node_modules/react-native-video-cache/ios/VideoCache.m
+index ffc7548..ffc72fe 100644
+--- a/node_modules/react-native-video-cache/ios/VideoCache.m
++++ b/node_modules/react-native-video-cache/ios/VideoCache.m
+@@ -5,7 +5,9 @@
+
+ RCT_EXPORT_MODULE()
+
+-RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(convert:(NSString *)url)
++RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(convert:(NSString *)url
++                                       params:(NSDictionary *)params
++                                       )
+ {
+     if (!KTVHTTPCache.proxyIsRunning) {
+       NSError *error;
+@@ -14,10 +16,15 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(convert:(NSString *)url)
+         return url;
+       }
+     }
++    NSDictionary *headers = params[@"headers"];
++    if(headers) {
++      [KTVHTTPCache downloadSetAdditionalHeaders: headers];
++    }
+     return [KTVHTTPCache proxyURLWithOriginalURL:[NSURL URLWithString:url]].absoluteString;
+ }
+
+ RCT_EXPORT_METHOD(convertAsync:(NSString *)url
++                  params:(NSDictionary *)params
+                   resolver:(RCTPromiseResolveBlock)resolve
+                   rejecter:(RCTPromiseRejectBlock)reject)
+ {
+@@ -29,6 +36,11 @@ RCT_EXPORT_METHOD(convertAsync:(NSString *)url
+       return;
+     }
+   }
++  NSDictionary *headers = params[@"headers"];
++  if(headers) {
++    [KTVHTTPCache downloadSetAdditionalHeaders: headers];
++  }
++
+   resolve([KTVHTTPCache proxyURLWithOriginalURL:[NSURL URLWithString:url]].absoluteString);
+ }
+

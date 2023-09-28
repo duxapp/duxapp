@@ -1,0 +1,29 @@
+{
+	"miniprogramRoot": "dist/",
+	"projectname": "duxapp",
+	"description": "duxapp",
+	"appid": "",
+	"setting": {
+		"urlCheck": false,
+		"es6": false,
+		"enhance": false,
+		"postcss": false,
+		"minified": false,
+		"babelSetting": {
+			"ignore": [],
+			"disablePlugins": [],
+			"outputPath": ""
+		}
+	},
+	"compileType": "miniprogram",
+	"srcMiniprogramRoot": "dist/",
+	"packOptions": {
+		"ignore": [],
+		"include": []
+	},
+	"condition": {},
+	"editorSetting": {
+		"tabIndent": "tab",
+		"tabSize": 4
+	}
+}

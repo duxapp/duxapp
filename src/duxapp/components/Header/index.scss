@@ -1,0 +1,61 @@
+.Header {
+  width: 100%;
+  z-index: 1;
+  &--absolute {
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    right: 0;
+    left: 0;
+  }
+
+  &__main {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    z-index: 1;
+    /*postcss-pxtransform rn eject enable*/
+    transition: opacity 0.1s;
+    /*postcss-pxtransform rn eject disable*/
+    opacity: 0;
+
+    &--show {
+      opacity: 1;
+    }
+  }
+
+  &__nav {
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row;
+
+    &__left {
+      align-items: center;
+      flex-direction: row;
+      width: 100px;
+      height: 100%;
+
+      &__icon {
+        width: 42px;
+        height: 42px;
+        margin-left: 20px;
+      }
+    }
+
+    &__main {
+      flex: 1;
+    }
+
+    &__title {
+      text-align: center;
+      font-size: 32px;
+      font-weight: bold;
+    }
+
+    &__right {
+      align-items: center;
+      width: 100px;
+    }
+  }
+}

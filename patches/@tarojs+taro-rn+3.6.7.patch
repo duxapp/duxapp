@@ -1,0 +1,40 @@
+diff --git a/node_modules/@tarojs/taro-rn/dist/lib/chooseImage/index.js b/node_modules/@tarojs/taro-rn/dist/lib/chooseImage/index.js
+index 583cc34..9302b51 100644
+--- a/node_modules/@tarojs/taro-rn/dist/lib/chooseImage/index.js
++++ b/node_modules/@tarojs/taro-rn/dist/lib/chooseImage/index.js
+@@ -1,4 +1,5 @@
+ import SYImagePicker from 'react-native-syan-image-picker';
++import { PermissionsAndroid, Platform } from 'react-native';
+ import { shouldBeObject } from '../../utils';
+ import { showActionSheet } from '../showActionSheet';
+ const res = { errMsg: 'chooseImage:ok' };
+@@ -51,7 +52,28 @@ function openCamera(options) {
+ // NOTE: 调用此函数会改变图片的像素尺寸
+ function openPicker(options) {
+     const { count: imageCount, sizeType = [], success, complete, fail } = options;
+-    return new Promise((resolve, reject) => {
++    return new Promise(async (resolve, reject) => {
++        // 安卓13 SDK33申请访问图片权限
++        if (Platform.OS === 'android') {
++          try {
++            const granted = await PermissionsAndroid.request(
++              PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES,
++              {
++                title: '申请获取相册',
++                message: '获取相册用于图片选择',
++                buttonNeutral: '稍后',
++                buttonNegative: '取消',
++                buttonPositive: '同意'
++              }
++            )
++            if(granted === PermissionsAndroid.RESULTS.GRANTED) {
++
++            }
++          } catch (error) {
++
++          }
++        }
++
+         // NOTE：react-native-syan-image-picker 暂不支持 Android 端压缩
+         SYImagePicker.showImagePicker({
+             compressFocusAlpha: true,
