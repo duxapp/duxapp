@@ -1,0 +1,21 @@
+.ActionSheet {
+
+  &__title {
+    padding: 30px 30px;
+    justify-content: center;
+    align-items: center;
+    font-size: 32px;
+    font-weight: bold;
+  }
+
+  &__item {
+    padding: 30px 30px;
+    justify-content: center;
+    align-items: center;
+
+    &__text {
+      font-size: 28px;
+      color: #333;
+    }
+  }
+}

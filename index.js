@@ -1,1 +1,2 @@
-import '@tarojs/rn-supporter/entry-file.js'
+export * from './components'
+export * from './utils'

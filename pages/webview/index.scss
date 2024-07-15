@@ -1,0 +1,9 @@
+taro-web-view-core {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+taro-web-view-core .taro-webview{
+  position: relative;
+  flex: 1;
+}
