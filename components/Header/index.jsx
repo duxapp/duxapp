@@ -1,7 +1,7 @@
 import { useMemo, createContext, useContext as useReactContext, useEffect } from 'react'
 import Taro, { useDidShow } from '@tarojs/taro'
 import { View, Image, Text } from '@tarojs/components'
-import { getContrastYIQ, nav, route, pages as routePages, useRoute, getStatusBarHeight } from '@/duxapp/utils'
+import { getContrastYIQ, nav, route, pages as routePages, useRoute, getStatusBarHeight, px } from '@/duxapp/utils'
 import theme from '@/duxapp/config/theme'
 import { TopView } from '../TopView'
 
@@ -26,7 +26,7 @@ export const HeaderBack = ({
 
   return (option.isBack || option.isBackHome || show) && <View
     className='Header__nav__left'
-    style={option.weapp ? { width: Taro.pxTransform(80) } : {}}
+    style={option.weapp ? { width: px(80) } : {}}
     onClick={() => {
       if (option.onBackClick?.()) {
         return
@@ -34,10 +34,13 @@ export const HeaderBack = ({
       option.isBack ? nav('back:') : option.isBackHome ? nav('back:home') : ''
     }}
   >
-    {option.isBack && <Image src={color === 'black' ? backWhite : back} className='Header__nav__left__icon' />}
-    {!option.isBack && option.isBackHome && <Image src={color === 'black' ? homeWhite : home} className='Header__nav__left__icon' />}
+    {
+      !['alipay', 'tt'].includes(process.env.TARO_ENV) && <>
+        {option.isBack && <Image src={color === 'black' ? backWhite : back} className='Header__nav__left__icon' />}
+        {!option.isBack && option.isBackHome && <Image src={color === 'black' ? homeWhite : home} className='Header__nav__left__icon' />}
+      </>
+    }
   </View>
-
 }
 
 export const Header = ({
@@ -76,15 +79,17 @@ export const Header = ({
   }, [])
 
   const option = useMemo(() => {
-    const headerHeihgt = 44
+    let headerHeihgt = 44
     // 小程序胶囊按钮宽度
     let jiaonangWidth = 0
     // 获取胶囊信息
-    if (process.env.TARO_ENV === 'weapp') {
-      const { width } = Taro.getMenuButtonBoundingClientRect()
-      jiaonangWidth = width + 10
-    }
     const statusBarHeight = getStatusBarHeight() || 0
+    if (isWeapp) {
+      const { width, height, top } = Taro.getMenuButtonBoundingClientRect()
+      jiaonangWidth = width + 10
+      // 动态计算header高度，让header文本和胶囊完全居中
+      headerHeihgt = height + (top - statusBarHeight) * 2
+    }
 
     const current = routePages[path]
 
@@ -96,7 +101,7 @@ export const Header = ({
     const weapp = !rn && !h5
 
     // 是否显示header
-    const showHeader = rn || process.env.TARO_ENV === 'weapp' || (global.platform === 'wechat' && theme.header.showWechat)
+    const showHeader = rn || isWeapp || (global.platform === 'wechat' && theme.header.showWechat)
       || (global.platform === 'wap' && theme.header.showWap)
       || !!renderMain || !!renderHeader
 
@@ -136,7 +141,7 @@ export const Header = ({
     }, 100)
   }, [color])
 
-  const headerHeight = option.rn ? option.headerHeihgt : option.h5 ? Taro.pxTransform(88) : `${option.headerHeihgt}px`
+  const headerHeight = option.rn ? option.headerHeihgt : option.h5 ? px(88) : `${option.headerHeihgt}px`
 
   return <headerContext.Provider value={option}>
     {
@@ -193,7 +198,7 @@ export const Header = ({
                           // 文本居中判断
                           textAlign: option.weapp && (option.isBack || !titleCenter) ? 'left' : 'center',
                           // 小程序没有返回按钮时，文本不要在最左边
-                          paddingLeft: Taro.pxTransform(option.weapp && !option.isBack && !titleCenter ? 32 : 0),
+                          paddingLeft: px(option.weapp && !option.isBack && !titleCenter ? 32 : 0),
                         }}
                       >{title}</Text>
                     }
@@ -217,3 +222,5 @@ export const Header = ({
 }
 
 Header.Back = HeaderBack
+
+const isWeapp = ['weapp', 'tt', 'alipay', 'swan', 'qq', 'jd', 'quickapp'].includes(process.env.TARO_ENV)

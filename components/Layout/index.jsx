@@ -11,18 +11,13 @@ export const getRect = (select, getAll, scope, num = 0) => {
       reject('请求超过10次')
       return
     }
-    let isRes = false
-    query[getAll ? 'selectAll' : 'select'](select).boundingClientRect(res => {
-      if (isRes) {
-        return
-      }
-      isRes = true
-      if ((!Array.isArray(res) && res) || Array.isArray(res) && res.length > 0) {
-        resolve(res)
+    query[getAll ? 'selectAll' : 'select'](select).boundingClientRect().exec(res => {
+      if (Array.isArray(res) && res[0]) {
+        resolve(getAll ? res : res[0])
       } else {
         setTimeout(() => getRect(select, getAll, scope, num + 1).then(resolve).catch(reject), 5)
       }
-    }).exec()
+    })
   })
 }
 

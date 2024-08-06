@@ -1,4 +1,4 @@
-import userConfig from '../../../configs/modeHuiqikang'
+import userConfig from '../../../configs/default'
 
 export {
   userConfig

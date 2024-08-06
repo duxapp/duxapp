@@ -390,6 +390,75 @@ duxappTheme.textColor1
 
 ```scss
 
+/*  #ifndef rn h5  */
+page {
+  height: 100vh;
+}
+
+/*  #endif  */
+
+/*  #ifdef h5  */
+.taro_page {
+  height: 100vh;
+}
+
+/*  #endif  */
+
+
+/*  #ifdef h5  */
+taro-view-core {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  border-style: solid;
+  border-width: 0;
+}
+input,
+textarea,
+taro-view-core {
+  box-sizing: border-box;
+}
+taro-view-core,
+taro-text-core {
+  line-height: 1;
+}
+taro-image-core {
+  width: auto;
+  height: auto;
+}
+/*  #endif  */
+/*  #ifndef rn h5  */
+view {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  border-style: solid;
+  border-width: 0;
+}
+input,
+textarea,
+view {
+  box-sizing: border-box;
+}
+view,
+text {
+  line-height: 1;
+}
+/*  #endif  */
+
+/*  #ifdef h5  */
+taro-input-core {
+  position: relative;
+
+  input {
+    position: absolute;
+    transform: translateY(-50%);
+    top: 50%;
+  }
+}
+
+/*  #endif  */
+
 /*  #ifdef weapp  */
 .button-clean {
   position: relative;
@@ -672,31 +741,31 @@ duxappTheme.textColor1
 
 // 文本尺寸
 .text-s1 {
-  color: $duxappTextSize1;
+  font-size: $duxappTextSize1;
 }
 
 .text-s2 {
-  color: $duxappTextSize1;
+  font-size: $duxappTextSize2;
 }
 
 .text-s3 {
-  color: $duxappTextSize1;
+  font-size: $duxappTextSize3;
 }
 
 .text-s4 {
-  color: $duxappTextSize1;
+  font-size: $duxappTextSize4;
 }
 
 .text-s5 {
-  color: $duxappTextSize1;
+  font-size: $duxappTextSize5;
 }
 
 .text-s6 {
-  color: $duxappTextSize1;
+  font-size: $duxappTextSize6;
 }
 
 .text-s7 {
-  color: $duxappTextSize1;
+  font-size: $duxappTextSize7;
 }
 
 /* 文本装饰 */
@@ -957,5 +1026,6 @@ duxappTheme.textColor1
 .square {
   aspect-ratio: 1;
 }
+
 
 ```

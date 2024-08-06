@@ -1,6 +1,4 @@
 import Taro from '@tarojs/taro'
-import { userConfig } from '@/duxapp/config/userConfig'
-import { asyncTimeOut } from '../util'
 
 let PermissionsAndroid, Platform, Geolocation
 
@@ -158,87 +156,10 @@ export const checkLocationPermission = async () => {
 export const getLocationBase = (enableHighAccuracy = false) => {
   const pormise = new Promise(async (resolve, reject) => {
     if (process.env.TARO_ENV === 'rn') {
-      const errKey = 'get-location-duxapp-error'
-      try {
-        const { data } = await Taro.getStorage({
-          key: errKey
-        })
-        const errDate = JSON.parse(data).errDate
-        if (new Date().getTime() - errDate < 2 * 24 * 60 * 60 * 1000) {
-          const msg = '距离上次用户拒绝授权位置信息不足24小时，不再次授权信息'
-          console.log(msg)
-          reject({ message: msg })
-          return
-        }
-      } catch (error) {
-
+      if (!getLocationBase.rn) {
+        return reject({ message: 'RN端不支持获取定位' })
       }
-      if (Platform.OS === 'android') {
-        /**
-         * fix: 安卓机上奇怪的bug，不在获取权限之前加个定时器的话，定位成功回调不触发
-         */
-        await asyncTimeOut(20)
-        const status = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION)
-        if (!status) {
-          const config = userConfig.option.duxapp.app?.permissions?.location
-          if (config) {
-            const { confirm } = await Taro.showModal({
-              title: config.title,
-              content: config.content,
-              confirmText: '快速开启定位',
-              cancelText: '暂不开启'
-            })
-            if (!confirm) {
-              reject({ message: '用户拒绝位置授权' })
-              return
-            }
-          }
-          const granted = await PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-            {
-              // 第一次请求【拒绝】后提示用户你为什么要这个权限
-              title: config?.title || '需要访问您的位置信息',
-              message: config?.title || 'APP将访问您的位置信息，以获取完整服务'
-            }
-          )
-          if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
-            // 记录获取失败的时间 等待 48小时之后再次获取时间 某些安卓平台 拒绝之后短时间内再次弹出会不让通过
-            await Taro.setStorage({
-              key: errKey,
-              data: JSON.stringify({
-                errDate: new Date().getTime()
-              })
-            })
-            reject({ message: '权限获取失败' })
-            return
-          }
-        }
-
-      }
-      Geolocation.getCurrentPosition(info => {
-        // 通过高精度模式再获取一次定位通过onChange函数回调
-        // !enableHighAccuracy && getLocationBase(true).then(changeFunc)
-        console.log('定位成功', enableHighAccuracy)
-        const { latitude, longitude } = info.coords
-        const { lat, lon } = gcjEncrypt(latitude, longitude)
-        resolve({
-          latitude: lat,
-          longitude: lon
-        })
-      }, err => {
-        console.log('定位失败', enableHighAccuracy)
-        if (!enableHighAccuracy) {
-          // 使用高精度重试获取定位
-          // getLocationBase(true).then(resolve).catch(reject)
-          reject(err)
-        } else {
-          reject(err)
-        }
-      }, {
-        timeout: 15000,
-        ...(enableHighAccuracy ? { maximumAge: 5000 } : {}),
-        enableHighAccuracy
-      })
+      getLocationBase.rn(enableHighAccuracy).then(resolve).catch(reject)
     } else {
       const type = process.env.TARO_ENV === 'h5' ? 'wgs84' : 'gcj02'
       const getRes = res => {
