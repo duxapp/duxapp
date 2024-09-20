@@ -1,7 +1,7 @@
 import { Component } from 'react'
-import Taro from '@tarojs/taro'
 import { View } from '@tarojs/components'
 import { Animated, Easing, StyleSheet } from 'react-native'
+import { px } from '@/duxui/utils'
 
 export class Loading extends Component {
   constructor(props) {
@@ -17,7 +17,7 @@ export class Loading extends Component {
 
   componentDidMount() {
     const { size = 52 } = this.props
-    this.getList(Taro.pxTransform(size))
+    this.getList(px(size))
     this.animate()
   }
 
@@ -74,18 +74,20 @@ export class Loading extends Component {
   }
 
   render() {
-    const { style = {}, color = 'dark' } = this.props
+    const { style = {}, color = 'dark', ...props } = this.props
     const { lines, width, r } = this.state
     const colors = {
       dark: '#7a7a7a',
       blank: '#fff'
     }
     return (
-      <View style={{
-        width: width,
-        height: width,
-        ...style
-      }}
+      <View
+        style={{
+          width: width,
+          height: width,
+          ...style
+        }}
+        {...props}
       >
         {
           lines.map((item, index) => {

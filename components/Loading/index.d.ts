@@ -1,4 +1,5 @@
-import { ComponentType, CSSProperties } from 'react'
+import { ComponentType } from 'react'
+import { ViewProps } from '@tarojs/components'
 
 interface color {
   /** 深色 #7a7a7a */
@@ -7,15 +8,11 @@ interface color {
   blank
 }
 
-interface LoadingProps {
+interface LoadingProps extends ViewProps {
   /** loading颜色 */
   color?: keyof color,
   /** loading尺寸 */
-  size?: number,
-  /** 图标样式 传入color和fontSize会覆盖 color和size属性 */
-  style?: CSSProperties,
-  /** 引用 */
-  ref?: string | ((node: any) => any)
+  size?: number
 }
 
 /**

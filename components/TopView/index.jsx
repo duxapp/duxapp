@@ -6,6 +6,7 @@ import { isIphoneX, route } from '@/duxapp/utils'
 import { QuickEvent } from '@/duxapp/utils/QuickEvent'
 import { KeyboardAvoiding } from '../KeyboardAvoiding'
 import { Status } from './Status'
+import { WeappRem } from './WeappRem'
 import './index.scss'
 
 const Position = ({ children }) => {
@@ -117,18 +118,21 @@ const Container = ({ index = 0, children }) => {
 
 const TopViewFunc = ({ pageKey, children, isSafe, isForm, className, ...props }) => {
 
-  return <View
-    className={classNames('TopView', className, { 'TopView--safe': isSafe && isIphoneX() })}
-    {...props}
-  >
-    <Status barStyle='dark-content' />
-    <Container>
-      <KeyboardAvoiding isForm={isForm}>
-        {children}
-      </KeyboardAvoiding>
-    </Container>
-    <CreateEle page={pageKey} />
-  </View>
+  return <>
+    <WeappRem />
+    <View
+      className={classNames('TopView', className, { 'TopView--safe': isSafe && isIphoneX() })}
+      {...props}
+    >
+      <Status barStyle='dark-content' />
+      <Container>
+        <KeyboardAvoiding isForm={isForm}>
+          {children}
+        </KeyboardAvoiding>
+      </Container>
+      <CreateEle page={pageKey} />
+    </View>
+  </>
 }
 
 export class TopView extends Component {

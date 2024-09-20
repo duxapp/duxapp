@@ -10,6 +10,10 @@ yarn duxapp app add duxapp
 
 此模块需要在 [duxapp 框架](https://app.docs.dux.plus) 中运行
 
+## 文档
+
+[http://www.duxapp.cn/docs/duxapp/start](http://www.duxapp.cn/docs/duxapp/start)
+
 ## 组件库
 
 ### TopView
@@ -268,7 +272,7 @@ export const BaseIcon = ({ name, color, size, style, className, ...props }) => {
       sty.color = color
     }
     if (size) {
-      sty.fontSize = Taro.pxTransform(size)
+      sty.fontSize = px(size)
     }
     return sty
   }, [color, size, style])

@@ -1,5 +1,5 @@
-import { Platform, NativeModules, StatusBar } from 'react-native'
-import Taro from '@tarojs/taro'
+import { Platform } from 'react-native'
+import { getStorage, setStorage, request } from '@tarojs/taro'
 import { useEffect, useRef } from 'react'
 import { asyncTimeOut } from '../util'
 
@@ -37,7 +37,7 @@ export const networkVerify = (() => {
       }
       await noRepeat.run(async () => {
         try {
-          const res = await Taro.getStorage({ key: 'ios-request-verify' })
+          const res = await getStorage({ key: 'ios-request-verify' })
           if (res?.data) {
             status = true
             return params
@@ -50,7 +50,7 @@ export const networkVerify = (() => {
               throw { message: '等待时间过长(超过30s) 请求失败' }
             }
             try {
-              const baidu = await Taro.request({
+              const baidu = await request({
                 url: 'https://www.baidu.com'
               })
               if (baidu.statusCode !== 200) {
@@ -64,7 +64,7 @@ export const networkVerify = (() => {
             }
           }
           await verify()
-          await Taro.setStorage({ key: 'ios-request-verify', data: '1' })
+          await setStorage({ key: 'ios-request-verify', data: '1' })
         }
       })
       status = true
@@ -82,15 +82,4 @@ export const useLaunch = callback => {
   useEffect(() => {
     data.current?.()
   }, [])
-}
-
-
-let statusBarHeight = 0
-
-if (Platform.OS === 'ios') {
-  NativeModules.StatusBarManager.getHeight(val => statusBarHeight = val.height)
-}
-
-export const getStatusBarHeight = () => {
-  return Platform.OS === 'android' ? StatusBar.currentHeight : statusBarHeight
 }

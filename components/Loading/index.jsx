@@ -1,7 +1,7 @@
 import { Component } from 'react'
-import Taro from '@tarojs/taro'
 import classNames from 'classnames'
 import { View } from '@tarojs/components'
+import { px } from '@/duxapp/utils'
 import './index.scss'
 
 export class Loading extends Component {
@@ -58,8 +58,8 @@ export class Loading extends Component {
       <View
         className={classNames('Loading', className)}
         style={{
-          width: Taro.pxTransform(width),
-          height: Taro.pxTransform(width),
+          width: px(width),
+          height: px(width),
           ...style
         }}
         {...props}
@@ -70,11 +70,11 @@ export class Loading extends Component {
               key={'item' + index}
               className={`child child-${index + 1}`}
               style={{
-                marginTop: Taro.pxTransform(- r),
-                height: Taro.pxTransform(r * 2),
+                marginTop: px(- r),
+                height: px(r * 2),
                 transform: 'rotate(' + (index * 45 + 90) + 'deg)',
-                left: Taro.pxTransform(item.left),
-                top: Taro.pxTransform(item.top),
+                left: px(item.left),
+                top: px(item.top),
                 backgroundColor: colors[color] || color || colors.dark
               }}
             />

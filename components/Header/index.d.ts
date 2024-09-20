@@ -1,7 +1,7 @@
-import { CSSProperties } from 'react'
-import { Component } from 'react'
+import { CSSProperties, Component, ReactElement } from 'react'
+import { ViewProps } from '@tarojs/components'
 
-type props = Partial<{
+interface HeaderProps extends ViewProps {
   /** 头部标题 */
   title?: string,
   /** h5端显示在头部的标题 默认等于title 设置为空将不会产生变化 */
@@ -16,7 +16,7 @@ type props = Partial<{
    */
   absolute?: boolean,
   /**
-   * absolute设置为true的情况下再使用此属性 用于控制组件的显示和隐藏
+   * 用于控制组件的显示和隐藏
    * @default true
    */
   show?: boolean,
@@ -29,15 +29,15 @@ type props = Partial<{
    * @info backgroundColor 属性仅支持 rgba rgb 16进制颜色
    */
   style?: CSSProperties,
-  /** 替换头部中间部分为自定义组件 请先设置isRenderMain 否则不生效 */
-  renderMain?: Component,
-  /** 替换头部为自定义组件 请先设置isRenderHeader 否则不生效 */
-  renderHeader?: Component
-  /** 左侧显示的组件 */
-  renderLeft?: Component
-  /** 右侧显示的组件 */
-  renderRight?: Component
-  /** 强制抢标题显示在中间 仅在tabbar页面生效 */
+  /** 自定义渲染标题区域 */
+  renderMain?: ReactElement,
+  /** 自定义渲染整个Header，包括返回区域和右侧区域 */
+  renderHeader?: ReactElement
+  /** 自定义渲染右侧区域 */
+  renderLeft?: ReactElement
+  /** 自定义渲染返回区域 */
+  renderRight?: ReactElement
+  /** 强制将标题显示在中间 仅在主页生效 */
   titleCenter?: boolean
   /**
    * 左侧按钮点击事件 点击左侧按钮时
@@ -47,7 +47,7 @@ type props = Partial<{
   onBackClick?: () => void
   /** 引用 */
   ref?: string | ((node: any) => any)
-}>
+}
 
 class HeaderBack extends Component {
 
@@ -59,6 +59,6 @@ class HeaderBack extends Component {
  * <Header title='页面标题' />
  * @info style.backgroundColor 属性仅支持 rgba rgb 16进制颜色
  */
-export class Header extends Component<props>{
+export class Header extends Component<HeaderProps>{
   static Back: HeaderBack
 }

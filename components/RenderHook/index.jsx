@@ -41,7 +41,7 @@ export class RenderHook {
     const [element, markItem] = useMemo(() => {
       const _markItem = this.elements[mark] || {}
       const _element = _markItem.self?.length
-        ? (max ? _markItem.self.slice(_markItem.self.length - max) : _markItem.self)
+        ? [...(max ? _markItem.self.slice(_markItem.self.length - max) : _markItem.self)]
         : typeof children !== 'undefined'
           ? [children]
           : []

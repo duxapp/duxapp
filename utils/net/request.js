@@ -1,4 +1,4 @@
-import Taro from '@tarojs/taro'
+import { request as taroRequest, showLoading, hideLoading } from '@tarojs/taro'
 import qs from 'qs'
 import { getUrl, execGetObject, execGetChild, execMiddle } from './util'
 import { asyncTimeOut, toast } from '../util'
@@ -123,7 +123,7 @@ const request = (() => {
           return
         }
       }
-      taroRequestTask = (['h5', 'rn'].includes(process.env.TARO_ENV) ? requestReact : Taro.request)({
+      taroRequestTask = (['h5', 'rn'].includes(process.env.TARO_ENV) ? requestReact : taroRequest)({
         url: `${requestParams.url}${Object.keys(requestParams.query).length ? '?' + qs.stringify(requestParams.query) : ''}`,
         data: !requestParams.body
           ? ''
@@ -141,7 +141,7 @@ const request = (() => {
       if (typeof loading === 'function') {
         loadingClose = loading()
       } else if (loading) {
-        Taro.showLoading({
+        showLoading({
           title: typeof loading === 'string' ? loading : '加载中'
         })
       }
@@ -175,10 +175,10 @@ const request = (() => {
         })
       }
     })).then(res => {
-      loading && loadingClose?.() || Taro.hideLoading()
+      loading && loadingClose?.() || hideLoading()
       return res
     }).catch(async err => {
-      loading && loadingClose?.() || Taro.hideLoading()
+      loading && loadingClose?.() || hideLoading()
       if (middle.error?.length) {
         try {
           return await execMiddle(middle.error, err, origin)

@@ -1,14 +1,13 @@
-import Taro from '@tarojs/taro'
+import { chooseMedia, chooseImage } from '@tarojs/taro'
 import qs from 'qs'
 import { ActionSheet } from '@/duxapp/components/ActionSheet'
 import { recursionGetValue } from '../object'
 
-let ExpoImagePicker, ExpoCamera, RNFS, Platform
+let ExpoImagePicker, getInfoAsync, Platform
 if (process.env.TARO_ENV === 'rn') {
   ExpoImagePicker = require('expo-image-picker')
-  RNFS = require('react-native-fs')
+  getInfoAsync = require('expo-file-system').getInfoAsync
   Platform = require('react-native').Platform
-  ExpoCamera = require('expo-camera')
 }
 
 /**
@@ -128,7 +127,7 @@ const getMedia = async (type, {
           message: '申请摄像头权限被拒绝'
         }
       }
-      option.cameraType = ExpoCamera.CameraType[camera === 'back' ? 'back' : 'front']
+      option.cameraType = camera === 'back' ? 'back' : 'front'
       promise = ExpoImagePicker.launchCameraAsync(option)
     }
     const { canceled, assets } = await promise
@@ -145,8 +144,7 @@ const getMedia = async (type, {
     let sizes
     if (Platform.OS === 'android') {
       sizes = await Promise.all(assets
-        .map(item => RNFS
-          .stat(item.uri.replace('file://', ''))
+        .map(item => getInfoAsync(item.uri.replace('file://', ''))
           .then(res => res.size)
         ))
     }
@@ -159,7 +157,7 @@ const getMedia = async (type, {
     }))
   } else {
     if (type === 'video') {
-      return Taro.chooseMedia({
+      return chooseMedia({
         count: 1,
         mediaType: 'video',
         sourceType,
@@ -179,7 +177,7 @@ const getMedia = async (type, {
         })
       })
     } else {
-      return Taro.chooseImage({
+      return chooseImage({
         count,
         sourceType,
         sizeType

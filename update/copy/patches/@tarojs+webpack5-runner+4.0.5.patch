@@ -1,0 +1,13 @@
+diff --git a/node_modules/@tarojs/webpack5-runner/dist/webpack/H5WebpackPlugin.js b/node_modules/@tarojs/webpack5-runner/dist/webpack/H5WebpackPlugin.js
+index bda93d8..0ed42a1 100644
+--- a/node_modules/@tarojs/webpack5-runner/dist/webpack/H5WebpackPlugin.js
++++ b/node_modules/@tarojs/webpack5-runner/dist/webpack/H5WebpackPlugin.js
+@@ -84,7 +84,7 @@ class H5WebpackPlugin {
+         const rootValue = baseFontSize / options.deviceRatio[designWidth] * 2;
+         let htmlScript = '';
+         if (((_d = options === null || options === void 0 ? void 0 : options.targetUnit) !== null && _d !== void 0 ? _d : 'rem') === 'rem') {
+-            htmlScript = `!function(n){function f(){var e=n.document.documentElement,r=e.getBoundingClientRect(),width=r.width,height=r.height,arr=[width,height].filter(function(value){return Boolean(value)}),w=Math.min.apply(Math,arr),x=${rootValue}*w/${designWidth};e.style.fontSize=x>=${max}?"${max}px":x<=${min}?"${min}px":x+"px"}; n.addEventListener("resize",(function(){f()})),f()}(window);`;
++            htmlScript = `!function(n){function f(){var e=n.document.documentElement,r=e.getBoundingClientRect(),width=r.width,height=r.height,arr=[width,height].filter(function(value){return value>100}),w=Math.min.apply(Math,arr),x=${rootValue}*w/${designWidth};e.style.fontSize=x>=${max}?"${max}px":x<=${min}?"${min}px":x+"px"}; n.addEventListener("resize",(function(){f()})),f()}(window);`;
+         }
+         const args = {
+             filename: `${entry || 'index'}.html`,

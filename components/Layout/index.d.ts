@@ -1,5 +1,5 @@
-import { ReactNode, CSSProperties } from 'react';
-import { ViewProps } from '@tarojs/components';
+import { ReactNode } from 'react'
+import { ViewProps } from '@tarojs/components'
 
 /**
  * 获取元素尺寸的工具函数
@@ -8,13 +8,9 @@ import { ViewProps } from '@tarojs/components';
  * @param num 请求次数（默认最多请求10次）
  * @returns Promise
  */
-export declare function getRect(select: string, getAll?: boolean, num?: number): Promise<any>;
+export function getRect(select: string, getAll?: boolean, num?: number): Promise<any>;
 
 interface LayoutProps extends ViewProps {
-  /** 子组件 */
-  children?: ReactNode;
-  /** 组件的类名 */
-  className?: string;
   /** 重载组件的 key，用于重新计算布局尺寸 */
   reloadKey?: string | number;
   /** 在布局发生变化时的回调函数 */
@@ -35,4 +31,4 @@ interface LayoutProps extends ViewProps {
  * @param props 组件属性
  * @returns JSX.Element
  */
-export declare function Layout(props: LayoutProps): JSX.Element;
+export function Layout(props: LayoutProps): JSX.Element;

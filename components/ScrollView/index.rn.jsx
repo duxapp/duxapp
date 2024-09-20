@@ -10,7 +10,6 @@ export const ScrollView = ({
   flip = false,
   flatListParams,
   onRefresh,
-  children,
   ...props
 }) => {
 
@@ -33,12 +32,9 @@ export const ScrollView = ({
         // WebView组件在滚动视图中 安卓部分机型闪退 添加如下属性
         overScrollMode='never'
         {...props}
-      >
-        {children}
-      </TaroScrollView>
+      />
     </View>
   )
 }
-
 
 ScrollView.Horizontal = Horizontal

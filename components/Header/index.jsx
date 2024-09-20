@@ -1,7 +1,7 @@
 import { useMemo, createContext, useContext as useReactContext, useEffect } from 'react'
-import Taro, { useDidShow } from '@tarojs/taro'
+import { useDidShow, setNavigationBarTitle, getMenuButtonBoundingClientRect, setNavigationBarColor, getSystemInfoSync } from '@tarojs/taro'
 import { View, Image, Text } from '@tarojs/components'
-import { getContrastYIQ, nav, route, pages as routePages, useRoute, getStatusBarHeight, px } from '@/duxapp/utils'
+import { getContrastYIQ, nav, route, pages as routePages, useRoute, px } from '@/duxapp/utils'
 import theme from '@/duxapp/config/theme'
 import { TopView } from '../TopView'
 
@@ -74,7 +74,7 @@ export const Header = ({
 
   useDidShow(() => {
     if (process.env.TARO_ENV === 'h5' && navTitle) {
-      Taro.setNavigationBarTitle({ title: navTitle })
+      setNavigationBarTitle({ title: navTitle })
     }
   }, [])
 
@@ -83,9 +83,9 @@ export const Header = ({
     // 小程序胶囊按钮宽度
     let jiaonangWidth = 0
     // 获取胶囊信息
-    const statusBarHeight = getStatusBarHeight() || 0
+    const statusBarHeight = getSystemInfoSync().statusBarHeight || 0
     if (isWeapp) {
-      const { width, height, top } = Taro.getMenuButtonBoundingClientRect()
+      const { width, height, top } = getMenuButtonBoundingClientRect()
       jiaonangWidth = width + 10
       // 动态计算header高度，让header文本和胶囊完全居中
       headerHeihgt = height + (top - statusBarHeight) * 2
@@ -130,7 +130,7 @@ export const Header = ({
   useEffect(() => {
     // 设置状态栏颜色
     setTimeout(() => {
-      Taro.setNavigationBarColor({
+      setNavigationBarColor({
         frontColor: getContrastYIQ(color) === 'white' ? '#000000' : '#ffffff',
         backgroundColor: 'transparent',
         animation: {

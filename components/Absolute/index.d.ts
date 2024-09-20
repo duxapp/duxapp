@@ -1,4 +1,4 @@
-import { LegacyRef, ComponentType } from 'react'
+import { ComponentType, ReactElement } from 'react'
 
 interface AbsoluteProps {
   /**
@@ -6,7 +6,7 @@ interface AbsoluteProps {
    */
   group?: string
   /** 子元素 */
-  children: ReactNode
+  children: ReactElement
 }
 
 /**

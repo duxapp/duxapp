@@ -1,5 +1,4 @@
-import Taro from '@tarojs/taro'
-import { getStatusBarHeight } from './rn'
+import { getSystemInfoSync } from '@tarojs/taro'
 import { getPlatform } from './util'
 
 (() => {
@@ -8,10 +7,7 @@ import { getPlatform } from './util'
   global.systemInfo = new Proxy({}, {
     get(obj, prop) {
       if (!systemInfo) {
-        systemInfo = Taro.getSystemInfoSync()
-      }
-      if (prop === 'statusBarHeight') {
-        return getStatusBarHeight()
+        systemInfo = getSystemInfoSync()
       }
       return systemInfo[prop]
     }

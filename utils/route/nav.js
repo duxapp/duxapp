@@ -1,4 +1,7 @@
-import Taro from '@tarojs/taro'
+import {
+  getCurrentPages, getCurrentInstance, makePhoneCall, openLocation,
+  navigateBack, navigateTo, navigateToMiniProgram, reLaunch, redirectTo
+} from '@tarojs/taro'
 import { useMemo } from 'react'
 import qs from 'qs'
 import routerPage, { pageTransfer, routes, currentPage } from './route'
@@ -45,7 +48,7 @@ class Route {
    * 在程序启动初始化的时候调用此方法初始化路由
    */
   init = async () => {
-    const getCurrentInstance = async (level = 1) => {
+    const _getCurrentInstance = async (level = 1) => {
       if (level > 20 || process.env.TARO_ENV === 'rn') {
         return { params: {}, path: Object.keys(routerPage)[0] }
       }
@@ -59,17 +62,17 @@ class Route {
           }
         }
       } else {
-        const { router } = Taro.getCurrentInstance()
+        const { router } = getCurrentInstance()
         if (router) {
           router.params = qs.parse(Object.keys(router.params).map(key => `${key}=${router.params[key]}`).join('&'))
           return router
         }
       }
       await asyncTimeOut(15)
-      return await getCurrentInstance(level + 1)
+      return await _getCurrentInstance(level + 1)
     }
 
-    const { path, params } = await getCurrentInstance()
+    const { path, params } = await _getCurrentInstance()
 
     this.current.push({
       path: path.startsWith('/') ? path.substring(1) : path,
@@ -183,7 +186,8 @@ class Route {
       }
       // 保存当前的跳转方式
       this.oldNavType = option.type
-      await Taro[option.type]({
+      const navs = { navigateBack, navigateTo, navigateToMiniProgram, reLaunch, redirectTo }
+      await navs[option.type]({
         ...(option.type === 'navigateBack'
           ? { delta: option.delta }
           : { url: option.url })
@@ -298,7 +302,7 @@ class Route {
       return false
     } else if (type === 'tel') {
       // 打开拨号
-      Taro.makePhoneCall({
+      makePhoneCall({
         phoneNumber: page
       })
       return false
@@ -309,7 +313,7 @@ class Route {
       if (latitude && longitude) {
         const env = process.env.TARO_ENV
         if (env === 'weapp') {
-          Taro.openLocation({
+          openLocation({
             latitude: +latitude,
             longitude: +longitude,
             address,
@@ -319,8 +323,8 @@ class Route {
           if (getPlatform() === 'wechat' && window.WeixinJSBridge) {
             window.WeixinJSBridge.invoke(
               'openLocation', {
-              latitude,
-              longitude,
+              latitude: +latitude,
+              longitude: +longitude,
               name,
               address,
               scale: 28,
@@ -393,7 +397,7 @@ class Route {
         option.type = 'navigateBack'
         if (option.delta === 'home') {
           // 返回到主页
-          const { length } = Taro.getCurrentPages()
+          const { length } = getCurrentPages()
           option.delta = length - 1
           const current = currentPage()
           const index = Object.keys(routerPage).find(key => !routerPage[key].disable)
@@ -493,7 +497,7 @@ class Route {
    * @param {String} path
    */
   getPathPosition = path => {
-    const pages = Taro.getCurrentPages()
+    const pages = getCurrentPages()
     const paths = []
     for (let i = 0; i < pages.length; i++) {
       let route = pages[i].route.split('?')[0]
@@ -509,6 +513,15 @@ class Route {
       paths,
     }
   }
+
+  useRoute = () => {
+
+    const data = useMemo(() => {
+      return deepCopy(this.current[this.current.length - 1]) || { path: '', params: {} }
+    }, [])
+
+    return data
+  }
 }
 
 export const route = new Route()
@@ -517,14 +530,7 @@ export const route = new Route()
  * 获取当前页面路由信息
  * @returns {params: {}, path: ''}
  */
-export const useRoute = () => {
-
-  const data = useMemo(() => {
-    return deepCopy(route.current[route.current.length - 1]) || { path: '', params: {} }
-  }, [])
-
-  return data
-}
+export const useRoute = route.useRoute
 
 export const nav = route.nav
 

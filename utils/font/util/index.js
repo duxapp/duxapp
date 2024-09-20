@@ -1,7 +1,7 @@
-import Taro from '@tarojs/taro'
+import { loadFontFace } from '@tarojs/taro'
 
 export const loadFont = (name, url) => {
-  return Taro.loadFontFace({
+  return loadFontFace({
     global: true,
     family: name,
     source: `url("${url}")`,

@@ -11,10 +11,6 @@ interface TopViewProps {
    * @default false
   */
   isForm: boolean
-  /**
-   * 组件页面标识 不传默认读取当前页面的路由
-   */
-  pageUrl: string
   /** 顶层样式 */
   style: CSSProperties
   /** 样式类名 */

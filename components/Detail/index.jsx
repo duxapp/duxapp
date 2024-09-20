@@ -7,6 +7,7 @@ import { ScrollView } from '../ScrollView'
  * @returns
  */
 
+
 export const createDetail = useRequest => {
   return ({
     url,
@@ -22,7 +23,7 @@ export const createDetail = useRequest => {
     renderHeader,
     renderFooter,
     onAction,
-    container: Container = Fragment
+    container: Container = Empty
   }) => {
 
     const [data, action] = useRequest({
@@ -62,4 +63,8 @@ export const createDetail = useRequest => {
       {renderFooter?.({ data, action })}
     </Container>
   }
+}
+
+const Empty = ({ children }) => {
+  return children
 }

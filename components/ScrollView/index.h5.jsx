@@ -1,5 +1,5 @@
 import { Component } from 'react'
-import Taro from '@tarojs/taro'
+import { nextTick } from '@tarojs/taro'
 import classNames from 'classnames'
 import { ScrollView as TaroScrollView, View } from '@tarojs/components'
 import { Loading } from '../Loading'
@@ -13,7 +13,7 @@ export class ScrollView extends Component {
   }
 
   componentDidMount() {
-    Taro.nextTick(() => this.onReady())
+    nextTick(() => this.onReady())
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
@@ -29,17 +29,18 @@ export class ScrollView extends Component {
   static Horizontal = Horizontal
 
   onReady() {
+    if (!this.props.onRefresh) {
+      return
+    }
     // 查找当前的根View
     this.rootEle = this.root
-    this.scrollEle = this.rootEle.getElementsByClassName('taro-scroll-view__scroll-y')[0]
 
-    this.scrollInfoEle = this.rootEle.getElementsByClassName('scroll-refresh')[0]
+    this.scrollEle = this.rootEle.querySelector('.taro-scroll-view__scroll-y')
+    this.scrollInfoEle = this.rootEle.querySelector('.scroll-refresh')
 
     this.scrollInfoEle.style.height = this.refreshHeihgt + 'px'
 
-    this.rootEle.addEventListener('touchstart', e => {
-      this.scrollEle = this.scrollEle || this.rootEle.getElementsByClassName('taro-scroll-view__scroll-y')[0]
-
+    this.scrollEle.addEventListener('touchstart', e => {
       if (!this.props.onRefresh || !e.changedTouches[0] || this.scrollEle.scrollTop !== 0) return
       this.scrollEle.style.transition = 'transform 0s'
       this.scrollInfoEle.style.transition = 'transform 0s'
@@ -48,9 +49,20 @@ export class ScrollView extends Component {
         y: e.changedTouches[0].pageY,
         status: true
       }
+      this.touchStart = true
     }, false)
     // 移动
-    this.rootEle.addEventListener('touchmove', e => {
+    this.scrollEle.addEventListener('touchmove', e => {
+      if (this.touchStart) {
+        this.touchStart = false
+        // 判断是不是垂直方向
+        const dx = Math.abs(e.changedTouches[0].pageX - this.touchStartPos.x)
+        const dy = Math.abs(e.changedTouches[0].pageY - this.touchStartPos.y)
+        if (dx >= dy) {
+          this.touchStartPos.status = false
+          return
+        }
+      }
       if (!this.touchStartPos.status) return
       let y = e.changedTouches[0].pageY - this.touchStartPos.y
       if (this.refreshStatus) {
@@ -64,7 +76,7 @@ export class ScrollView extends Component {
       y > 1 && e.preventDefault()
     }, false)
 
-    this.rootEle.addEventListener('touchend', e => {
+    this.scrollEle.addEventListener('touchend', e => {
       if (!this.touchStartPos.status) return
       let y = Math.max(0, e.changedTouches[0].pageY - this.touchStartPos.y)
       y = (1 - Math.pow(Math.E, -(y / this.refreshMaxHeihgt))) * this.refreshMaxHeihgt
@@ -149,11 +161,8 @@ export class ScrollView extends Component {
             'scroll-auto-height-h5 scroll',
             flip && 'scroll-flip'
           )}
-          onTouchMove={() => { }}
           {...props}
-        >
-          {this.props.children}
-        </TaroScrollView>
+        />
         <View className='scroll-refresh' >
           <Loading />
         </View>

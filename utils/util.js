@@ -1,22 +1,23 @@
-import Taro, { pxTransform } from '@tarojs/taro'
+import { pxTransform, getSystemInfoSync, showToast } from '@tarojs/taro'
 
 export const toast = msg => {
   if (!msg) {
     return
   }
-  Taro.showToast({
+  showToast({
     title: typeof msg === 'object' ? JSON.stringify(msg) : msg,
-    icon: 'none'
+    icon: 'none',
+    duration: 3000
   })
 }
 
 let systemInfo
 export const isIphoneX = () => {
-  systemInfo = systemInfo || Taro.getSystemInfoSync()
+  systemInfo = systemInfo || getSystemInfoSync()
   if (process.env.TARO_ENV === 'rn') {
     return require('react-native').Platform.OS !== 'android' && systemInfo.safeArea?.bottom < systemInfo.screenHeight
   } else {
-    const phoneMarks = ['iPhone X', 'iPhone 11', 'iPhone 12', 'iPhone 13', 'iPhone 14', 'iPhone 15']
+    const phoneMarks = ['iPhone X', 'iPhone 11', 'iPhone 12', 'iPhone 13', 'iPhone 14', 'iPhone 15', 'iPhone 16', 'iPhone 17']
     const { model = '' } = systemInfo
     for (let i = 0, l = phoneMarks.length; i < l; i++) {
       if ((model || '').startsWith(phoneMarks[i])) return true

@@ -1,4 +1,4 @@
-import Taro from '@tarojs/taro'
+import { getStorage, setStorage } from '@tarojs/taro'
 import { useEffect, useMemo, useState } from 'react'
 import { QuickEvent } from './QuickEvent'
 
@@ -34,7 +34,7 @@ export class Cache {
 
   async init() {
     try {
-      const res = await Taro.getStorage({ key: this.config.key })
+      const res = await getStorage({ key: this.config.key })
       if (res?.data) {
         try {
           this.data = JSON.parse(res.data)
@@ -66,7 +66,7 @@ export class Cache {
     if (this.config.global) {
       global[this.config.key] = this.data
     }
-    Taro.setStorage({
+    setStorage({
       key: this.config.key,
       data: JSON.stringify(this.data)
     })

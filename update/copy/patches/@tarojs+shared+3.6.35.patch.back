@@ -1,0 +1,63 @@
+diff --git a/node_modules/@tarojs/shared/dist/template.js b/node_modules/@tarojs/shared/dist/template.js
+index d1eafbe..0a6fa28 100644
+--- a/node_modules/@tarojs/shared/dist/template.js
++++ b/node_modules/@tarojs/shared/dist/template.js
+@@ -194,7 +194,7 @@ const Navigator = {
+     bindComplete: NO_DEFAULT_VALUE
+ };
+ const Audio = {
+-    id: NO_DEFAULT_VALUE,
++    // id: NO_DEFAULT_VALUE,
+     src: NO_DEFAULT_VALUE,
+     loop: DEFAULT_FALSE,
+     controls: DEFAULT_FALSE,
+@@ -286,7 +286,7 @@ const internalComponents = {
+     Map: MapComp,
+     Slot,
+     SlotView,
+-    NativeSlot,
++    // NativeSlot,
+     Script,
+ };
+ new Set([
+@@ -1061,11 +1061,11 @@ ${this.buildXsTemplate()}
+ </template>
+
+ <template name="tmpl_${level}_${nodeAlias}_focus">
+-  <${nodeName} ${this.buildAttribute(comp.attributes, nodeName)} id="{{i.uid||i.sid}}" data-sid="{{i.sid}}">${children}</${nodeName}>
++  <${nodeName} ${this.buildAttribute(comp.attributes, nodeName)}${nodeName === "block" ? "" : ' id="{{i.uid||i.sid}}" data-sid=" {{i.sid}}"'}>${children}</${nodeName}>
+ </template>
+
+ <template name="tmpl_${level}_${nodeAlias}_blur">
+-  <${nodeName} ${this.buildAttribute(attrs, nodeName)} id="{{i.uid||i.sid}}" data-sid="{{i.sid}}">${children}</${nodeName}>
++  <${nodeName} ${this.buildAttribute(attrs, nodeName)}${nodeName === "block" ? "" : ' id="{{i.uid||i.sid}}" data-sid="{{i.sid}}"'}>${children}</${nodeName}>
+ </template>
+ `;
+         if (isFunction(this.modifyTemplateResult)) {
+@@ -1100,7 +1100,7 @@ ${this.buildXsTemplate()}
+         }
+         let res = `
+ <template name="tmpl_${level}_${nodeAlias}">
+-  <${nodeName} ${this.buildAttribute(comp.attributes, comp.nodeName)} id="{{i.uid||i.sid}}" data-sid="{{i.sid}}">${children}</${nodeName}>
++  <${nodeName} ${this.buildAttribute(comp.attributes, comp.nodeName)}${nodeName === "block" ? "" : ' id="{{i.uid||i.sid}}" data-sid="{{i.sid}}"'}>${children}</${nodeName}>
+ </template>
+ `;
+         if (isFunction(this.modifyTemplateResult)) {
+@@ -1123,7 +1123,7 @@ ${this.buildXsTemplate()}
+             if (compName === 'custom-wrapper') {
+                 template += `
+ <template name="tmpl_${level}_${compName}">
+-  <${compName} i="{{i}}" l="{{l}}" id="{{i.uid||i.sid}}" data-sid="{{i.sid}}">
++  <${compName} i="{{i}}" l="{{l}}"${compName === "block" ? "" : ' id="{{i.uid||i.sid}}" data-sid="{{i.sid}}"'}>
+   </${compName}>
+ </template>
+   `;
+@@ -1144,7 +1144,7 @@ ${this.buildXsTemplate()}
+   `;
+                 template += `
+ <template name="tmpl_${level}_${compName}">
+-  <${compName} ${this.buildThirdPartyAttr(attrs, this.thirdPartyPatcher[compName] || {})} id="{{i.uid||i.sid}}" data-sid="{{i.sid}}">${children}</${compName}>
++  <${compName} ${this.buildThirdPartyAttr(attrs, this.thirdPartyPatcher[compName] || {})}${compName === "block" ? "" : ' id="{{i.uid||i.sid}}" data-sid="{{i.sid}}"'}>${children}</${compName}>
+ </template>
+   `;
+             }

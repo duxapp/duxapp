@@ -1,5 +1,5 @@
 import qs from 'qs'
-import Taro from '@tarojs/taro'
+import { getCurrentPages } from '@tarojs/taro'
 import { asyncTimeOut } from '../util'
 
 const { pages, registerPages, pagesTransfer, routes } = (() => {
@@ -173,7 +173,7 @@ export const currentPage = () => {
   if (process.env.TARO_ENV === 'h5') {
     path = window.location.hash.split('?')[0].split('#')[1]
   } else {
-    const _pages = Taro.getCurrentPages()
+    const _pages = getCurrentPages()
     const current = _pages[_pages.length - 1]
     path = current.path || current.route
   }

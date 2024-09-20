@@ -1,4 +1,4 @@
-import Taro from '@tarojs/taro'
+import { uploadFile as uploadFileTaro } from '@tarojs/taro'
 import { getUrl, execGetChild, execGetObject, getMedia, execMiddle } from './util'
 
 const uploadFile = process.env.TARO_ENV === 'rn'
@@ -77,7 +77,7 @@ const uploadFile = process.env.TARO_ENV === 'rn'
       return execFetch
     }
   })()
-  : Taro.uploadFile
+  : uploadFileTaro
 
 const upload = (
   type = 'image',

@@ -1,4 +1,4 @@
-import Taro from '@tarojs/taro'
+import { getLocation } from '@tarojs/taro'
 
 let PermissionsAndroid, Platform, Geolocation
 
@@ -61,19 +61,19 @@ const outOfChina = (lat, lon) => {
 //WGS-84 to GCJ-02
 export const gcjEncrypt = (wgsLat, wgsLon) => {
   if (outOfChina(wgsLat, wgsLon))
-    return { lat: wgsLat, lon: wgsLon };
+    return { lat: wgsLat, lon: wgsLon, lng: wgsLon };
 
   let d = delta(wgsLat, wgsLon);
-  return { lat: wgsLat + d.lat, lon: wgsLon + d.lon };
+  return { lat: wgsLat + d.lat, lon: wgsLon + d.lon, lng: wgsLon + d.lon };
 }
 
 //GCJ-02 to WGS-84
 export const gcjDecrypt = (gcjLat, gcjLon) => {
   if (outOfChina(gcjLat, gcjLon))
-    return { lat: gcjLat, lon: gcjLon };
+    return { lat: gcjLat, lon: gcjLon, lng: gcjLon };
 
   let d = delta(gcjLat, gcjLon);
-  return { lat: gcjLat - d.lat, lon: gcjLon - d.lon };
+  return { lat: gcjLat - d.lat, lon: gcjLon - d.lon, lng: gcjLon - d.lon };
 }
 
 //GCJ-02 to WGS-84 exactly
@@ -98,7 +98,7 @@ export const gcjDecryptExact = (gcjLat, gcjLon) => {
 
     if (++i > 10000) break;
   }
-  return { lat: wgsLat, lon: wgsLon };
+  return { lat: wgsLat, lon: wgsLon, lng: wgsLon };
 }
 
 //GCJ-02 to BD-09
@@ -108,7 +108,7 @@ export const bdEncrypt = (gcjLat, gcjLon) => {
   let theta = Math.atan2(y, x) + 0.000003 * Math.cos(x * x_pi);
   let bdLon = z * Math.cos(theta) + 0.0065;
   let bdLat = z * Math.sin(theta) + 0.006;
-  return { lat: bdLat, lon: bdLon };
+  return { lat: bdLat, lon: bdLon, lng: bdLon };
 }
 
 //BD-09 to GCJ-02
@@ -118,7 +118,7 @@ export const bdDecrypt = (bdLat, bdLon) => {
   let theta = Math.atan2(y, x) - 0.000003 * Math.cos(x * x_pi);
   let gcjLon = z * Math.cos(theta);
   let gcjLat = z * Math.sin(theta);
-  return { lat: gcjLat, lon: gcjLon };
+  return { lat: gcjLat, lon: gcjLon, lng: gcjLon };
 }
 
 // 计算两点之间的距离 单位m
@@ -174,7 +174,7 @@ export const getLocationBase = (enableHighAccuracy = false) => {
           return res
         }
       }
-      Taro.getLocation({
+      getLocation({
         type,
         isHighAccuracy: enableHighAccuracy
       }).then(res => {
@@ -183,7 +183,7 @@ export const getLocationBase = (enableHighAccuracy = false) => {
         console.log('定位失败', error)
         reject({ message: '获取定位失败', error })
       })
-      // enableHighAccuracy && Taro.getLocation({
+      // enableHighAccuracy && getLocation({
       //   type,
       //   isHighAccuracy: true
       // }).then(res => changeFunc?.(getRes(res)))

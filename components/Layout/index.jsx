@@ -1,10 +1,10 @@
 import { useEffect, useMemo } from 'react'
-import Taro from '@tarojs/taro'
+import { createSelectorQuery } from '@tarojs/taro'
 import { View } from '@tarojs/components'
 import { CustomWrapper } from '../CustomWrapper'
 
 export const getRect = (select, getAll, scope, num = 0) => {
-  const query = scope ? Taro.createSelectorQuery().in(scope) : Taro.createSelectorQuery()
+  const query = scope ? createSelectorQuery().in(scope) : createSelectorQuery()
 
   return new Promise((resolve, reject) => {
     if (num > 10) {
