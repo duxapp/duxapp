@@ -1,3 +1,18 @@
+# 1.0.69
+
+## PullView
+
+修复 `mask` 小程序端无效的问题
+
+## hooks
+
+将 `creatGlobalState` 调整为 `createGlobalState`
+将 `creatContextState` 调整为 `createContextState`
+
+## Types
+
+修复一些types提示
+
 # 1.0.63
 
 ## 主要更改

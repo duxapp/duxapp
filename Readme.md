@@ -76,7 +76,7 @@ export default TopView.HOC(function Duxapp() {
 这在多模块系统中开发一些公共模块来说，是很有效的工具
 
 ### Loading
-菊花加在中效果
+菊花加载中效果
 
 ### List
 分页列表组件。  
@@ -222,10 +222,10 @@ console.log(userConfig.option.duxapp)
 ### 全局状态
 
 ```jsx
-import { creatGlobalState, contextState } from '@/duxapp'
+import { createGlobalState, contextState } from '@/duxapp'
 
 /** APP全局状态 */
-const globalState = creatGlobalState({ text: '默认值' })
+const globalState = createGlobalState({ text: '默认值' })
 
 // 任何地方设置值
 globalState.setState({ text: '设置的值' })

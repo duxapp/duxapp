@@ -19,8 +19,8 @@ export class PullView extends Component {
   }
 
   overlayCilck = () => {
-    const { modal } = this.props
-    if (modal) return
+    const { modal, mask = modal } = this.props
+    if (mask) return
     this.close()
   }
 

@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useMemo, useRef, useState } from 
 import { QuickEvent } from '../QuickEvent'
 import { deepEqua } from '../object'
 
-export const creatGlobalState = defaultData => {
+export const createGlobalState = defaultData => {
 
   const event = new QuickEvent()
 
@@ -28,7 +28,13 @@ export const creatGlobalState = defaultData => {
   }
 }
 
-export const creatContextState = () => {
+/**
+ * 修复单词错误，兼容错误写法
+ * 2024-10-15
+ */
+export const creatGlobalState = createGlobalState
+
+export const createContextState = () => {
 
   const context = createContext([void 0, () => console.error('setState 方法不在 Provider 作用域内')])
 
@@ -54,7 +60,13 @@ export const creatContextState = () => {
   }
 }
 
-export const contextState = creatContextState()
+/**
+ * 修复单词错误，兼容错误写法
+ * 2024-10-15
+ */
+export const creatContextState = createContextState
+
+export const contextState = createContextState()
 
 export const useDeepObject = data => {
   const _data = useRef(data)

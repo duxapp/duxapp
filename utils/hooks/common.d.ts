@@ -4,7 +4,7 @@ import { ComponentType, ReactNode } from 'react'
  * 创建一个全局作用域的 state
  * @param initialState
  */
-export function creatGlobalState<S>(initialState: S): {
+export function createGlobalState<S>(initialState: S): {
   useState: () => S
   setState: (value: S | ((prevState: S) => S)) => void
 }
@@ -27,7 +27,7 @@ interface ContextStateProviderProps {
 /**
  * 创建一个局部作用域的 state
  */
-export function creatContextState(): {
+export function createContextState(): {
   useState: () => [any, (value: any | ((prevState: any) => any)) => void]
   Provider: ComponentType<ContextStateProviderProps>
 }

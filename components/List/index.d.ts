@@ -1,5 +1,5 @@
 import { ScrollViewProps } from '@tarojs/components'
-import { Component, ReactElement, CSSProperties } from 'react'
+import { Component, ReactElement, CSSProperties, FC } from 'react'
 import { Request } from '../../utils/net'
 import { RequestHooks } from '../../utils/hooks/request'
 
@@ -63,11 +63,9 @@ interface ListProps extends ScrollViewProps {
   listClassName?: string
 }
 
-declare function List(props: ListProps): JSX.Element
-
 export function createList(
   usePageList: (
     url: Request.RequestOption,
     option?: RequestHooks.PageDataConfig
   ) => [any[], RequestHooks.PageDataResult]
-): List
+): FC<ListProps>
