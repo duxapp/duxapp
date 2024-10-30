@@ -1,9 +1,14 @@
 {
   "name": "duxapp",
   "description": "duxapp模块，所有模块的公共基础模块",
-  "version": "1.0.69",
+  "version": "1.0.72",
   "dependencies": [],
   "npm": {
+    "browserslist": [
+      "Android >= 4.4",
+      "iOS >= 9",
+      "not dead"
+    ],
     "scripts": {
       "build:weapp": "duxapp runtime enterFile && taro build --type weapp",
       "build:swan": "duxapp runtime enterFile && taro build --type swan",
@@ -68,7 +73,7 @@
       "@types/react": "^18.0.24",
       "@types/webpack-env": "^1.18.1",
       "babel-preset-taro": "4.0.5",
-      "duxapp-cli": "~2.0.13",
+      "duxapp-cli": "~2.0.14",
       "eslint": "^8.26.0",
       "eslint-config-taro": "4.0.5",
       "eslint-plugin-import": "^2.26.0",

@@ -231,7 +231,7 @@ declare namespace Upload {
     /** 选择图片的来源 */
     sourceType?: keyof sourceType[]
     /** 图片压缩类型 */
-    sizeType?: keyof sizeType[]
+    sizeType?: (keyof sizeType)[]
     /** 视频压缩 */
     compressed?: boolean
     /** 拍摄时的最大时长 单位秒 */

@@ -108,12 +108,21 @@ export class ObjectManage {
     }
     if (cache && cacheKey) {
       this.cache = new Cache({ key: cacheKey, global, defaultData })
-      this.cache.getAsync().then(_data => {
-        if (_data && this.data !== _data) {
+      this.cache.onLocal((status, _data) => {
+        if (status && _data) {
           this.data = _data
           this.quickEvent.trigger(this.data, 'cache')
+        } else {
+          this.quickEvent.trigger(this.data, 'no-cache')
         }
       })
+      // this.cache.getAsync()
+      // .then(_data => {
+      //   if (_data && this.data !== _data) {
+      //     this.data = _data
+      //     this.quickEvent.trigger(this.data, 'cache')
+      //   }
+      // })
     }
   }
 
@@ -126,7 +135,9 @@ export class ObjectManage {
   data = {}
 
   // 监听选中项改变事件
-  onSet = this.quickEvent.on
+  onSet = callback => this.quickEvent.on((data, type) => {
+    type !== 'no-cache' && callback(data, type)
+  })
 
   // 替换数据
   set = data => {

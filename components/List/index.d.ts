@@ -1,5 +1,7 @@
 import { ScrollViewProps } from '@tarojs/components'
 import { Component, ReactElement, CSSProperties, FC } from 'react'
+import { VirtualListProps } from '@tarojs/components-advanced/dist/components/virtual-list'
+import { VirtualWaterfallProps } from '@tarojs/components-advanced/dist/components/virtual-waterfall'
 import { Request } from '../../utils/net'
 import { RequestHooks } from '../../utils/hooks/request'
 
@@ -10,7 +12,7 @@ interface ListProps extends ScrollViewProps {
   renderItem: Component
   /** 请求参数 request 的data */
   data?: {
-    [key]: any
+    [key: string]: any
   }
   /** 其他的请求参数 */
   requestOption?: Request.RequestOption
@@ -61,6 +63,30 @@ interface ListProps extends ScrollViewProps {
   listStyle?: CSSProperties
   /** 除了RN端，其他端应用于列表上的样式，可以用于实现多列布局 */
   listClassName?: string
+  /**
+   * 是否使用虚拟列表 这在小程序和H5端生效 RN端默认使用虚拟列表
+   * 开启后还需要传入 virtualListProps 或者 virtualWaterfallProps 参数
+   *
+   * 如果columns>1使用virtualListProps传入参数
+   *
+   * 要需要配置 itemSize 才能正常显示，请查看相关文档
+   *
+   * 开启后，传入renderItem的组件就会接收到一个叫id的props，需要将这个id传递给你的组件的根节点
+   *
+   * https://nervjs.github.io/taro-docs/docs/virtual-list
+   * https://nervjs.github.io/taro-docs/docs/virtual-waterfall
+   */
+  useVirtualList?: boolean
+  /**
+   * 传给虚拟列表的参数
+   * https://nervjs.github.io/taro-docs/docs/virtual-list
+   */
+  virtualListProps?: VirtualListProps
+  /**
+   * 当 columns > 1 时传递给 virtual-waterfall 的参数
+   * https://nervjs.github.io/taro-docs/docs/virtual-waterfall
+   */
+  virtualWaterfallProps?: VirtualWaterfallProps
 }
 
 export function createList(
@@ -68,4 +94,9 @@ export function createList(
     url: Request.RequestOption,
     option?: RequestHooks.PageDataConfig
   ) => [any[], RequestHooks.PageDataResult]
-): FC<ListProps>
+): FC<ListProps> & {
+  /**
+   * 使用 useVirtualList 开启虚拟列表后可以要传入itemSize参数，使用这个函数转换
+   */
+  itemSize: (px: number) => number
+}

@@ -69,6 +69,7 @@ export const ListSelect = ({
 }
 
 const ListSelectItem = ({
+  id,
   item,
   children
 }) => {
@@ -76,7 +77,7 @@ const ListSelectItem = ({
   if (!type) {
     return children
   }
-  return <View className='ListSelectItem'>
+  return <View className='ListSelectItem' id={id}>
     <View className={`ListSelectItem__check${type === 'radio' ? ' ListSelectItem__check--radio' : ''}`} onClick={() => choice(item)}>
       {isCheck(item) && <View className={`ListSelectItem__check__child${type === 'radio' ? ' ListSelectItem__check__child--radio' : ''}`} />}
     </View>
@@ -100,3 +101,4 @@ const ListSelectSubmit = ({
 
 ListSelect.Item = ListSelectItem
 ListSelect.Submit = ListSelectSubmit
+ListSelect.useContext = useContext

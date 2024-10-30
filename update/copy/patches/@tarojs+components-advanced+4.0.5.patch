@@ -1,0 +1,25 @@
+diff --git a/node_modules/@tarojs/components-advanced/dist/components/virtual-waterfall/react/waterfall.js b/node_modules/@tarojs/components-advanced/dist/components/virtual-waterfall/react/waterfall.js
+index 40fff15..0591b33 100644
+--- a/node_modules/@tarojs/components-advanced/dist/components/virtual-waterfall/react/waterfall.js
++++ b/node_modules/@tarojs/components-advanced/dist/components/virtual-waterfall/react/waterfall.js
+@@ -285,8 +285,7 @@ class Waterfall extends React.PureComponent {
+         const _a = omit(this.props, [
+             'item', 'itemCount', 'itemData', 'itemKey', 'useIsScrolling',
+             'innerElementType', 'innerTagName', 'itemElementType', 'itemTagName',
+-            'outerElementType', 'outerTagName', 'onScrollToLower', 'onScrollToUpper',
+-            'upperThreshold', 'lowerThreshold',
++            'outerElementType', 'outerTagName',
+             'position',
+         ]), { className, style, height, width, enhanced, outerWrapper, renderTop, renderBottom } = _a, rest = __rest(_a, ["className", "style", "height", "width", "enhanced", "outerWrapper", "renderTop", "renderBottom"]);
+         const { isScrolling, scrollOffset, scrollUpdateWasRequested } = this.state;
+@@ -303,8 +302,8 @@ class Waterfall extends React.PureComponent {
+         return React.createElement(outerWrapper || this.preset.outerElement, outerProps, React.createElement(this.preset.innerElement, {
+             key: `${this.preset.id}-wrapper`,
+             id: `${this.preset.id}-wrapper`,
+-            className: classNames(className, 'virtual-waterfall-wrapper'),
+-            style: Object.assign({ display: 'flex', justifyContent: 'space-evenly', pointerEvents: isScrolling ? 'none' : 'auto', position: 'relative', height: estimatedHeight, width: '100%' }, style),
++            className: 'virtual-waterfall-wrapper',
++            style: { display: 'flex', justifyContent: 'space-evenly', pointerEvents: isScrolling ? 'none' : 'auto', position: 'relative', height: estimatedHeight, width: '100%' },
+         }, columnNodes));
+     }
+ }
