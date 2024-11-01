@@ -1,7 +1,7 @@
 import { Component } from 'react'
 import { View } from '@tarojs/components'
 import { Animated, Easing, StyleSheet } from 'react-native'
-import { px } from '@/duxui/utils'
+import { px } from '@/duxapp/utils'
 
 export class Loading extends Component {
   constructor(props) {

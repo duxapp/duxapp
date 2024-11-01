@@ -1,36 +1,14 @@
-import { useEffect, useMemo, memo, useRef, useState } from 'react'
+import { useEffect, useMemo, memo, useRef } from 'react'
 import { View, Text, Image } from '@tarojs/components'
-import { VirtualList } from '@tarojs/components-advanced/dist/components/virtual-list'
-import { VirtualWaterfall } from '@tarojs/components-advanced/dist/components/virtual-waterfall'
 import { useDidShow, getSystemInfoSync } from '@tarojs/taro'
 import { noop } from '@/duxapp/utils'
-import classNames from 'classnames'
 import { ListLoading } from './Loading'
 import { ListSelect } from './Select'
 import { ScrollView } from '../ScrollView'
-import { FlatList } from '../FlatList'
-import { Layout } from '../Layout'
+import { FlatList } from './FlatList'
+import { WeappList } from './WeappList'
 import empty from './image/empty.png'
 import './index.scss'
-
-export {
-  ListLoading
-}
-
-const Empty = ({
-  onEmptyClick,
-  emptyTitle
-}) => {
-  return <View
-    className='list-empty'
-    onClick={onEmptyClick}
-  >
-    <Image src={empty} className='list-empty__icon' />
-    <Text className='list-empty__title'>{emptyTitle}</Text>
-  </View>
-}
-
-const itemSize = px => px * getSystemInfoSync().screenWidth / 750
 
 export const createList = usePageData => {
   const List = ({
@@ -72,8 +50,6 @@ export const createList = usePageData => {
     const ref = useRef({})
     ref.current = { list, action }
 
-    const [height, setHeight] = useState(0)
-
     useDidShow(() => {
       if (option?.ready === false) {
         return
@@ -104,11 +80,15 @@ export const createList = usePageData => {
     const { type } = ListSelect.useContext()
 
     const RenderItem = useMemo(() => {
-      return memo(({ data: itemData, id, index, item = itemData?.[index], ...itemProps }) => {
+      const Item_ = ({ data: itemData, id, index, item = itemData?.[index], ...itemProps }) => {
         return <ListSelect.Item item={item} index={index} id={id}>
           <Item item={item} id={type ? undefined : id} index={index} {...itemProps} {...ref.current} />
         </ListSelect.Item>
-      })
+      }
+      if (process.env.TARO_ENV === 'rn') {
+        return Item_
+      }
+      return memo(Item_)
     }, [type])
 
     const refresh = action.loading && action.refresh
@@ -117,22 +97,6 @@ export const createList = usePageData => {
       loading={action.loading}
       text={action.loading ? '加载中' : action.loadEnd ? '没有更多了' : '上拉加载'}
     />
-
-    // 非RN端虚拟列表
-    const isWaterfall = useVirtualList && columns > 1
-
-    const VList = isWaterfall ? VirtualWaterfall : VirtualList
-
-    const [Top, Bottom] = useVirtualList && process.env.TARO_ENV !== 'rn' ? [
-      () => <>
-        {renderHeader}
-        {emptyStatus && (renderEmpty || <Empty onEmptyClick={onEmptyClick} emptyTitle={emptyTitle} />)}
-      </>,
-      () => <>
-        {renderFooter}
-        {loadMore}
-      </>
-    ] : []
 
     return <ListSelect>
       {
@@ -154,38 +118,26 @@ export const createList = usePageData => {
               {renderFooter}
               {loadMore}
             </>}
-          /> : useVirtualList ? (
-            height > 0 ?
-              <VList
-                height={height}
-                column={columns}
-                className={props.className}
-                style={props.style}
-                itemData={list}
-                itemCount={list.length}
-                item={RenderItem}
-                // 下拉刷新了上拉加载
-                lowerThreshold={200}
-                onScrollToLower={page && action.next || noop}
-                refresherEnabled={refresh !== undefined}
-                refresherThreshold={50}
-                onRefresherrefresh={() => {
-                  !refresh && action.reload()
-                }}
-                refresherTriggered={!!refresh}
-                refresherBackground='transparent'
-                // 自定义渲染
-                renderTop={isWaterfall ? Top : <Top />}
-                renderBottom={isWaterfall ? Bottom : <Bottom />}
-
-                {...(isWaterfall ? virtualWaterfallProps : virtualListProps)}
-              /> :
-              <Layout
-                className={classNames('flex-grow', props.className)}
-                style={props.style}
-                onLayout={e => setHeight(e.height)}
-              />
-          ) :
+          /> : useVirtualList ?
+            <WeappList
+              list={list}
+              RenderItem={RenderItem}
+              columns={columns}
+              page={page}
+              renderHeader={renderHeader}
+              renderFooter={renderFooter}
+              emptyStatus={emptyStatus}
+              renderEmpty={renderEmpty}
+              loadMore={loadMore}
+              Empty={Empty}
+              onEmptyClick={onEmptyClick}
+              emptyTitle={emptyTitle}
+              action={action}
+              refresh={refresh}
+              virtualListProps={virtualListProps}
+              virtualWaterfallProps={virtualWaterfallProps}
+              props={props}
+            /> :
             <ScrollView
               refresh={refresh}
               lowerThreshold={200}
@@ -217,3 +169,21 @@ export const createList = usePageData => {
   return List
 }
 
+export {
+  ListLoading
+}
+
+const itemSize = px => px * getSystemInfoSync().screenWidth / 750
+
+const Empty = ({
+  onEmptyClick,
+  emptyTitle
+}) => {
+  return <View
+    className='list-empty'
+    onClick={onEmptyClick}
+  >
+    <Image src={empty} className='list-empty__icon' />
+    <Text className='list-empty__title'>{emptyTitle}</Text>
+  </View>
+}

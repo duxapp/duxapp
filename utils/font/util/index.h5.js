@@ -3,3 +3,7 @@ export const loadFont = (name, url) => {
   document.fonts.add(font)
   return font.load()
 }
+
+export const loadLocalFont = () => {
+
+}

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { toast } from '../util'
-import { loadFont } from './util'
+import { loadFont, loadLocalFont } from './util'
 import { networkVerify } from '../rn'
 import { userConfig } from '../../config/userConfig'
 
@@ -17,6 +17,9 @@ export const font = {
     if (local === true || local?.[Platform?.OS] === true) {
       return true
     }
+  },
+  loadLocal: async (name, assets) => {
+    loadLocalFont(name, assets)
   },
   load: async (name, url, num = 0) => {
     if (num > 5) {

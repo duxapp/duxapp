@@ -1,7 +1,7 @@
 {
   "name": "duxapp",
   "description": "duxapp模块，所有模块的公共基础模块",
-  "version": "1.0.72",
+  "version": "1.0.74",
   "dependencies": [],
   "npm": {
     "browserslist": [
@@ -73,7 +73,7 @@
       "@types/react": "^18.0.24",
       "@types/webpack-env": "^1.18.1",
       "babel-preset-taro": "4.0.5",
-      "duxapp-cli": "~2.0.14",
+      "duxapp-cli": "~2.0.16",
       "eslint": "^8.26.0",
       "eslint-config-taro": "4.0.5",
       "eslint-plugin-import": "^2.26.0",

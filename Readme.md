@@ -84,7 +84,7 @@ export default TopView.HOC(function Duxapp() {
 如果后端提供的接口是使用get参数的page进行分页的，可以使用此组件极大的简化列表开发的难度，这个组件集成了下拉刷新，上拉分页、加载完成等
 
 ```jsx
-import { Empty, Column, Header, Text, TopView, Status } from '@/duxui'
+import { Empty, Column, Header, Text, TopView, Status } from '@/duxapp'
 import { List } from '@/duxslim'
 
 export default function GroundLog() {

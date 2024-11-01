@@ -1,0 +1,77 @@
+
+import { VirtualList } from '@tarojs/components-advanced/dist/components/virtual-list'
+import { VirtualWaterfall } from '@tarojs/components-advanced/dist/components/virtual-waterfall'
+import { useState } from 'react'
+import classNames from 'classnames'
+import { noop } from '@/duxapp/utils'
+import { Layout } from '../../Layout'
+
+export const WeappList = ({
+  list,
+  columns,
+  renderHeader,
+  renderFooter,
+  emptyStatus,
+  renderEmpty,
+  loadMore,
+  Empty,
+  RenderItem,
+  onEmptyClick,
+  emptyTitle,
+  page,
+  action,
+  refresh,
+  virtualWaterfallProps,
+  virtualListProps,
+  props
+}) => {
+
+  const [height, setHeight] = useState(0)
+
+  // 非RN端虚拟列表
+  const isWaterfall = columns > 1
+
+  const VList = isWaterfall ? VirtualWaterfall : VirtualList
+
+  const [Top, Bottom] = [
+    () => <>
+      {renderHeader}
+      {emptyStatus && (renderEmpty || <Empty onEmptyClick={onEmptyClick} emptyTitle={emptyTitle} />)}
+    </>,
+    () => <>
+      {renderFooter}
+      {loadMore}
+    </>
+  ]
+
+  return height > 0 ?
+    <VList
+      height={height}
+      column={columns}
+      className={props.className}
+      style={props.style}
+      itemData={list}
+      itemCount={list.length}
+      item={RenderItem}
+      // 下拉刷新了上拉加载
+      lowerThreshold={200}
+      onScrollToLower={page && action.next || noop}
+      refresherEnabled={refresh !== undefined}
+      refresherThreshold={50}
+      onRefresherrefresh={() => {
+        !refresh && action.reload()
+      }}
+      refresherTriggered={!!refresh}
+      refresherBackground='transparent'
+      // 自定义渲染
+      renderTop={isWaterfall ? Top : <Top />}
+      renderBottom={isWaterfall ? Bottom : <Bottom />}
+
+      {...(isWaterfall ? virtualWaterfallProps : virtualListProps)}
+    /> :
+    <Layout
+      className={classNames('flex-grow', props.className)}
+      style={props.style}
+      onLayout={e => setHeight(e.height)}
+    />
+}

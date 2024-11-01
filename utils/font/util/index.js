@@ -8,3 +8,7 @@ export const loadFont = (name, url) => {
     scopes: ['webview', 'native']
   })
 }
+
+export const loadLocalFont = () => {
+
+}
