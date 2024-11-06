@@ -17,11 +17,11 @@ declare namespace RequestHooks {
      */
     field?: string
     /**
-     * 请求错误回调
+     * 请求错误回调，这里如果不抛出错误，将会请求成功，需要返回一个对象
      * @param err
      * @returns
      */
-    onError?: (err: any) => void
+    onError?: (err: any) => any | Promise<{}>
     /**
      * 在页面显示的时候刷新数据
      */

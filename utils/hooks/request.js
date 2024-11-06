@@ -38,21 +38,25 @@ export const createRequestHooks = request => {
         }
         setStatus(true)
         _config.current.status = true
+        const complete = () => {
+          _config.current.status = false
+          init.current = true
+          setStatus(false)
+        }
         return request(_option)
-          .then(res => {
-            res = resultAction(res)
-            _config.current.status = false
-            init.current = true
-            setStatus(false)
-            return res
-          })
           .catch(err => {
             if (_config.current?.onError) {
               return _config.current?.onError(err)
             }
-            _config.current.status = false
-            init.current = true
-            setStatus(false)
+            complete()
+            throw err
+          })
+          .then(res => {
+            res = resultAction(res)
+            complete()
+            return res
+          }).catch(err => {
+            complete()
             throw err
           })
       }, [_option, resultAction])

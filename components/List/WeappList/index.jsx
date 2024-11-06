@@ -1,7 +1,7 @@
 
 import { VirtualList } from '@tarojs/components-advanced/dist/components/virtual-list'
 import { VirtualWaterfall } from '@tarojs/components-advanced/dist/components/virtual-waterfall'
-import { useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import classNames from 'classnames'
 import { noop } from '@/duxapp/utils'
 import { Layout } from '../../Layout'
@@ -33,19 +33,20 @@ export const WeappList = ({
 
   const VList = isWaterfall ? VirtualWaterfall : VirtualList
 
-  const [Top, Bottom] = [
-    () => <>
-      {renderHeader}
-      {emptyStatus && (renderEmpty || <Empty onEmptyClick={onEmptyClick} emptyTitle={emptyTitle} />)}
-    </>,
-    () => <>
-      {renderFooter}
-      {loadMore}
-    </>
-  ]
+  const [key, setKey] = useState(0)
+
+  const oldLength = useRef(list.length)
+
+  useMemo(() => {
+    if (list.length < oldLength.current) {
+      setKey(old => old + 1)
+    }
+    oldLength.current = list.length
+  }, [list.length])
 
   return height > 0 ?
     <VList
+      key={key}
       height={height}
       column={columns}
       className={props.className}
@@ -64,8 +65,14 @@ export const WeappList = ({
       refresherTriggered={!!refresh}
       refresherBackground='transparent'
       // 自定义渲染
-      renderTop={isWaterfall ? Top : <Top />}
-      renderBottom={isWaterfall ? Bottom : <Bottom />}
+      renderTop={<>
+        {renderHeader}
+        {emptyStatus && (renderEmpty || <Empty onEmptyClick={onEmptyClick} emptyTitle={emptyTitle} />)}
+      </>}
+      renderBottom={<>
+        {renderFooter}
+        {loadMore}
+      </>}
 
       {...(isWaterfall ? virtualWaterfallProps : virtualListProps)}
     /> :
