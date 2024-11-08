@@ -11,6 +11,29 @@ index 3b64150..7fd6753 100644
              const upperObserver = this.boundaryDetectionHelper({
                  event: typeof this.props.onScrollToUpper === 'function' ? () => {
                      if (this.field.diffOffset >= 0)
+diff --git a/node_modules/@tarojs/components-advanced/dist/components/virtual-list/react/list.js b/node_modules/@tarojs/components-advanced/dist/components/virtual-list/react/list.js
+index a4c0d04..6462191 100644
+--- a/node_modules/@tarojs/components-advanced/dist/components/virtual-list/react/list.js
++++ b/node_modules/@tarojs/components-advanced/dist/components/virtual-list/react/list.js
+@@ -260,7 +260,7 @@ class List extends React.PureComponent {
+             }
+         }
+         this._callPropsCallbacks();
+-        this.preset.boundaryDetection();
++        // this.preset.boundaryDetection();
+     }
+     componentDidUpdate(prevProps, prevState) {
+         const { scrollOffset, scrollUpdateWasRequested } = this.state;
+@@ -378,8 +378,7 @@ class List extends React.PureComponent {
+         const _a = omit(this.props, [
+             'item', 'itemCount', 'itemData', 'itemKey', 'useIsScrolling',
+             'innerElementType', 'innerTagName', 'itemElementType', 'itemTagName',
+-            'outerElementType', 'outerTagName', 'onScrollToLower', 'onScrollToUpper',
+-            'upperThreshold', 'lowerThreshold',
++            'outerElementType', 'outerTagName',
+             'position', 'innerRef',
+         ]), { className, direction, height, layout, style, width, enhanced = false, outerWrapper, renderTop, renderBottom } = _a, rest = __rest(_a, ["className", "direction", "height", "layout", "style", "width", "enhanced", "outerWrapper", "renderTop", "renderBottom"]);
+         const { scrollOffset, scrollUpdateWasRequested } = this.state;
 diff --git a/node_modules/@tarojs/components-advanced/dist/components/virtual-waterfall/preset.js b/node_modules/@tarojs/components-advanced/dist/components/virtual-waterfall/preset.js
 index 3d27413..968b2d1 100644
 --- a/node_modules/@tarojs/components-advanced/dist/components/virtual-waterfall/preset.js
@@ -25,10 +48,29 @@ index 3d27413..968b2d1 100644
                  event: typeof this.props.onScrollToUpper === 'function' ? () => {
                      if (this.field.diffOffset >= 0)
 diff --git a/node_modules/@tarojs/components-advanced/dist/components/virtual-waterfall/react/waterfall.js b/node_modules/@tarojs/components-advanced/dist/components/virtual-waterfall/react/waterfall.js
-index 40fff15..8353508 100644
+index 40fff15..2e65c27 100644
 --- a/node_modules/@tarojs/components-advanced/dist/components/virtual-waterfall/react/waterfall.js
 +++ b/node_modules/@tarojs/components-advanced/dist/components/virtual-waterfall/react/waterfall.js
-@@ -303,8 +303,8 @@ class Waterfall extends React.PureComponent {
+@@ -194,7 +194,7 @@ class Waterfall extends React.PureComponent {
+             this._outerRef.scrollTop = initialScrollOffset;
+         }
+         this._callPropsCallbacks();
+-        this.preset.boundaryDetection();
++        // this.preset.boundaryDetection();
+     }
+     componentDidUpdate(prevProps, prevState) {
+         const { scrollOffset, scrollUpdateWasRequested } = this.state;
+@@ -285,8 +285,7 @@ class Waterfall extends React.PureComponent {
+         const _a = omit(this.props, [
+             'item', 'itemCount', 'itemData', 'itemKey', 'useIsScrolling',
+             'innerElementType', 'innerTagName', 'itemElementType', 'itemTagName',
+-            'outerElementType', 'outerTagName', 'onScrollToLower', 'onScrollToUpper',
+-            'upperThreshold', 'lowerThreshold',
++            'outerElementType', 'outerTagName',
+             'position',
+         ]), { className, style, height, width, enhanced, outerWrapper, renderTop, renderBottom } = _a, rest = __rest(_a, ["className", "style", "height", "width", "enhanced", "outerWrapper", "renderTop", "renderBottom"]);
+         const { isScrolling, scrollOffset, scrollUpdateWasRequested } = this.state;
+@@ -303,8 +302,8 @@ class Waterfall extends React.PureComponent {
          return React.createElement(outerWrapper || this.preset.outerElement, outerProps, React.createElement(this.preset.innerElement, {
              key: `${this.preset.id}-wrapper`,
              id: `${this.preset.id}-wrapper`,

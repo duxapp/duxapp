@@ -64,6 +64,7 @@ export const WeappList = ({
       }}
       refresherTriggered={!!refresh}
       refresherBackground='transparent'
+      enhanced // 默认开启 防止抖动
       // 自定义渲染
       renderTop={<>
         {renderHeader}
