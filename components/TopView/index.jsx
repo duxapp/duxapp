@@ -9,132 +9,6 @@ import { Status } from './Status'
 import { WeappRem } from './WeappRem'
 import './index.scss'
 
-const Position = ({ children }) => {
-  return process.env.TARO_ENV === 'rn'
-    ? children
-    : <View className='position'>
-      {children}
-    </View>
-}
-
-const EleItem = memo(({
-  item,
-  onRemove
-}) => {
-
-  const remove = useCallback(() => {
-    onRemove?.(item)
-  }, [item, onRemove])
-
-  if (
-    item.element instanceof Array
-    && !React.isValidElement(item.element[0])
-    && (typeof item.element[0] === 'function' || typeof item.element[0] === 'object')
-  ) {
-    const [Item, props] = item.element
-    return <Item {...props} onTopViewRemove={remove} />
-  } else {
-    return item.element
-  }
-})
-
-class CreateEle extends Component {
-
-  constructor(props) {
-    super(props)
-    const { page } = props
-
-    this.eventOff = TopView.event.on((name, e, ...args) => {
-      if (name === page + '-add') {
-        this.add(e, ...args)
-      } else if (name === page + '-remove') {
-        this.remove(e, ...args)
-      } else if (name === page + '-removeAll') {
-        this.removeAll(e, ...args)
-      }
-    }).remove
-  }
-
-  state = {
-    elements: []
-  }
-
-  componentWillUnmount() {
-    this.eventOff()
-  }
-
-  add = e => {
-    const { elements } = this.state
-    const index = elements.findIndex(item => item.key === e.key)
-    if (~index) {
-      elements[index] = e
-    } else {
-      elements.push(e)
-    }
-    this.setState({ elements })
-  }
-
-  remove = (e, add) => {
-    const { elements } = this.state
-    const index = elements.findIndex(v => v.key === e.key)
-    if (~index) {
-      elements.splice(index, 1)
-      this.setState({ elements })
-    }
-    if (add) {
-      this.add(add)
-    }
-  }
-
-  removeAll = () => {
-    this.setState({ elements: [] })
-  }
-
-  render() {
-    const { elements } = this.state
-    return <Position>
-      {
-        elements.map(item => <EleItem key={item.key} item={item} onRemove={this.remove} />)
-      }
-    </Position>
-  }
-}
-
-const Container = ({ index = 0, children }) => {
-  const item = TopView.containers[index]
-  if (!item) {
-    const Page = children.props.children
-    // 如果传入的页面是一个未初始化的组件则执行这个组件
-    if (typeof Page === 'function') {
-      return cloneElement(children, {}, <Page />)
-    }
-    return children
-  }
-  const Item = item.component
-  return <Item {...item.props}>
-    <Container index={index + 1}>{children}</Container>
-  </Item>
-}
-
-const TopViewFunc = ({ pageKey, children, isSafe, isForm, className, ...props }) => {
-
-  return <>
-    <WeappRem />
-    <View
-      className={classNames('TopView', className, { 'TopView--safe': isSafe && isIphoneX() })}
-      {...props}
-    >
-      <Status barStyle='dark-content' />
-      <Container>
-        <KeyboardAvoiding isForm={isForm}>
-          {children}
-        </KeyboardAvoiding>
-      </Container>
-      <CreateEle page={pageKey} />
-    </View>
-  </>
-}
-
 export class TopView extends Component {
 
   // eslint-disable-next-line react/sort-comp
@@ -278,4 +152,130 @@ export class TopView extends Component {
   render() {
     return <TopViewFunc {...this.props} pageKey={this.pageKey} />
   }
+}
+
+const Position = ({ children }) => {
+  return process.env.TARO_ENV === 'rn' || process.env.TARO_ENV === 'harmony'
+    ? children
+    : <View className='position'>
+      {children}
+    </View>
+}
+
+const EleItem = memo(({
+  item,
+  onRemove
+}) => {
+
+  const remove = useCallback(() => {
+    onRemove?.(item)
+  }, [item, onRemove])
+
+  if (
+    item.element instanceof Array
+    && !React.isValidElement(item.element[0])
+    && (typeof item.element[0] === 'function' || typeof item.element[0] === 'object')
+  ) {
+    const [Item, props] = item.element
+    return <Item {...props} onTopViewRemove={remove} />
+  } else {
+    return item.element
+  }
+})
+
+class CreateEle extends Component {
+
+  constructor(props) {
+    super(props)
+    const { page } = props
+
+    this.eventOff = TopView.event.on((name, e, ...args) => {
+      if (name === page + '-add') {
+        this.add(e, ...args)
+      } else if (name === page + '-remove') {
+        this.remove(e, ...args)
+      } else if (name === page + '-removeAll') {
+        this.removeAll(e, ...args)
+      }
+    }).remove
+  }
+
+  state = {
+    elements: []
+  }
+
+  componentWillUnmount() {
+    this.eventOff()
+  }
+
+  add = e => {
+    const { elements } = this.state
+    const index = elements.findIndex(item => item.key === e.key)
+    if (~index) {
+      elements[index] = e
+    } else {
+      elements.push(e)
+    }
+    this.setState({ elements })
+  }
+
+  remove = (e, add) => {
+    const { elements } = this.state
+    const index = elements.findIndex(v => v.key === e.key)
+    if (~index) {
+      elements.splice(index, 1)
+      this.setState({ elements })
+    }
+    if (add) {
+      this.add(add)
+    }
+  }
+
+  removeAll = () => {
+    this.setState({ elements: [] })
+  }
+
+  render() {
+    const { elements } = this.state
+    return <Position>
+      {
+        elements.map(item => <EleItem key={item.key} item={item} onRemove={this.remove} />)
+      }
+    </Position>
+  }
+}
+
+const Container = ({ index = 0, children }) => {
+  const item = TopView.containers[index]
+  if (!item) {
+    const Page = children.props.children
+    // 如果传入的页面是一个未初始化的组件则执行这个组件
+    if (typeof Page === 'function') {
+      return cloneElement(children, {}, <Page />)
+    }
+    return children
+  }
+  const Item = item.component
+  return <Item {...item.props}>
+    <Container index={index + 1}>{children}</Container>
+  </Item>
+}
+
+const TopViewFunc = ({ pageKey, children, isSafe, isForm, className, ...props }) => {
+
+  return <>
+    <WeappRem />
+    <View
+      className={classNames('TopView', className, { 'TopView--safe': isSafe && isIphoneX() })}
+      {...props}
+    >
+      <Status barStyle='dark-content' />
+      <Container>
+        <KeyboardAvoiding isForm={isForm}>
+          {children}
+        </KeyboardAvoiding>
+      </Container>
+      <CreateEle page={pageKey} />
+    </View>
+  </>
 }

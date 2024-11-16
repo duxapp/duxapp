@@ -29,11 +29,11 @@ export const ActionSheet = ({
 
   return <>
     <PullView onClose={close} ref={pullView}>
-      <View className='rt-3 bg-white'>
+      <View className='rt-3 bg-white items-center'>
         <View className='ActionSheet__title'>{title}</View>
         {
           list?.map((item, index) => <View key={item}
-            className='ActionSheet__item'
+            className='ActionSheet__item self-stretch'
             onClick={itemClick.bind(null, item, index)}
           >
             <Text className='ActionSheet__item__text'>{item}</Text>

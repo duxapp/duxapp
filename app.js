@@ -2,7 +2,6 @@ import {
   app,
   route
 } from './utils'
-import './utils/init'
 
 app.register('duxapp')
 

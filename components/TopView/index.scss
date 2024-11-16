@@ -1,13 +1,14 @@
 .TopView {
   height: 100%;
   background-color: $duxappPageColor;
-  /*  #ifndef rn  */
+
+  /*  #ifndef rn harmony  */
   .position {
     position: initial;
   }
+
   /*  #endif  */
   &--safe {
     padding-bottom: 68px;
   }
 }
-

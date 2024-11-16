@@ -168,27 +168,6 @@ const pageTransfer = (path, params) => {
   }
 }
 
-export const currentPage = () => {
-  let path
-  if (process.env.TARO_ENV === 'h5') {
-    path = window.location.hash.split('?')[0].split('#')[1]
-  } else {
-    const _pages = getCurrentPages()
-    const current = _pages[_pages.length - 1]
-    path = current.path || current.route
-  }
-  if (path.startsWith('/')) {
-    path = path.substr(1)
-  }
-  return path
-}
-
-export const currentPageAsync = async () => {
-  await asyncTimeOut(20)
-  return currentPage()
-}
-
-
 export default pages
 
 export {

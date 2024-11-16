@@ -1,16 +1,5 @@
 import { getLocation } from '@tarojs/taro'
-
-let PermissionsAndroid, Platform, Geolocation
-
-if (process.env.TARO_ENV === 'rn') {
-  const RN = require('react-native')
-  PermissionsAndroid = RN.PermissionsAndroid
-  Platform = RN.Platform
-  Geolocation = require('@react-native-community/geolocation').default
-  Geolocation.setRNConfiguration({
-    locationProvider: 'android'
-  })
-}
+import { Platform, PermissionsAndroid } from '../rn/util'
 
 const PI = Math.PI
 const x_pi = PI * 3000.0 / 180.0

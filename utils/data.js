@@ -6,15 +6,13 @@ export class Cache {
   constructor({
     // 数据key
     key = '',
-    global,
     defaultData
   }) {
     if (!key) {
       throw '使用Cache请设置Key'
     }
     this.config = {
-      key,
-      global
+      key
     }
     if (defaultData) {
       this.data = defaultData
@@ -24,7 +22,6 @@ export class Cache {
 
   config = {
     key: '',
-    global: false,
     readStatus: false
   }
 
@@ -40,9 +37,6 @@ export class Cache {
           this.data = JSON.parse(res.data)
         } catch (error) {
           this.data = res.data
-        }
-        if (this.config.global) {
-          global[this.config.key] = this.data
         }
         this.config.readStatus = true
         this.localEvent.trigger(true, this.data)
@@ -62,9 +56,6 @@ export class Cache {
       this.data = _data(this.data)
     } else {
       this.data = _data
-    }
-    if (this.config.global) {
-      global[this.config.key] = this.data
     }
     setStorage({
       key: this.config.key,
@@ -99,15 +90,13 @@ export class ObjectManage {
     cache,
     // 缓存数据key
     cacheKey = '',
-    // 将数据缓存到全局变量
-    global,
     defaultData
   } = {}) {
     if (defaultData) {
       this.data = defaultData
     }
     if (cache && cacheKey) {
-      this.cache = new Cache({ key: cacheKey, global, defaultData })
+      this.cache = new Cache({ key: cacheKey, defaultData })
       this.cache.onLocal((status, _data) => {
         if (status && _data) {
           this.data = _data

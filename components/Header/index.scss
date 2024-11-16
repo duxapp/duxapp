@@ -1,6 +1,5 @@
 .Header {
   width: 100%;
-  z-index: 1;
   &--absolute {
     position: absolute;
     z-index: 1;
@@ -12,8 +11,8 @@
   &__main {
     position: absolute;
     top: 0;
-    right: 0;
     left: 0;
+    width: 100%;
     z-index: 1;
     /*postcss-pxtransform rn eject enable*/
     transition: opacity 0.1s;
@@ -26,8 +25,8 @@
   }
 
   &__nav {
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
     flex-direction: row;
 
     &__left {
@@ -45,6 +44,7 @@
 
     &__main {
       flex: 1;
+      justify-content: center;
     }
 
     &__title {

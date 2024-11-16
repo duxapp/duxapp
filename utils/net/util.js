@@ -2,13 +2,7 @@ import { chooseMedia, chooseImage } from '@tarojs/taro'
 import qs from 'qs'
 import { ActionSheet } from '@/duxapp/components/ActionSheet'
 import { recursionGetValue } from '../object'
-
-let ExpoImagePicker, getInfoAsync, Platform
-if (process.env.TARO_ENV === 'rn') {
-  ExpoImagePicker = require('expo-image-picker')
-  getInfoAsync = require('expo-file-system').getInfoAsync
-  Platform = require('react-native').Platform
-}
+import { Platform, ExpoFS, ExpoImagePicker } from '../rn/util'
 
 /**
  * 获取请求url
@@ -144,7 +138,7 @@ const getMedia = async (type, {
     let sizes
     if (Platform.OS === 'android') {
       sizes = await Promise.all(assets
-        .map(item => getInfoAsync(item.uri.replace('file://', ''))
+        .map(item => ExpoFS.getInfoAsync(item.uri.replace('file://', ''))
           .then(res => res.size)
         ))
     }

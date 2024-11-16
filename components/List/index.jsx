@@ -118,7 +118,7 @@ export const createList = usePageData => {
               {renderFooter}
               {loadMore}
             </>}
-          /> : useVirtualList ?
+          /> : useVirtualList && process.env.TARO_ENV !== 'harmony' ?
             <WeappList
               list={list}
               RenderItem={RenderItem}

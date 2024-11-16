@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, forwardRef } from 'react'
 import { View as NativeView } from 'react-native'
+import { getSystemInfoSync } from '@tarojs/taro'
 import ClickableSimplified from '@tarojs/components-rn/dist/components/ClickableSimplified'
 
 const ClickView = ClickableSimplified(NativeView)
@@ -29,6 +30,7 @@ export const Layout = ({ children, onLayout, onClick, reloadKey, ...props }) => 
   useEffect(() => {
     if (viewRef.current && layoutStatus) {
       viewRef.current.measure((x, y, width, height, left, top) => {
+        const { windowWidth } = getSystemInfoSync()
         onLayoutRef.current?.({
           width: width || layoutData.current.width,
           height: height || layoutData.current.height,
@@ -39,7 +41,7 @@ export const Layout = ({ children, onLayout, onClick, reloadKey, ...props }) => 
            * 需要测试多个机型是否正常
            * 目前测试ios取值正常，安卓有此问题
            */
-          left: left > global.systemInfo.windowWidth ? left - global.systemInfo.windowWidth : left,
+          left: left > windowWidth ? left - windowWidth : left,
           top
         })
       })

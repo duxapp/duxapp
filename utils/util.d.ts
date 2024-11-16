@@ -34,3 +34,8 @@ export function noop(): void
 export function stopPropagation(event: EventTarget | any): void
 
 export const px = pxTransform
+
+/**
+ * 将设计尺寸转换为实际尺寸对应的数字
+ */
+export const pxNum = (val: number) => number

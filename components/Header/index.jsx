@@ -3,6 +3,7 @@ import { useDidShow, setNavigationBarTitle, getMenuButtonBoundingClientRect, set
 import { View, Image, Text } from '@tarojs/components'
 import { getContrastYIQ, nav, route, pages as routePages, useRoute, px } from '@/duxapp/utils'
 import theme from '@/duxapp/config/theme'
+import { getPlatform, pxNum } from '@/duxapp/utils/util'
 import { TopView } from '../TopView'
 
 import back from './images/back.png'
@@ -15,33 +16,6 @@ import './index.scss'
 const headerContext = createContext({})
 
 const useContext = () => useReactContext(headerContext)
-
-export const HeaderBack = ({
-  show
-}) => {
-
-  const option = useContext()
-
-  const color = getContrastYIQ(option.color)
-
-  return (option.isBack || option.isBackHome || show) && <View
-    className='Header__nav__left'
-    style={option.weapp ? { width: px(80) } : {}}
-    onClick={() => {
-      if (option.onBackClick?.()) {
-        return
-      }
-      option.isBack ? nav('back:') : option.isBackHome ? nav('back:home') : ''
-    }}
-  >
-    {
-      !['alipay', 'tt'].includes(process.env.TARO_ENV) && <>
-        {option.isBack && <Image src={color === 'black' ? backWhite : back} className='Header__nav__left__icon' />}
-        {!option.isBack && option.isBackHome && <Image src={color === 'black' ? homeWhite : home} className='Header__nav__left__icon' />}
-      </>
-    }
-  </View>
-}
 
 export const Header = ({
   color = theme.header.textColor, // 文字及返回按钮颜色 默认自动处理
@@ -79,46 +53,47 @@ export const Header = ({
   }, [])
 
   const option = useMemo(() => {
-    let headerHeihgt = 44
+    const rn = process.env.TARO_ENV === 'rn'
+    const h5 = process.env.TARO_ENV === 'h5'
+    const harmony = process.env.TARO_ENV === 'harmony'
+
+    let headerHeight = pxNum(88)
     // 小程序胶囊按钮宽度
     let jiaonangWidth = 0
     // 获取胶囊信息
-    const statusBarHeight = getSystemInfoSync().statusBarHeight || 0
+    const statusBarHeight = h5 ? 0 : (getSystemInfoSync().statusBarHeight || 0)
     if (isWeapp) {
       const { width, height, top } = getMenuButtonBoundingClientRect()
       jiaonangWidth = width + 10
       // 动态计算header高度，让header文本和胶囊完全居中
-      headerHeihgt = height + (top - statusBarHeight) * 2
+      headerHeight = height + (top - statusBarHeight) * 2
     }
 
     const current = routePages[path]
 
     const { pages, paths } = route.getPathPosition(Object.keys(routePages)[0])
 
-    const rn = process.env.TARO_ENV === 'rn'
-    const h5 = process.env.TARO_ENV === 'h5'
-
-    const weapp = !rn && !h5
-
     // 是否显示header
-    const showHeader = rn || isWeapp || (global.platform === 'wechat' && theme.header.showWechat)
-      || (global.platform === 'wap' && theme.header.showWap)
+    const showHeader = rn || isWeapp || harmony
+      || (getPlatform() === 'wechat' && theme.header.showWechat)
+      || (getPlatform() === 'wap' && theme.header.showWap)
       || !!renderMain || !!renderHeader
 
     const bgColor = style?.backgroundColor || theme.header.color
 
-    const showHeight = headerHeihgt + (showStatus ? 0 : rn ? statusBarHeight : h5 ? 0 : statusBarHeight)
+    const showHeight = headerHeight + (showStatus ? 0 : statusBarHeight)
 
     return {
       onBackClick,
-      headerHeihgt,
+      headerHeight,
       statusBarHeight,
       isBack: pages.length > 1,
       isBackHome: paths[0] === undefined && !current?.home,
       jiaonangWidth,
       rn,
+      harmony,
       h5,
-      weapp,
+      weapp: isWeapp,
       showHeader,
       bgColor,
       color,
@@ -141,31 +116,24 @@ export const Header = ({
     }, 100)
   }, [color])
 
-  const headerHeight = option.rn ? option.headerHeihgt : option.h5 ? px(88) : `${option.headerHeihgt}px`
-
   return <headerContext.Provider value={option}>
     {
       option.showHeader ? <>
         {!show && showStatus && <View
           style={{
-            height: option.rn
-              ? option.statusBarHeight
-              : option.h5
-                ? 0
-                : `${option.statusBarHeight}px`,
+            height: option.statusBarHeight,
             backgroundColor: option.bgColor
           }}
         />}
         {(show || absolute) && <View
-          style={style}
+          style={{ ...style, height: option.showHeight }}
           className={`Header${absolute ? ' Header--absolute' : ''}`}
+
           {...props}
         >
-          {(!absolute || option.rn) && <View
+          {(!absolute || option.rn || option.harmony) && <View
             style={{
-              height: option.rn
-                ? option.showHeight
-                : `${option.showHeight}px`
+              height: option.showHeight
             }}
           />}
           <View
@@ -174,18 +142,18 @@ export const Header = ({
             }}
             className={`Header__main${show ? ' Header__main--show' : ''}`}
           >
+            <View style={{ height: option.statusBarHeight }} />
             {
-              option.rn
-                ? <View style={{ height: option.statusBarHeight }} />
-                : <View style={{ height: `${option.statusBarHeight}px` }} />
-            }
-            {
-              renderHeader
-                ? <View style={{ paddingRight: option.jiaonangWidth, height: headerHeight }}>{renderHeader}</View>
+              renderHeader ?
+                <View
+                  style={{ paddingRight: option.jiaonangWidth, height: option.headerHeight }}
+                >
+                  {renderHeader}
+                </View>
                 :
                 <View
                   className='Header__nav'
-                  style={{ height: headerHeight }}
+                  style={{ height: option.headerHeight }}
                 >
                   {renderLeft || <HeaderBack show={!!renderRight} />}
                   <View className='Header__nav__main'>
@@ -198,7 +166,7 @@ export const Header = ({
                           // 文本居中判断
                           textAlign: option.weapp && (option.isBack || !titleCenter) ? 'left' : 'center',
                           // 小程序没有返回按钮时，文本不要在最左边
-                          paddingLeft: px(option.weapp && !option.isBack && !titleCenter ? 32 : 0),
+                          paddingLeft: px(option.weapp && !option.isBack && !titleCenter ? 24 : 0),
                         }}
                       >{title}</Text>
                     }
@@ -206,8 +174,9 @@ export const Header = ({
                   {(option.isBack || option.isBackHome || !!renderRight) && <View className='Header__nav__right'
                     style={option.weapp
                       ? {
-                        marginRight: option.jiaonangWidth + 'px'
-                      } : {}}
+                        marginRight: option.jiaonangWidth
+                      } : {}
+                    }
                   >
                     {renderRight}
                   </View>}
@@ -219,6 +188,33 @@ export const Header = ({
         : null
     }
   </headerContext.Provider>
+}
+
+export const HeaderBack = ({
+  show
+}) => {
+
+  const option = useContext()
+
+  const color = getContrastYIQ(option.color)
+
+  return (option.isBack || option.isBackHome || show) && <View
+    className='Header__nav__left'
+    style={option.weapp ? { width: px(80) } : {}}
+    onClick={() => {
+      if (option.onBackClick?.()) {
+        return
+      }
+      option.isBack ? nav('back:') : option.isBackHome ? nav('back:home') : ''
+    }}
+  >
+    {
+      !['alipay', 'tt'].includes(process.env.TARO_ENV) && <>
+        {option.isBack && <Image src={color === 'black' ? backWhite : back} className='Header__nav__left__icon' />}
+        {!option.isBack && option.isBackHome && <Image src={color === 'black' ? homeWhite : home} className='Header__nav__left__icon' />}
+      </>
+    }
+  </View>
 }
 
 Header.Back = HeaderBack

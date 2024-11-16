@@ -4,7 +4,7 @@ import {
 } from '@tarojs/taro'
 import { useMemo } from 'react'
 import qs from 'qs'
-import routerPage, { pageTransfer, routes, currentPage } from './route'
+import routerPage, { pageTransfer, routes, pages as routePages } from './route'
 import { bdEncrypt } from '../map'
 import Map from '../map/map'
 import { QuickEvent } from '../QuickEvent'
@@ -95,10 +95,16 @@ class Route {
             params: params ? qs.parse(params) : {}
           }
         }
-      } else {
+      } else if (router) {
         return {
           params: qs.parse(Object.keys(router.query || {}).map(key => `${key}=${router.query[key]}`).join('&')),
           path: router.path
+        }
+      } else {
+        // 兼容华为bug，华为启动传入路由参数
+        return {
+          params: {},
+          path: Object.keys(routePages)[0]
         }
       }
     }
@@ -497,15 +503,38 @@ class Route {
    * @param {String} path
    */
   getPathPosition = path => {
-    const pages = getCurrentPages()
+    // const pages = getCurrentPages()
+    // const paths = []
+    // for (let i = 0; i < pages.length; i++) {
+    //   let route = pages[i].route.split('?')[0]
+    //   if (route[0] === '/') {
+    //     route = route.substring(1)
+    //   }
+    //   if (route === path) {
+    //     paths.push(route)
+    //   }
+    // }
+    // return {
+    //   pages,
+    //   paths,
+    // }
+
+    const pages = process.env.TARO_ENV === 'harmony' ? this.current : getCurrentPages()
     const paths = []
     for (let i = 0; i < pages.length; i++) {
-      let route = pages[i].route.split('?')[0]
-      if (route[0] === '/') {
-        route = route.substring(1)
-      }
-      if (route === path) {
-        paths.push(route)
+      if (process.env.TARO_ENV === 'harmony') {
+        const item = pages[i]
+        if (item.path === path) {
+          paths.push(item.path)
+        }
+      } else {
+        let route = pages[i].route.split('?')[0]
+        if (route[0] === '/') {
+          route = route.substring(1)
+        }
+        if (route === path) {
+          paths.push(route)
+        }
       }
     }
     return {
@@ -535,3 +564,27 @@ export const useRoute = route.useRoute
 export const nav = route.nav
 
 export const decodeParams = route.decodeParams
+
+
+
+export const currentPage = () => {
+  let path = ''
+  if (process.env.TARO_ENV === 'h5') {
+    path = window.location.hash.split('?')[0].split('#')[1]
+  } else if (process.env.TARO_ENV === 'harmony') {
+    path = route.current[route.current.length - 1]?.path || ''
+  } else {
+    const _pages = getCurrentPages()
+    const current = _pages[_pages.length - 1]
+    path = current.path || current.route
+  }
+  if (path.startsWith('/')) {
+    return path.slice(1)
+  }
+  return path
+}
+
+export const currentPageAsync = async () => {
+  await asyncTimeOut(20)
+  return currentPage()
+}

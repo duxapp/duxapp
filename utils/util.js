@@ -1,4 +1,5 @@
 import { pxTransform, getSystemInfoSync, showToast } from '@tarojs/taro'
+import { Platform } from '@/duxapp/utils/rn/util'
 
 export const toast = msg => {
   if (!msg) {
@@ -15,7 +16,7 @@ let systemInfo
 export const isIphoneX = () => {
   systemInfo = systemInfo || getSystemInfoSync()
   if (process.env.TARO_ENV === 'rn') {
-    return require('react-native').Platform.OS !== 'android' && systemInfo.safeArea?.bottom < systemInfo.screenHeight
+    Platform.OS !== 'android' && systemInfo.safeArea?.bottom < systemInfo.screenHeight
   } else {
     const phoneMarks = ['iPhone X', 'iPhone 11', 'iPhone 12', 'iPhone 13', 'iPhone 14', 'iPhone 15', 'iPhone 16', 'iPhone 17']
     const { model = '' } = systemInfo
@@ -74,5 +75,15 @@ export const px = (() => {
       cache[val] = pxTransform(val)
     }
     return cache[val]
+  }
+})();
+
+export const pxNum = (() => {
+  let windowWidth
+  return val => {
+    if (!windowWidth) {
+      windowWidth = getSystemInfoSync().windowWidth
+    }
+    return val / 750 * windowWidth
   }
 })();

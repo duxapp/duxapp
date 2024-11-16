@@ -2,12 +2,8 @@ import { useEffect, useMemo, useState } from 'react'
 import { toast } from '../util'
 import { loadFont, loadLocalFont } from './util'
 import { networkVerify } from '../rn'
+import { Platform } from '../rn/util'
 import { userConfig } from '../../config/userConfig'
-
-let Platform
-if (process.env.TARO_ENV === 'rn') {
-  Platform = require('react-native').Platform
-}
 
 export const font = {
   fonts: {},

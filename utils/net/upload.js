@@ -1,9 +1,9 @@
 import { uploadFile as uploadFileTaro } from '@tarojs/taro'
 import { getUrl, execGetChild, execGetObject, getMedia, execMiddle } from './util'
+import { Platform } from '../rn/util'
 
 const uploadFile = process.env.TARO_ENV === 'rn'
   ? (() => {
-    const { Platform } = require('react-native')
     const createFormData = (filePath, body = {}, name) => {
       const data = new FormData()
       const uri = Platform.OS === 'android' ? filePath : filePath.replace('file://', '');
