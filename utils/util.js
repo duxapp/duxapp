@@ -87,3 +87,5 @@ export const pxNum = (() => {
     return val / 750 * windowWidth
   }
 })();
+
+export const isPlatformMini = ['weapp', 'tt', 'alipay', 'swan', 'qq', 'jd', 'quickapp'].includes(process.env.TARO_ENV)

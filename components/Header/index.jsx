@@ -3,7 +3,7 @@ import { useDidShow, setNavigationBarTitle, getMenuButtonBoundingClientRect, set
 import { View, Image, Text } from '@tarojs/components'
 import { getContrastYIQ, nav, route, pages as routePages, useRoute, px } from '@/duxapp/utils'
 import theme from '@/duxapp/config/theme'
-import { getPlatform, pxNum } from '@/duxapp/utils/util'
+import { getPlatform, isPlatformMini, pxNum } from '@/duxapp/utils/util'
 import { TopView } from '../TopView'
 
 import back from './images/back.png'
@@ -62,11 +62,13 @@ export const Header = ({
     let jiaonangWidth = 0
     // 获取胶囊信息
     const statusBarHeight = h5 ? 0 : (getSystemInfoSync().statusBarHeight || 0)
-    if (isWeapp) {
-      const { width, height, top } = getMenuButtonBoundingClientRect()
-      jiaonangWidth = width + 10
-      // 动态计算header高度，让header文本和胶囊完全居中
-      headerHeight = height + (top - statusBarHeight) * 2
+    if (isPlatformMini) {
+      const { width, height, top } = getMenuButtonBoundingClientRect() || {}
+      if (width && top) {
+        jiaonangWidth = width + 10
+        // 动态计算header高度，让header文本和胶囊完全居中
+        headerHeight = height + (top - statusBarHeight) * 2
+      }
     }
 
     const current = routePages[path]
@@ -74,7 +76,7 @@ export const Header = ({
     const { pages, paths } = route.getPathPosition(Object.keys(routePages)[0])
 
     // 是否显示header
-    const showHeader = rn || isWeapp || harmony
+    const showHeader = rn || isPlatformMini || harmony
       || (getPlatform() === 'wechat' && theme.header.showWechat)
       || (getPlatform() === 'wap' && theme.header.showWap)
       || !!renderMain || !!renderHeader
@@ -93,7 +95,7 @@ export const Header = ({
       rn,
       harmony,
       h5,
-      weapp: isWeapp,
+      weapp: isPlatformMini,
       showHeader,
       bgColor,
       color,
@@ -218,5 +220,3 @@ export const HeaderBack = ({
 }
 
 Header.Back = HeaderBack
-
-const isWeapp = ['weapp', 'tt', 'alipay', 'swan', 'qq', 'jd', 'quickapp'].includes(process.env.TARO_ENV)

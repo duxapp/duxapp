@@ -1,0 +1,45 @@
+diff --git a/node_modules/@tarojs/shared/dist/template.js b/node_modules/@tarojs/shared/dist/template.js
+index 93c6643..02944a5 100644
+--- a/node_modules/@tarojs/shared/dist/template.js
++++ b/node_modules/@tarojs/shared/dist/template.js
+@@ -1086,11 +1086,11 @@ ${this.buildXsImportTemplate()}<template is="{{'tmpl_0_' + item.${"nn" /* Shortc
+ </template>
+ 
+ <template name="tmpl_${level}_${nodeAlias}_focus">
+-  <${nodeName} ${this.buildAttribute(comp.attributes, nodeName)} id="{{i.uid||i.sid}}" data-sid="{{i.sid}}">${children}</${nodeName}>
++  <${nodeName} ${this.buildAttribute(comp.attributes, nodeName)}${nodeName === "block" ? "" : ' id="{{i.uid||i.sid}}" data-sid="{{i.sid}}"'}>${children}</${nodeName}>
+ </template>
+ 
+ <template name="tmpl_${level}_${nodeAlias}_blur">
+-  <${nodeName} ${this.buildAttribute(attrs, nodeName)} id="{{i.uid||i.sid}}" data-sid="{{i.sid}}">${children}</${nodeName}>
++  <${nodeName} ${this.buildAttribute(attrs, nodeName)}${nodeName === "block" ? "" : ' id="{{i.uid||i.sid}}" data-sid="{{i.sid}}"'}>${children}</${nodeName}>
+ </template>
+ `;
+         if (isFunction(this.modifyTemplateResult)) {
+@@ -1126,7 +1126,7 @@ ${this.buildXsImportTemplate()}<template is="{{'tmpl_0_' + item.${"nn" /* Shortc
+         }
+         let res = `
+ <template name="tmpl_${level}_${nodeAlias}">
+-  <${nodeName} ${this.buildAttribute(comp.attributes, comp.nodeName)} id="{{i.uid||i.sid}}" data-sid="{{i.sid}}">${children}</${nodeName}>
++  <${nodeName} ${this.buildAttribute(comp.attributes, comp.nodeName)}${nodeName === "block" ? "" : ' id="{{i.uid||i.sid}}" data-sid="{{i.sid}}"'}>${children}</${nodeName}>
+ </template>
+ `;
+         if (isFunction(this.modifyTemplateResult)) {
+@@ -1149,7 +1149,7 @@ ${this.buildXsImportTemplate()}<template is="{{'tmpl_0_' + item.${"nn" /* Shortc
+             if (compName === 'custom-wrapper') {
+                 template += `
+ <template name="tmpl_${level}_${compName}">
+-  <${compName} i="{{i}}" ${!isSupportRecursive && isUseXS ? 'l="{{l}}"' : ''} id="{{i.uid||i.sid}}" data-sid="{{i.sid}}">
++  <${compName} i="{{i}}" ${!isSupportRecursive && isUseXS ? 'l="{{l}}"' : ''}${compName === "block" ? "" : ' id="{{i.uid||i.sid}}" data-sid="{{i.sid}}"'}>
+   </${compName}>
+ </template>
+   `;
+@@ -1168,7 +1168,7 @@ ${this.buildXsImportTemplate()}<template is="{{'tmpl_0_' + item.${"nn" /* Shortc
+   `;
+                 template += `
+ <template name="tmpl_${level}_${compName}">
+-  <${compName} ${this.buildThirdPartyAttr(attrs, this.thirdPartyPatcher[compName] || {})} id="{{i.uid||i.sid}}" data-sid="{{i.sid}}">${children}</${compName}>
++  <${compName} ${this.buildThirdPartyAttr(attrs, this.thirdPartyPatcher[compName] || {})}${compName === "block" ? "" : ' id="{{i.uid||i.sid}}" data-sid="{{i.sid}}"'}>${children}</${compName}>
+ </template>
+   `;
+             }
