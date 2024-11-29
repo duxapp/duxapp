@@ -119,7 +119,7 @@ export function createRequestHooks(request: () => Promist<any>): {
   useRequest: (
     option: Request.RequestOption,
     config: RequestHooks.RequestConfig
-  ) => [any, RequestResult]
+  ) => [any, RequestHooks.RequestResult]
 
   usePageData: (
     url: Request.RequestOption,

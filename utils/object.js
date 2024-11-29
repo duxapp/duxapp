@@ -93,6 +93,8 @@ const deepEqua = (data1, data2) => {
     return true
   } else if (data1 !== null && data2 !== null && (typeof data1 !== 'object' || typeof data2 !== 'object')) {
     return false
+  } else if (data1 === null || data2 === null) {
+    return data1 === data2
   }
   const keys = [Object.keys(data1), Object.keys(data2)]
   if (keys[0].length !== keys[1].length) {
