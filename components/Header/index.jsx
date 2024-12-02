@@ -166,9 +166,7 @@ export const Header = ({
                         style={{
                           color,
                           // 文本居中判断
-                          textAlign: option.weapp && (option.isBack || !titleCenter) ? 'left' : 'center',
-                          // 小程序没有返回按钮时，文本不要在最左边
-                          paddingLeft: px(option.weapp && !option.isBack && !titleCenter ? 24 : 0),
+                          textAlign: option.weapp && (option.isBack || !titleCenter) ? 'left' : 'center'
                         }}
                       >{title}</Text>
                     }

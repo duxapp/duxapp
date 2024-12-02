@@ -87,9 +87,6 @@ export const createRequestHooks = request => {
 
       const requestOption = useDeepObject(option && typeof option === 'object' ? option : { url: option })
 
-      const currentState = useRef({ requestOption, config, page: 1, loadEnd: false, loading: false })
-      currentState.current.config = config
-
       const [list, setList] = useState(config?.defaultListData ?? (config?.cache && requestCache.getCache(option)) ?? [])
 
       const [loading, setLoading] = useState(false)
@@ -97,6 +94,10 @@ export const createRequestHooks = request => {
       const [refresh, setRefresh] = useState(false)
 
       const [loadEnd, setLoadEnd] = useState(false)
+
+      const currentState = useRef({ requestOption, config, page: 1, loadEnd: false, loading: false, list })
+      currentState.current.config = config
+      currentState.current.list = list
 
       const getList = useCallback(() => {
         const state = currentState.current
@@ -106,14 +107,18 @@ export const createRequestHooks = request => {
         if (state.page === 1) {
           setRefresh(true)
         }
-        return request({
+        let _option = {
           ...state.requestOption,
           data: {
             ...state.requestOption?.data,
             page: state.page
           },
           toast: state.requestOption?.toast ?? true
-        }).then(async res => {
+        }
+        if (currentState.current.config?.onRequestOption) {
+          _option = currentState.current.config.onRequestOption(_option, state)
+        }
+        return request(_option).then(async res => {
           const field = state.config?.field || 'list'
           let _list = res[field]
           if (typeof _list === 'undefined') {

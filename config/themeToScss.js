@@ -45,7 +45,11 @@ module.exports = theme => {
   Object.keys(theme).forEach(key => {
     const value = theme[key]
     if (typeof value !== 'object') {
-      scssData[''].push(`$duxapp${capitalizeFirstLetter(key)}: ${value};`)
+      scssData[''].push(`$duxapp${capitalizeFirstLetter(key)}: ${typeof value === 'number'
+          ? `${value}px`
+          : value
+        };`
+      )
     } else {
       switch (key) {
         case 'common': {

@@ -42,7 +42,7 @@ interface RequestConfig {
      * 成功的code
      * code对不上，请求将会走catch方法
      */
-    succesCode: number,
+    successCode: number,
     /**
      * 请求失败的标准code
      * 这个code将用于内部使用

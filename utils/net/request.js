@@ -56,8 +56,9 @@ const requestReact = async ({ url, data, header, timeout, ...option } = {}) => {
 
 const request = (() => {
   const requestKeys = {}
-  return ({ request: requestConfig = {}, result: resultConfig = {}, ...params } = {}, origin) => {
+  return (params = {}, origin) => {
 
+    const { request: requestConfig = {}, result: resultConfig = {} } = params.config || {}
     const { contentType = 'application/json' } = requestConfig
 
     const urls = params.url.split('?')
@@ -160,7 +161,7 @@ const request = (() => {
           try {
             const code = execGetChild(resultConfig.code, res)
             const message = execGetChild(resultConfig.message, res)
-            if (code == resultConfig.succesCode) {
+            if (code == (resultConfig.successCode || resultConfig.succesCode)) {
               resolve(execGetChild(resultConfig.data, res))
             } else {
               reject({ code, message })

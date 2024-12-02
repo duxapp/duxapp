@@ -79,6 +79,31 @@ declare namespace RequestHooks {
      * 默认列表数据
      */
     defaultListData?: any[]
+    /**
+     * 监听请求参数，重新返回新的请求参数
+     * 这可以用来自定义分页，或者自他自定义需求
+     */
+    onRequestOption?: (
+      option: Request.RequestOption,
+      state: {
+        /**
+         * 列表数据
+         */
+        list: any[]
+        /**
+         * 当前页面
+         */
+        page: number
+        /**
+         * 是否加载完成
+         */
+        loadEnd: boolean
+        /**
+         * 是否正在加载中
+         */
+        loading: boolean
+      }
+    ) => Request.RequestOption
   }
 
   interface PageDataResult {

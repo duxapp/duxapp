@@ -175,7 +175,7 @@ const uploadTempFile = (files, option = {}) => {
               }
               const code = execGetChild(resultConfig.code, response)
               const message = execGetChild(resultConfig.message, response)
-              if (code == resultConfig.succesCode) {
+              if (code == (resultConfig.successCode || resultConfig.succesCode)) {
                 return execGetChild(option.resultField || uploadConfig.resultField, response)
               } else {
                 throw { code, message }

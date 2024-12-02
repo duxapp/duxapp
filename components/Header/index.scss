@@ -14,9 +14,9 @@
     left: 0;
     width: 100%;
     z-index: 1;
-    /*postcss-pxtransform rn eject enable*/
+    /*  #ifndef rn  */
     transition: opacity 0.1s;
-    /*postcss-pxtransform rn eject disable*/
+    /*  #endif  */
     opacity: 0;
 
     &--show {
