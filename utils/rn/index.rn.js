@@ -83,3 +83,5 @@ export const useLaunch = callback => {
     data.current?.()
   }, [])
 }
+
+export const nextTick = callback => setTimeout(callback, 0)

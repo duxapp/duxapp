@@ -1,5 +1,5 @@
 diff --git a/node_modules/@tarojs/components/dist/components/taro-view-core.js b/node_modules/@tarojs/components/dist/components/taro-view-core.js
-index 3e511ff..4506300 100644
+index 3e511ff..e4a5b8e 100644
 --- a/node_modules/@tarojs/components/dist/components/taro-view-core.js
 +++ b/node_modules/@tarojs/components/dist/components/taro-view-core.js
 @@ -2,7 +2,7 @@ import { proxyCustomElement, HTMLElement, createEvent, h, Host } from '@stencil/
@@ -11,3 +11,22 @@ index 3e511ff..4506300 100644
 
  const View = /*@__PURE__*/ proxyCustomElement(class extends HTMLElement {
    constructor() {
+@@ -57,8 +57,16 @@ const View = /*@__PURE__*/ proxyCustomElement(class extends HTMLElement {
+     });
+     let attr = {};
+     if (!!this.animation) {
+-      attr['animation'] = this.animation;
+-      attr['data-animation'] = this.animation;
++      let animation = this.animation;
++      const [name, step] = animation.split('--');
++      if (this.animationName === name && step === undefined) {
++        animation = `${this.animationName}--${this.animationStep}`;
++      } else {
++        this.animationName = name;
++        this.animationStep = step;
++      }
++      attr['animation'] = animation;
++      attr['data-animation'] = animation;
+     }
+     return (h(Host, Object.assign({ class: cls }, attr), h("slot", null)));
+   }

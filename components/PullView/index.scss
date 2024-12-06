@@ -5,21 +5,16 @@
   width: 100%;
   height: 100%;
   z-index: 10;
-  /*  #ifndef rn  */
-  transition: background-color 0.2s;
-  /*  #endif  */
+  background-color: #000;
+  opacity: 0;
   &__main {
     position: absolute;
     opacity: 0;
     z-index: 10;
-    /*  #ifndef rn  */
-    transition: opacity 0.2s, transform 0.2s;
-    /*  #endif  */
     /*  #ifdef harmony  */
     align-items: center;
     /*  #endif  */
 
-    /*  #ifndef rn  */
     &--top {
       left: 0;
       width: 100%;
@@ -47,12 +42,6 @@
       right: 0;
       transform: translate(200px, 0);
     }
-
-    &--show {
-      opacity: 1;
-      transform: translate(0, 0);
-    }
-    /*  #endif  */
   }
 
   &__other {

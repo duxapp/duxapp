@@ -41,6 +41,11 @@ export const px = pxTransform
 export const pxNum = (val: number) => number
 
 /**
+ * 在 style 里面编写transform样式的时候使用这个函数进行包装，才能兼容多个端
+ */
+export const transformStyle = (obj: { [key: string]: string }) => string
+
+/**
  * 判断是不是各种小程序
  */
 export const isPlatformMini = boolean

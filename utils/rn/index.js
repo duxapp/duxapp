@@ -1,4 +1,4 @@
-import { useLaunch as useLaunchWeapp } from '@tarojs/taro'
+import { useLaunch as useLaunchWeapp, nextTick } from '@tarojs/taro'
 import { useEffect, useRef } from 'react'
 
 export const useLaunch = process.env.TARO_ENV === 'weapp'
@@ -12,3 +12,7 @@ export const useLaunch = process.env.TARO_ENV === 'weapp'
   }
 
 export const networkVerify = params => params
+
+export {
+  nextTick
+}

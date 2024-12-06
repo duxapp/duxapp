@@ -88,4 +88,15 @@ export const pxNum = (() => {
   }
 })();
 
+export const transformStyle = obj => {
+  if (process.env.TARO_ENV === 'rn') {
+    return Object.keys(obj).map(key => {
+      return {
+        [key]: obj[key]
+      }
+    })
+  }
+  return Object.keys(obj).map(key => `${key}(${obj[key]})`).join(' ')
+}
+
 export const isPlatformMini = ['weapp', 'tt', 'alipay', 'swan', 'qq', 'jd', 'quickapp'].includes(process.env.TARO_ENV)
