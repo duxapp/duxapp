@@ -7,6 +7,7 @@
   z-index: 10;
   background-color: #000;
   opacity: 0;
+
   &__main {
     position: absolute;
     opacity: 0;
@@ -19,28 +20,30 @@
       left: 0;
       width: 100%;
       top: 0;
-      transform: translate(0, -200px);
     }
 
     &--bottom {
       left: 0;
       width: 100%;
       bottom: 0;
-      transform: translate(0, 200px);
     }
 
     &--left {
       top: 0;
       height: 100%;
       left: 0;
-      transform: translate(-200px, 0);
     }
 
     &--right {
       top: 0;
       height: 100%;
       right: 0;
-      transform: translate(200px, 0);
+    }
+
+    &--center {
+      left: 50%;
+      top: 50%;
+      opacity: 0;
     }
   }
 

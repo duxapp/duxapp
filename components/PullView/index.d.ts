@@ -10,6 +10,8 @@ interface side {
   left
   /** 右侧弹出 */
   right
+  /** 弹出到正中 */
+  center
 }
 
 interface PullViewProps {
@@ -33,6 +35,10 @@ interface PullViewProps {
    * 当关闭遮罩层时，无法点击遮罩层进行关闭，需要手动关闭弹框
    */
   masking?: boolean
+  /**
+   * 动画持续时长 默认 200
+   */
+  duration?: number
   /**
    * 分组 同一个分组的弹框将会以队列的形式显示
    */

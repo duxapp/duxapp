@@ -13,6 +13,8 @@ export const useLaunch = process.env.TARO_ENV === 'weapp'
 
 export const networkVerify = params => params
 
+export const useBackHandler = () => { }
+
 export {
   nextTick
 }

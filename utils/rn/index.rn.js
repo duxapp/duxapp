@@ -1,4 +1,4 @@
-import { Platform } from 'react-native'
+import { Platform, BackHandler } from 'react-native'
 import { getStorage, setStorage, request } from '@tarojs/taro'
 import { useEffect, useRef } from 'react'
 import { asyncTimeOut } from '../util'
@@ -85,3 +85,21 @@ export const useLaunch = callback => {
 }
 
 export const nextTick = callback => setTimeout(callback, 0)
+
+export const useBackHandler = (callback, status = true) => {
+
+  const callbackRef = useRef(callback)
+  callbackRef.current = callback
+
+  useEffect(() => {
+    if (status) {
+      const event = BackHandler.addEventListener('hardwareBackPress', () => {
+        callbackRef.current?.()
+        return true
+      })
+      return () => event.remove()
+    }
+  }, [status])
+}
+
+
