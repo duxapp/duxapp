@@ -43,7 +43,10 @@ export const contextState: {
 /**
  * 传入一个基本值或者对象，如果是对象，当这个对象的内容实际发生改变时，才返回改变的值
  * 其中不要包含复杂对象，这可能导致死循环，如果是函数需要用 useCallback 进行封装
- * @param data
- * @returns
  */
-export const useDeepObject = (data: any) => any
+export const useDeepObject: (data: any) => any
+
+/**
+ * 用户函数组件里面的 forceUpdate
+ */
+export const useForceUpdate: () => () => void

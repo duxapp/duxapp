@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { QuickEvent } from '../QuickEvent'
 import { deepEqua } from '../object'
 
@@ -79,4 +79,9 @@ export const useDeepObject = data => {
   }, [data])
 
   return result
+}
+
+export const useForceUpdate = () => {
+  const [, setState] = useState()
+  return useCallback(() => setState(old => !old), [])
 }
