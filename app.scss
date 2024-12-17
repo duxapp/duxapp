@@ -13,7 +13,8 @@ page {
 /*  #endif  */
 
 /*  #ifdef h5  */
-taro-view-core {
+taro-view-core,
+.swiper-wrapper .swiper-slide {
   display: flex;
   flex-direction: column;
   position: relative;
@@ -23,7 +24,8 @@ taro-view-core {
 
 input,
 textarea,
-taro-view-core {
+taro-view-core,
+taro-swiper-item-core {
   box-sizing: border-box;
 }
 
@@ -39,7 +41,8 @@ taro-image-core {
 
 /*  #endif  */
 /*  #ifndef rn h5 harmony  */
-view {
+view,
+swiper-item {
   display: flex;
   flex-direction: column;
   position: relative;
@@ -49,7 +52,8 @@ view {
 
 input,
 textarea,
-view {
+view,
+swiper-item {
   box-sizing: border-box;
 }
 

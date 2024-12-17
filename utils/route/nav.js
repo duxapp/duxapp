@@ -58,13 +58,17 @@ class Route {
           const [path, params] = hash.split('?')
           return {
             path,
-            params: params ? qs.parse(params) : {}
+            params: params ? qs.parse(params, {
+              parseArrays: false
+            }) : {}
           }
         }
       } else {
         const { router } = getCurrentInstance()
         if (router) {
-          router.params = qs.parse(Object.keys(router.params).map(key => `${key}=${router.params[key]}`).join('&'))
+          router.params = qs.parse(Object.keys(router.params).map(key => `${key}=${router.params[key]}`).join('&'), {
+            parseArrays: false
+          })
           return router
         }
       }
@@ -92,12 +96,16 @@ class Route {
           const [path, params] = hash.split('?')
           return {
             path,
-            params: params ? qs.parse(params) : {}
+            params: params ? qs.parse(params, {
+              parseArrays: false
+            }) : {}
           }
         }
       } else if (router) {
         return {
-          params: qs.parse(Object.keys(router.query || {}).map(key => `${key}=${router.query[key]}`).join('&')),
+          params: qs.parse(Object.keys(router.query || {}).map(key => `${key}=${router.query[key]}`).join('&'), {
+            parseArrays: false
+          }),
           path: router.path
         }
       } else {
@@ -438,8 +446,10 @@ class Route {
    * @param {object} obj
    * @return {object}
    */
-  decodeParams = obj => {
-    let params = qs.parse(qs.stringify(obj))
+  decodeParams = (params, parse) => {
+    if (parse) {
+      params = qs.parse(qs.stringify(params), { parseArrays: false })
+    }
     if (params.scene) {
       params = {
         ...qs.parse(decodeURIComponent(params.scene)),
@@ -456,7 +466,7 @@ class Route {
             if (typeof data[key] === 'string') {
               _data[key] = decodeURIComponent(data[key])
             } else if (typeof data[key] === 'object') {
-              _data[key] = decode(data[key])
+              _data[key] = decode(toArrayIfCumulative(data[key]))
             } else {
               _data[key] = data[key]
             }
@@ -555,6 +565,27 @@ class Route {
 
 export const route = new Route()
 
+// 将连续的类数组转换为数组
+const toArrayIfCumulative = obj => {
+  if (typeof obj !== 'object' || obj === null) return obj // 非对象直接返回原对象
+
+  const keys = Object.keys(obj) // 获取对象的所有键
+  const numericKeys = keys.map(Number) // 转换键为数字
+  if (numericKeys.some(window.isNaN)) return obj
+
+  numericKeys.sort((a, b) => a - b)
+
+  // 检查键是否从 0 开始且连续
+  for (let i = 0; i < numericKeys.length; i++) {
+    if (numericKeys[i] !== i) {
+      return obj // 如果键不连续，返回原对象
+    }
+  }
+
+  // 是累数组，转换为数组
+  return numericKeys.map(key => obj[key])
+}
+
 /**
  * 获取当前页面路由信息
  * @returns {params: {}, path: ''}
@@ -564,8 +595,6 @@ export const useRoute = route.useRoute
 export const nav = route.nav
 
 export const decodeParams = route.decodeParams
-
-
 
 export const currentPage = () => {
   let path = ''

@@ -30,7 +30,7 @@ export const PullView = forwardRef(({
 
   const translate = siteTranslates[side]
 
-  const close = useCallback(async () => {
+  const close = useCallback(async (change = true) => {
     let an = ans.current.main
     if (side === 'center' && process.env.TARO_ENV !== 'rn') {
       an = an.translate('-50%', '-50%')
@@ -42,7 +42,7 @@ export const PullView = forwardRef(({
     ).export())
     setMaskAn(ans.current.mask.opacity(0).step().export())
     await asyncTimeOut(duration)
-    refs.current.onClose?.()
+    change !== false && refs.current.onClose?.()
   }, [duration, side, translate.key, translate.value])
 
   useBackHandler(close, !mask)
