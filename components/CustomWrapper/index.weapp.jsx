@@ -9,10 +9,11 @@ export const CustomWrapper = (() => {
   let _id = 0
   return function CustomWrapperComp({
     children,
+    id: userId,
     ...props
   }) {
 
-    const id = useMemo(() => 'CustomWrapper' + (_id++), [])
+    const id = useMemo(() => 'CustomWrapper-' + (userId ?? _id++), [userId])
     return <context.Provider value={{ id }}>
       <TaroCustomWrapper id={id} {...props}>
         {children}

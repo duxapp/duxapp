@@ -5,22 +5,18 @@ const colorToRgb = hexcolor => {
   if (typeof hexcolor !== 'string') {
     return [0, 0, 0]
   }
-  if (hexcolor.substr(0, 3) === 'rgb') {
+  if (hexcolor.slice(0, 3) === 'rgb') {
     const start = hexcolor.indexOf('(') + 1
     const length = hexcolor.indexOf(')') - start
-    const rgb = hexcolor.substr(start, length).split(',')
+    const rgb = hexcolor.slice(start, length).split(',')
     r = parseInt(rgb[0])
     g = parseInt(rgb[1])
     b = parseInt(rgb[2])
   } else {
-    hexcolor = hexcolor.substr(0, 1) === '#' ? hexcolor.substr(1) : hexcolor
-    if (hexcolor.length === 3) {
-      const rgb = hexcolor.split('')
-      hexcolor = `${rgb[0]}${rgb[0]}${rgb[1]}${rgb[1]}${rgb[2]}${rgb[2]}`
-    }
-    r = parseInt(hexcolor.substr(0, 2), 16)
-    g = parseInt(hexcolor.substr(2, 2), 16)
-    b = parseInt(hexcolor.substr(4, 2), 16)
+    const bigint = parseInt(hexcolor.slice(1), 16)
+    r = (bigint >> 16) & 255
+    g = (bigint >> 8) & 255
+    b = bigint & 255
   }
   return [r, g, b]
 }

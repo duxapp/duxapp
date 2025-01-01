@@ -1,3 +1,23 @@
+diff --git a/node_modules/@tarojs/taro-h5/dist/api/canvas/canvasToTempFilePath.js b/node_modules/@tarojs/taro-h5/dist/api/canvas/canvasToTempFilePath.js
+index c393378..fd6cf6b 100644
+--- a/node_modules/@tarojs/taro-h5/dist/api/canvas/canvasToTempFilePath.js
++++ b/node_modules/@tarojs/taro-h5/dist/api/canvas/canvasToTempFilePath.js
+@@ -5,10 +5,12 @@ import { MethodHandler } from '../../utils/handler.js';
+  * 把当前画布指定区域的内容导出生成指定大小的图片。在 draw() 回调里调用该方法才能保证图片导出成功。
+  * @todo 暂未支持尺寸相关功能
+  */
+-const canvasToTempFilePath = ({ canvasId, fileType, quality, success, fail, complete }, inst) => {
++const canvasToTempFilePath = ({ canvasId, canvas, fileType, quality, success, fail, complete }, inst) => {
+     const handle = new MethodHandler({ name: 'canvasToTempFilePath', success, fail, complete });
+-    const el = findDOM(inst);
+-    const canvas = el === null || el === void 0 ? void 0 : el.querySelector(`canvas[canvas-id="${canvasId}"]`);
++    if (!canvas) {
++      const el = findDOM(inst);
++      canvas = el === null || el === void 0 ? void 0 : el.querySelector(`canvas[canvas-id="${canvasId}"]`);
++    }
+     try {
+         const dataURL = canvas === null || canvas === void 0 ? void 0 : canvas.toDataURL(`image/${(fileType === 'jpg' ? 'jpeg' : fileType) || 'png'}`, quality);
+         return handle.success({
 diff --git a/node_modules/@tarojs/taro-h5/dist/api/ui/animation/index.js b/node_modules/@tarojs/taro-h5/dist/api/ui/animation/index.js
 index 811e220..6142261 100644
 --- a/node_modules/@tarojs/taro-h5/dist/api/ui/animation/index.js
