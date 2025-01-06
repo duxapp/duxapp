@@ -48,7 +48,13 @@ interface PullViewProps {
   /** 点击非内容区域的关闭事件 */
   onClose?: () => any
   /** 引用 */
-  ref?: LegacyRef<any>
+  ref?: LegacyRef<{
+    /**
+     * 关闭弹窗
+     * change传入false，可以避免触发 onClose 事件
+     */
+    close: (change?: boolean) => void
+  }>
 }
 
 /**

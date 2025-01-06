@@ -11,7 +11,7 @@ import { QuickEvent } from '../QuickEvent'
 import { deepCopy } from '../object'
 import { asyncTimeOut, getPlatform } from '../util'
 
-export class PageBackData {
+class PageBackData {
 
   callback = null
 
@@ -35,7 +35,6 @@ export class PageBackData {
     }
   }
 }
-
 
 class Route {
 
@@ -310,7 +309,7 @@ class Route {
 
     // 打开网页
     if (['http', 'https'].includes(type)) {
-      nav('/duxapp/webview/index', {
+      this.nav('/duxapp/webview/index', {
         url: type + ':' + page
       })
       return false
@@ -346,14 +345,14 @@ class Route {
             }, openRes => {
               if (openRes.err_msg !== 'open_location:ok') {
                 const res = bdEncrypt(latitude, longitude)
-                nav('duxapp/webview/index', {
+                this.nav('duxapp/webview/index', {
                   url: `https://api.map.baidu.com/geocoder?location=${res.lat},${res.lon}&output=html&src=com.duxapp`
                 })
               }
             })
           } else {
             const res = bdEncrypt(latitude, longitude)
-            nav('duxapp/webview/index', {
+            this.nav('duxapp/webview/index', {
               url: `https://api.map.baidu.com/geocoder?location=${res.lat},${res.lon}&output=html&src=com.duxapp`
             })
           }

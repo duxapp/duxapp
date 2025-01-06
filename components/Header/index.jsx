@@ -1,7 +1,7 @@
 import { useMemo, createContext, useContext as useReactContext, useEffect } from 'react'
 import { useDidShow, setNavigationBarTitle, getMenuButtonBoundingClientRect, setNavigationBarColor, getSystemInfoSync } from '@tarojs/taro'
 import { View, Image, Text } from '@tarojs/components'
-import { getContrastYIQ, nav, route, pages as routePages, useRoute, px } from '@/duxapp/utils'
+import { getContrastYIQ, route, pages as routePages, px } from '@/duxapp/utils'
 import theme from '@/duxapp/config/theme'
 import { getPlatform, isPlatformMini, pxNum } from '@/duxapp/utils/util'
 import { TopView } from '../TopView'
@@ -34,7 +34,7 @@ export const Header = ({
   ...props
 }) => {
 
-  const { path } = useRoute()
+  const { path } = route.useRoute()
 
   /**
    * 收集当前页面配置
@@ -205,7 +205,7 @@ export const HeaderBack = ({
       if (option.onBackClick?.()) {
         return
       }
-      option.isBack ? nav('back:') : option.isBackHome ? nav('back:home') : ''
+      option.isBack ? route.nav('back:') : option.isBackHome ? route.nav('back:home') : ''
     }}
   >
     {

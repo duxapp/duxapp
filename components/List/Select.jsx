@@ -1,6 +1,6 @@
 import { View } from '@tarojs/components'
 import { createContext, useCallback, useContext as useReactContext, useState } from 'react'
-import { toast, useRoute, route, stopPropagation, noop } from '@/duxapp/utils'
+import { toast, route, stopPropagation, noop } from '@/duxapp/utils'
 import './Select.scss'
 
 const useCheck = (max = 99) => {
@@ -46,7 +46,7 @@ const useContext = () => useReactContext(context)
 export const ListSelect = ({
   children
 }) => {
-  const { params } = useRoute()
+  const { params } = route.useRoute()
   const type = params.listSelectMax > 1 ? 'checkbox' : params.listSelectMax === 1 ? 'radio' : ''
 
   const [selects, { choice, isCheck }] = useCheck(params.listSelectMax || 1)

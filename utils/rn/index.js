@@ -1,7 +1,7 @@
 import { useLaunch as useLaunchWeapp, nextTick } from '@tarojs/taro'
 import { useEffect, useRef } from 'react'
 
-export const useLaunch = process.env.TARO_ENV === 'weapp'
+export const useLaunch = process.env.TARO_PLATFORM === 'mini'
   ? useLaunchWeapp
   : callback => {
     const data = useRef(callback)

@@ -1,8 +1,6 @@
 import { ComponentType } from 'react'
 
 interface KeyboardAvoidingProps {
-  /** 引用 */
-  ref?: string | ((node: any) => any)
 }
 
 /**

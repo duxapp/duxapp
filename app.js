@@ -1,9 +1,4 @@
-import {
-  app,
-  route
-} from './utils'
-
-app.register('duxapp')
+import { route } from './utils'
 
 export default {
   show: (...arg) => {

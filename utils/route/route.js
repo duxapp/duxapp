@@ -1,6 +1,4 @@
 import qs from 'qs'
-import { getCurrentPages } from '@tarojs/taro'
-import { asyncTimeOut } from '../util'
 
 const { pages, registerPages, pagesTransfer, routes } = (() => {
 

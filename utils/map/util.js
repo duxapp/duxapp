@@ -123,22 +123,6 @@ export const distance = (latA, lonA, latB, lonB) => {
 }
 
 /**
- * 检查是否获得定位权限 主要用户判断安卓用户审核问题
- * @returns
- */
-export const checkLocationPermission = async () => {
-  if (process.env.TARO_ENV === 'rn') {
-    if (Platform.OS === 'android') {
-      return await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION)
-    } else {
-      return true
-    }
-  } else {
-    return true
-  }
-}
-
-/**
  * 获取用户当前经纬度 返回火星坐标
  * 如果定位失败会返回错误
  */

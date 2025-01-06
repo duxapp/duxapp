@@ -14,7 +14,7 @@ export const font = {
       return true
     }
   },
-  loadLocal: async (name, assets) => {
+  loadLocal: (name, assets) => {
     loadLocalFont(name, assets)
   },
   load: async (name, url, num = 0) => {
