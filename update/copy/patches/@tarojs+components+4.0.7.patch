@@ -1,3 +1,16 @@
+diff --git a/node_modules/@tarojs/components/dist/components/taro-swiper-core.js b/node_modules/@tarojs/components/dist/components/taro-swiper-core.js
+index 110488e..607d5d3 100644
+--- a/node_modules/@tarojs/components/dist/components/taro-swiper-core.js
++++ b/node_modules/@tarojs/components/dist/components/taro-swiper-core.js
+@@ -264,7 +264,7 @@ const Swiper = /*@__PURE__*/ proxyCustomElement(class extends HTMLElement {
+     // eslint-disable-next-line @typescript-eslint/no-this-alias
+     const that = this;
+     const options = Object.assign(Object.assign({ pagination: { el: `.taro-swiper-${__classPrivateFieldGet(this, _Swiper_id, "f")} > .swiper-container > .swiper-pagination` }, direction: vertical ? 'vertical' : 'horizontal', loop: circular, slidesPerView: slidesPerView, initialSlide: initialSlide, loopAdditionalSlides: loopAdditionalSlides, speed: duration, observeParents: true, observer: true, centeredSlides: centeredSlides, zoom: this.zoom, nested: true }, effectsProps), { on: {
+-        changeTransitionEnd(e) {
++        slideChangeTransitionEnd(e) {
+           if (__classPrivateFieldGet(that, _Swiper_swiperResetting, "f") || __classPrivateFieldGet(that, _Swiper_lastSwiperActiveIndex, "f") === this.realIndex)
+             return;
+           __classPrivateFieldSet(that, _Swiper_lastSwiperActiveIndex, this.realIndex, "f");
 diff --git a/node_modules/@tarojs/components/dist/components/taro-view-core.js b/node_modules/@tarojs/components/dist/components/taro-view-core.js
 index 3e511ff..e4a5b8e 100644
 --- a/node_modules/@tarojs/components/dist/components/taro-view-core.js
