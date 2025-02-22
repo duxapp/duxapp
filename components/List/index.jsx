@@ -1,6 +1,6 @@
 import { useEffect, useMemo, memo, useRef } from 'react'
 import { View, Text, Image } from '@tarojs/components'
-import { useDidShow, getSystemInfoSync } from '@tarojs/taro'
+import { useDidShow, getWindowInfo } from '@tarojs/taro'
 import { noop } from '@/duxapp/utils'
 import { ListLoading } from './Loading'
 import { ListSelect } from './Select'
@@ -173,7 +173,7 @@ export {
   ListLoading
 }
 
-const itemSize = px => px * getSystemInfoSync().screenWidth / 750
+const itemSize = px => px * getWindowInfo().screenWidth / 750
 
 const Empty = ({
   onEmptyClick,
