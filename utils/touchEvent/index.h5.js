@@ -1,4 +1,4 @@
-(function() {
+(function () {
   let isTouch = false
   let touchId = null
 
@@ -20,6 +20,10 @@
   }
 
   function dispatchTouchEvent(evt, eventType) {
+    if (['input', 'textarea'].includes(evt.target.tagName.toLowerCase())) {
+      return
+    }
+
     evt.preventDefault()
     const touch = createTouch(evt, evt.target)
     const touchEvent = new TouchEvent(eventType, {
@@ -35,7 +39,7 @@
 
   function handleMouseEvent(evt) {
 
-    switch(evt.type) {
+    switch (evt.type) {
       case 'mousedown':
         isTouch = true
         touchId = Date.now()
