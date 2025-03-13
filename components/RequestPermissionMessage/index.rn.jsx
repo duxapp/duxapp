@@ -1,4 +1,4 @@
-import { getSystemInfoSync } from '@tarojs/taro'
+import { getWindowInfo } from '@tarojs/taro'
 import { Text, View } from '@tarojs/components'
 import { Platform, PermissionsAndroid } from 'react-native'
 import { asyncTimeOut, px, userConfig } from '@/duxapp/utils'
@@ -18,7 +18,7 @@ export const requestPermissionMessage = async (type, msg) => {
     }
     if (await check()) {
       const permissions = userConfig.option?.duxappReactNative?.permissions || {}
-      const { statusBarHeight = 0 } = getSystemInfoSync()
+      const { statusBarHeight = 0 } = getWindowInfo()
       const { remove } = TopView.add(<View
         className='absolute gap-1 p-3 r-2 z-1 bg-primary'
         style={{
