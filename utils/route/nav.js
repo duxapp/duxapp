@@ -309,9 +309,13 @@ class Route {
 
     // 打开网页
     if (['http', 'https'].includes(type)) {
-      this.nav('/duxapp/webview/index', {
-        url: type + ':' + page
-      })
+      if (process.env.TARO_ENV === 'h5') {
+        window.location.href = type + ':' + page
+      } else {
+        this.nav('/duxapp/webview/index', {
+          url: type + ':' + page
+        })
+      }
       return false
     } else if (type === 'tel') {
       // 打开拨号

@@ -202,7 +202,8 @@ export const HeaderBack = ({
     className='Header__nav__left'
     style={option.weapp ? { width: px(80) } : {}}
     onClick={() => {
-      if (option.onBackClick?.()) {
+      if (option.onBackClick) {
+        option.onBackClick()
         return
       }
       option.isBack ? route.nav('back:') : option.isBackHome ? route.nav('back:home') : ''

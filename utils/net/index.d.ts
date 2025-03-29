@@ -104,7 +104,7 @@ declare namespace Request {
     /** 请求类型 */
     method?: keyof method
     /** 请求超时时间（ms） 默认30000 */
-    tomeout?: number
+    timeout?: number
     /**
      * 防止重复请求的时间间隔，在这个事件内如果发生相同参数的请求将被拦截触发catch
      * catch将返回，下面的数据，如果你不想使用，可以把这个值设置为0
