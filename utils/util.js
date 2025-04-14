@@ -1,4 +1,4 @@
-import { pxTransform, getSystemInfoSync, showToast } from '@tarojs/taro'
+import { pxTransform, getWindowInfo, showToast } from '@tarojs/taro'
 import { Platform } from '@/duxapp/utils/rn/util'
 
 export const toast = msg => {
@@ -12,14 +12,14 @@ export const toast = msg => {
   })
 }
 
-let systemInfo
+let winInfo
 export const isIphoneX = () => {
-  systemInfo = systemInfo || getSystemInfoSync()
+  winInfo = winInfo || getWindowInfo()
   if (process.env.TARO_ENV === 'rn') {
-    Platform.OS !== 'android' && systemInfo.safeArea?.bottom < systemInfo.screenHeight
+    Platform.OS !== 'android' && winInfo.safeArea?.bottom < winInfo.screenHeight
   } else {
     const phoneMarks = ['iPhone X', 'iPhone 11', 'iPhone 12', 'iPhone 13', 'iPhone 14', 'iPhone 15', 'iPhone 16', 'iPhone 17']
-    const { model = '' } = systemInfo
+    const { model = '' } = winInfo
     for (let i = 0, l = phoneMarks.length; i < l; i++) {
       if ((model || '').startsWith(phoneMarks[i])) return true
     }
@@ -82,7 +82,7 @@ export const pxNum = (() => {
   let windowWidth
   return val => {
     if (!windowWidth) {
-      windowWidth = getSystemInfoSync().windowWidth
+      windowWidth = getWindowInfo().windowWidth
     }
     return val / 750 * windowWidth
   }
