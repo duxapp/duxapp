@@ -1,6 +1,8 @@
 .TopView {
   height: 100%;
   background-color: $duxappPageColor;
+  display: flex;
+  flex-direction: column;
 
   /*  #ifndef rn harmony  */
   .position {

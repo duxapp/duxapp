@@ -8,12 +8,17 @@ const colorToRgb = hexcolor => {
   if (hexcolor.slice(0, 3) === 'rgb') {
     const start = hexcolor.indexOf('(') + 1
     const length = hexcolor.indexOf(')') - start
-    const rgb = hexcolor.slice(start, length).split(',')
+    const rgb = hexcolor.slice(start, start + length).split(',')
     r = parseInt(rgb[0])
     g = parseInt(rgb[1])
     b = parseInt(rgb[2])
   } else {
-    const bigint = parseInt(hexcolor.slice(1), 16)
+    // 处理3位十六进制简写形式
+    let hex = hexcolor.slice(1)
+    if (hex.length === 3) {
+      hex = hex.split('').map(c => c + c).join('')
+    }
+    const bigint = parseInt(hex, 16)
     r = (bigint >> 16) & 255
     g = (bigint >> 8) & 255
     b = bigint & 255
@@ -40,9 +45,8 @@ const colorDark = (color, level = 1) => {
 }
 
 const getContrastYIQ = hexcolor => {
-  let yiq
   const [r, g, b] = colorToRgb(hexcolor)
-  yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000
+  const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000
   return (yiq >= 128) ? 'black' : 'white'
 }
 

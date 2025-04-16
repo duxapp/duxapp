@@ -1,0 +1,14 @@
+.duxapp-index {
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  gap: 16px;
+  &__title {
+    font-size: 32px;
+    font-weight: bold;
+    text-align: center;
+  }
+  &__content {
+    font-size: 28px;
+  }
+}

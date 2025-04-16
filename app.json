@@ -1,6 +1,6 @@
 {
   "name": "duxapp",
   "description": "duxapp模块，所有模块的公共基础模块",
-  "version": "1.0.102",
+  "version": "1.0.105",
   "dependencies": []
 }

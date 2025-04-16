@@ -10,9 +10,9 @@
 .Loading {
   position: relative;
   .child {
+    position: absolute;
     border-radius: 3px;
     animation-fill-mode: both;
-    position: absolute;
     width: 6px;
     margin-left: -3px;
   }

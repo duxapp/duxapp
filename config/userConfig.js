@@ -1,4 +1,4 @@
-import userConfig from '../../../configs/duxuiExample'
+import userConfig from '../../../configs/default'
 
 export {
   userConfig
