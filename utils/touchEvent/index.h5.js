@@ -2,6 +2,14 @@
   let isTouch = false
   let touchId = null
 
+
+  function isMobile() {
+    const userAgent = navigator.userAgent || navigator.vendor || window.opera
+    const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i
+
+    return mobileRegex.test(userAgent)
+  }
+
   function createTouch(evt, target) {
     return new Touch({
       identifier: touchId,
@@ -72,5 +80,5 @@
   }
 
   // 在 DOMContentLoaded 事件之后尝试附加事件监听器
-  document.addEventListener('DOMContentLoaded', attachEventListeners)
+  !isMobile() && document.addEventListener('DOMContentLoaded', attachEventListeners)
 })()
