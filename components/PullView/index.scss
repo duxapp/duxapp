@@ -14,9 +14,6 @@
     position: absolute;
     opacity: 0;
     z-index: 10;
-    /*  #ifdef harmony  */
-    align-items: center;
-    /*  #endif  */
 
     &--top {
       left: 0;
@@ -45,7 +42,6 @@
     &--center {
       left: 50%;
       top: 50%;
-      opacity: 0;
     }
   }
 

@@ -4,7 +4,7 @@
  */
 export const font: {
   /**
-   * 加载一个本地字体
+   * 加载一个本地字体 仅RN端支持
    * @param name 字体名称
    * @param assets 字体资源路径
    */

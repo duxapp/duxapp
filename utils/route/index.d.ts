@@ -14,7 +14,7 @@ interface RouteConfig extends AnyObject {
   /**
    * 编译的平台
    */
-  platform?: ('h5' | 'weapp' | 'rn' | 'harmony')[]
+  platform?: ('h5' | 'weapp' | 'rn' | 'harmony_cpp')[]
 
 }
 

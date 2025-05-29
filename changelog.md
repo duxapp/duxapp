@@ -51,7 +51,7 @@
 ## 主要更改
 - Taro更新到4.0.5 RN更新到0.75
 - 完善大量类型提示
-- 完善开发文档[http://duxapp.cn/](http://duxapp.cn/)
+- 完善开发文档[http://duxapp.com/](http://duxapp.com/)
 - RN端引入@shopify/flash-list作为List组件实现
 - 小程序端支持转换为rem布局
 

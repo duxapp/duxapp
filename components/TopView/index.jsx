@@ -155,7 +155,7 @@ export class TopView extends Component {
 }
 
 const Position = ({ children }) => {
-  return process.env.TARO_ENV === 'rn' || process.env.TARO_ENV === 'harmony'
+  return process.env.TARO_ENV === 'rn' || process.env.TARO_ENV === 'harmony_cpp'
     ? children
     : <View className='position'>
       {children}

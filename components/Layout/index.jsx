@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from 'react'
-import { createSelectorQuery } from '@tarojs/taro'
+import { createSelectorQuery, nextTick } from '@tarojs/taro'
 import { View } from '@tarojs/components'
 import { CustomWrapper } from '../CustomWrapper'
 
@@ -34,11 +34,13 @@ export const Layout = ({ children, onLayout, className, reloadKey, ...props }) =
   const currentClass = useMemo(() => `ui-layout-measure-${++layoutKey}`, [])
 
   useEffect(() => {
-    if (id) {
-      getRect('.' + currentClass, false, document.getElementById(id)?.ctx).then(onLayout)
-    } else {
-      getRect('.' + currentClass).then(onLayout)
-    }
+    nextTick(() => {
+      if (id) {
+        getRect('.' + currentClass, false, document.getElementById(id)?.ctx).then(onLayout)
+      } else {
+        getRect('.' + currentClass).then(onLayout)
+      }
+    })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentClass, reloadKey, id])
 

@@ -1,15 +1,6 @@
 import { ReactNode } from 'react'
 import { ViewProps } from '@tarojs/components'
 
-/**
- * 获取元素尺寸的工具函数
- * @param select 选择器
- * @param getAll 是否获取全部元素
- * @param num 请求次数（默认最多请求10次）
- * @returns Promise
- */
-export function getRect(select: string, getAll?: boolean, num?: number): Promise<any>;
-
 interface LayoutProps extends ViewProps {
   /** 重载组件的 key，用于重新计算布局尺寸 */
   reloadKey?: string | number;

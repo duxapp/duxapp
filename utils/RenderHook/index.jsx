@@ -36,6 +36,10 @@ export class RenderHook {
     return this.elements[mark]?.[type] || []
   }
 
+  getMark = (mark, type = 'self') => {
+    return this.elements[mark]?.[type] || []
+  }
+
   Render = ({ mark, children, option, max }) => {
 
     const [element, markItem] = useMemo(() => {
@@ -95,3 +99,5 @@ const Container = ({ containers, option, index = 0, children }) => {
     </Container>
   </Item>
 }
+
+export const duxappHook = new RenderHook()

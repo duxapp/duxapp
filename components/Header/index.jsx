@@ -55,7 +55,7 @@ export const Header = ({
   const option = useMemo(() => {
     const rn = process.env.TARO_ENV === 'rn'
     const h5 = process.env.TARO_ENV === 'h5'
-    const harmony = process.env.TARO_ENV === 'harmony'
+    const harmony = process.env.TARO_ENV === 'harmony_cpp'
 
     let headerHeight = pxNum(88)
     // 小程序胶囊按钮宽度
@@ -128,9 +128,8 @@ export const Header = ({
           }}
         />}
         {(show || absolute) && <View
-          style={{ ...style, height: option.showHeight }}
+          style={style}
           className={`Header${absolute ? ' Header--absolute' : ''}`}
-
           {...props}
         >
           {(!absolute || option.rn || option.harmony) && <View

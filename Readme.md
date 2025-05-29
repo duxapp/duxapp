@@ -31,13 +31,13 @@ projectName 是项目名称，项目初始化后将会自动安装依赖，安�
 
 ## 开发文档
 
-[http://www.duxapp.cn](http://www.duxapp.cn)
+[http://www.duxapp.com](http://www.duxapp.com)
 
 ## UI 库
 
 duxui 是一套兼容小程序、APP、鸿蒙、H5的移动端ui组件库，提供了60+个组件，帮助你快速完成业务
 
-文档极示例：[https://duxapp.cn/docs/duxui/start](https://duxapp.cn/docs/duxui/start)
+文档极示例：[https://duxapp.com/docs/duxui/start](https://duxapp.com/docs/duxui/start)
 
 ## 官方群聊
 

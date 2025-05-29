@@ -22,9 +22,14 @@ export class RenderHook {
   }) => JSX.Element
 
   /**
-   * 获取添加的钩子
+   * hook获取添加的钩子
    */
   useMark: (mark: string, type?: 'self' | 'before' | 'after' | 'container' = 'self') => any[]
+
+  /**
+   * 获取添加的钩子
+   */
+  getMark: (mark: string, type?: 'self' | 'before' | 'after' | 'container' = 'self') => any[]
 
   /**
    * 添加一个或多个钩子
@@ -56,3 +61,5 @@ export class RenderHook {
    */
   addContainer: (mark: string, ...element: any[]) => void
 }
+
+export const duxappHook: RenderHook

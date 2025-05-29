@@ -35,11 +35,7 @@ export const PullView = forwardRef(({
     if (side === 'center' && process.env.TARO_ENV !== 'rn') {
       an = an.translate('-50%', '-50%')
     }
-    setMainAn(an[translate.key](pxNum(translate.value)).opacity(0).step(
-      process.env.TARO_ENV !== 'rn' ? {
-        transformOrigin: '25% 25% 0'
-      } : {}
-    ).export())
+    setMainAn(an[translate.key](pxNum(translate.value)).opacity(0).step().export())
     setMaskAn(ans.current.mask.opacity(0).step().export())
     await asyncTimeOut(duration)
     change !== false && refs.current.onClose?.()
@@ -68,13 +64,13 @@ export const PullView = forwardRef(({
         }
       }
       if (side === 'center') {
-        let an = ans.current.main.scale(1).opacity(1)
+        let an = ans.current.main.opacity(1)
         if (process.env.TARO_ENV !== 'rn') {
-          an = an.translateX('-50%').translateY('-50%')
+          an = an.translate('-50%', '-50%')
         }
-        setMainAn(an.step().export())
+        setMainAn(an.scale(1).step().export())
       } else {
-        setMainAn(ans.current.main.translateX(0).translateY(0).opacity(1).step().export())
+        setMainAn(ans.current.main.translate(0, 0).opacity(1).step().export())
       }
       setMaskAn(ans.current.mask.opacity(refs.current.overlayOpacity).step().export())
     })

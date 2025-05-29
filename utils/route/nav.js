@@ -10,6 +10,7 @@ import Map from '../map/map'
 import { QuickEvent } from '../QuickEvent'
 import { deepCopy } from '../object'
 import { asyncTimeOut, getPlatform } from '../util'
+import { duxappHook } from '../RenderHook'
 
 class PageBackData {
 
@@ -199,7 +200,7 @@ class Route {
       }
       // 保存当前的跳转方式
       this.oldNavType = option.type
-      const navs = { navigateBack, navigateTo, navigateToMiniProgram, reLaunch, redirectTo }
+      const navs = { navigateBack, navigateTo, reLaunch, redirectTo }
       await navs[option.type]({
         ...(option.type === 'navigateBack'
           ? { delta: option.delta }
@@ -385,6 +386,41 @@ class Route {
       // 重启
       option.type = 'reLaunch'
       return option
+    } else if (type === 'mini') {
+      // 打开小程序
+      const params = this.parseMiniProgramParams(path)
+      if (process.env.TARO_ENV === 'weapp') {
+        if (!params.appId) {
+          console.warn('启动失败，参数中需要小程序appid')
+          return false
+        }
+        const miniProgramTypes = ['release', 'develop', 'trial']
+        navigateToMiniProgram({
+          appId: params.appId,
+          path: params.path,
+          extraData: option.params,
+          envVersion: miniProgramTypes[params.type]
+        })
+      } else if (process.env.TARO_ENV === 'rn') {
+        const [wechat] = duxappHook.getMark('WechatLib')
+        if (!wechat) {
+          console.warn('启动失败，模块依赖中需要包含wechat')
+          return false
+        }
+        if (!params.userName) {
+          console.warn('启动失败，参数中需要小程序原始id')
+          return false
+        }
+        const queryString = option.params
+        wechat.launchMiniProgram({
+          userName: params.userName,
+          path: params.path + `${queryString ? '?' : ''}${queryString}`,
+          miniProgramType: params.type
+        })
+      } else {
+        console.warn('当前平台不支持启动小程序')
+      }
+      return false
     }
 
     // 删除路由上的第一个/
@@ -442,6 +478,31 @@ class Route {
       option.url = `/${transfer.path}${Object.keys(transfer.params).length ? '?' + qs.stringify(option.params) : ''}`
     }
     return option
+  }
+
+  parseMiniProgramParams(input) {
+    const parts = input.split('|')
+
+    const data = { type: 0 }
+
+    // 遍历分割后的部分，按特征匹配
+    parts.forEach(part => {
+      part = part.trim()
+      if (/^wx[0-9a-fA-F]{16}$/.test(part)) {
+        data.appId = part
+      }
+      else if (/^gh_[0-9a-zA-Z]+$/.test(part)) {
+        data.userName = part
+      }
+      else if (/^[123]$/.test(part)) {
+        data.type = parseInt(part, 10)
+      }
+      else if (part.includes('/')) {
+        data.path = part
+      }
+    })
+
+    return data
   }
 
   /**
@@ -532,10 +593,10 @@ class Route {
     //   paths,
     // }
 
-    const pages = process.env.TARO_ENV === 'harmony' ? this.current : getCurrentPages()
+    const pages = process.env.TARO_ENV === 'harmony_cpp' ? this.current : getCurrentPages()
     const paths = []
     for (let i = 0; i < pages.length; i++) {
-      if (process.env.TARO_ENV === 'harmony') {
+      if (process.env.TARO_ENV === 'harmony_cpp') {
         const item = pages[i]
         if (item.path === path) {
           paths.push(item.path)
@@ -603,7 +664,7 @@ export const currentPage = () => {
   let path = ''
   if (process.env.TARO_ENV === 'h5') {
     path = window.location.hash.split('?')[0].split('#')[1]
-  } else if (process.env.TARO_ENV === 'harmony') {
+  } else if (process.env.TARO_ENV === 'harmony_cpp') {
     path = route.current[route.current.length - 1]?.path || ''
   } else {
     const _pages = getCurrentPages()
