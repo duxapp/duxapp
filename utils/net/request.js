@@ -150,6 +150,9 @@ const request = (() => {
         // 中间件处理返回数据
         try {
           let result = await taroRequestTask
+          if(!result.statusCode && result.errMsg === 'request:ok') {
+            result.statusCode = 200
+          }
           result = await execMiddle(middle.result, result, origin)
           resolve(result)
         } catch (error) {

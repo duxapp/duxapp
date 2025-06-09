@@ -1,32 +1,20 @@
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { TopView } from '../TopView'
 
 export const Absolute = ({ group, children }) => {
   const action = useRef(null)
 
   useEffect(() => {
-    return () => {
-      if (!action.current) {
-        console.error('在Absolute组件中你的内容过快的卸载了,这将导致你的子元素可能并未真正的卸载掉,请检查你的逻辑')
-      } else {
-        action.current.remove()
-      }
+    if (!action.current) {
+      action.current = TopView.add(children, { group })
+    } else {
+      action.current.update(children, { group })
     }
-  }, [])
-
-  useMemo(() => {
-    if (action.current) {
-      action.current.update(children)
-      return
-    }
-    setTimeout(() => {
-      if (!action.current) {
-        action.current = TopView.add(children)
-      } else {
-        action.current.update(children, { group })
-      }
-    }, 0)
   }, [children, group])
+
+  useEffect(() => {
+    return () => action.current?.remove()
+  }, [])
 
   return null
 }

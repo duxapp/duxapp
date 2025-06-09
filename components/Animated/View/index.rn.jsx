@@ -1,14 +1,15 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Animated, Easing } from 'react-native'
 import ClickableSimplified from '@tarojs/components-rn/dist/components/ClickableSimplified'
+import { deepCopy } from '@/duxapp/utils/object'
 
 const ClickView = ClickableSimplified(Animated.View)
 
-export const View = ({ animation, style, ...props }) => {
+export const View = ({ animation, style = {}, ...props }) => {
 
   const [init, setInit] = useState(false)
 
-  const lastStyle = useRef({ ...style })
+  const lastStyle = useRef(deepCopy(style))
 
   const getDefaultValue = useCallback(type => {
     const val = type in lastStyle.current

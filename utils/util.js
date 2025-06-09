@@ -68,15 +68,13 @@ export const stopPropagation = e => {
   e?.stopPropagation?.()
 }
 
-export const px = (() => {
-  const cache = {}
-  return val => {
-    if (!cache[val]) {
-      cache[val] = pxTransform(val)
-    }
-    return cache[val]
+export const px = (val, pxUnit) => {
+  if (process.env.TARO_ENV === 'rn') {
+    return pxTransform(val) + (pxUnit ? 'px' : 0)
+  } else {
+    return pxTransform(val)
   }
-})();
+}
 
 export const pxNum = (() => {
   let windowWidth
