@@ -4,7 +4,7 @@
  * subPackage:是否将其设置为分包
  * home: 是否是主页 是主页的页面将会被排在前面
  */
-const config = {
+export default  {
   // 指定页面路径
   path: 'pages',
   // 跳转时打印跳转路径
@@ -21,5 +21,3 @@ const config = {
     }
   }
 }
-
-module.exports = config

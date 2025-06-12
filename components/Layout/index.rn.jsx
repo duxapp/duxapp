@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, forwardRef } from 'react'
 import { View as NativeView } from 'react-native'
-import { getSystemInfoSync } from '@tarojs/taro'
+import { getWindowInfo } from '@/duxapp/utils'
 import ClickableSimplified from '@tarojs/components-rn/dist/components/ClickableSimplified'
 
 const ClickView = ClickableSimplified(NativeView)
@@ -30,7 +30,7 @@ export const Layout = ({ children, onLayout, onClick, reloadKey, ...props }) => 
   useEffect(() => {
     if (viewRef.current && layoutStatus) {
       viewRef.current.measure((x, y, width, height, left, top) => {
-        const { windowWidth } = getSystemInfoSync()
+        const { windowWidth } = getWindowInfo()
         onLayoutRef.current?.({
           width: width || layoutData.current.width,
           height: height || layoutData.current.height,

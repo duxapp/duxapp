@@ -1,4 +1,4 @@
-import { ComponentType, ReactElement } from 'react'
+import { ComponentType } from 'react'
 
 interface ActionSheetProps {
 

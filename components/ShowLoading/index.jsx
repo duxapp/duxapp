@@ -1,13 +1,12 @@
 import { View, Text } from '@tarojs/components'
-import { getSystemInfoSync } from '@tarojs/taro'
-import { px, currentPage } from '@/duxapp/utils'
+import { px, currentPage, getWindowInfo } from '@/duxapp/utils'
 import { TopView } from '../TopView'
 import { Loading } from '../Loading'
 
 import './index.scss'
 
 const getSize = size => {
-  const { windowWidth } = getSystemInfoSync()
+  const { windowWidth } = getWindowInfo()
   return 750 / windowWidth * size
 }
 
@@ -15,7 +14,7 @@ const ShowLoading = ({
   text = '请稍后',
   mask
 }) => {
-  const { windowWidth, windowHeight } = getSystemInfoSync()
+  const { windowWidth, windowHeight } = getWindowInfo()
 
   return <>
     {mask && <View className='ShowLoading__mask' />}

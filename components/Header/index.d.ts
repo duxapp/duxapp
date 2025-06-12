@@ -1,4 +1,4 @@
-import { CSSProperties, Component, ReactElement } from 'react'
+import { CSSProperties, ReactElement, ComponentType } from 'react'
 import { ViewProps } from '@tarojs/components'
 
 interface HeaderProps extends ViewProps {
@@ -45,11 +45,9 @@ interface HeaderProps extends ViewProps {
    * @returns
    */
   onBackClick?: () => void
-  /** 引用 */
-  ref?: string | ((node: any) => any)
 }
 
-class HeaderBack extends Component {
+interface HeaderBackProps {
 
 }
 
@@ -59,6 +57,10 @@ class HeaderBack extends Component {
  * <Header title='页面标题' />
  * @info style.backgroundColor 属性仅支持 rgba rgb 16进制颜色
  */
-export class Header extends Component<HeaderProps>{
-  static Back: HeaderBack
+export const Header: ComponentType<HeaderProps> & {
+  /**
+   * 当你使用了`renderHeader`属性的时候，返回按钮将不在header上，你可以使用这个组件替代返回按钮的位置。
+   * 这个组件只能出现在Header组件的内部，例如 renderHeader 属性内
+   */
+  Back: ComponentType<HeaderBackProps>
 }

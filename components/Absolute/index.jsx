@@ -8,7 +8,7 @@ export const Absolute = ({ group, children }) => {
     if (!action.current) {
       action.current = TopView.add(children, { group })
     } else {
-      action.current.update(children, { group })
+      action.current.update(children)
     }
   }, [children, group])
 

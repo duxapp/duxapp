@@ -41,13 +41,13 @@ $duxappHeaderColor: #fff;
 $duxappHeaderTextColor: #000;`]
 }
 
-module.exports = theme => {
+export default theme => {
   Object.keys(theme).forEach(key => {
     const value = theme[key]
     if (typeof value !== 'object') {
       scssData[''].push(`$duxapp${capitalizeFirstLetter(key)}: ${typeof value === 'number'
-          ? `${value}px`
-          : value
+        ? `${value}px`
+        : value
         };`
       )
     } else {

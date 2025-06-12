@@ -1,7 +1,6 @@
-// eslint-disable-next-line import/no-commonjs
-const { defineConfig } = require('@tarojs/cli')
+import { defineConfig } from '@tarojs/cli'
 
-module.exports = defineConfig({
+export default defineConfig({
   h5: {
     // 关闭 H5 全屏弹出的警告
     devServer: {

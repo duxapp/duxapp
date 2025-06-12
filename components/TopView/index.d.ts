@@ -1,4 +1,4 @@
-import { LegacyRef, ComponentType, Component, CSSProperties, ReactElement, ReactNode } from 'react'
+import { ComponentType, Component, CSSProperties, ReactElement } from 'react'
 
 interface TopViewProps {
   /**
@@ -15,16 +15,10 @@ interface TopViewProps {
   style: CSSProperties
   /** 样式类名 */
   className: string
-  /** 引用 */
-  ref?: LegacyRef<any>
 }
 
-interface AddAsyncTask extends Promise<AddAsyncTask> {
-
-}
 /**
  * 根节点 可以用于控制页面全局弹窗 下巴机型底部空白 键盘弹出控制
- * @noInheritDoc
  */
 export class TopView extends Component<TopViewProps> {
   /**
@@ -32,14 +26,14 @@ export class TopView extends Component<TopViewProps> {
    * @param element 组件
    * @return 返回一个key，用于更新或者删除
    */
-  static add(element: ReactElement, option?: {
+  static add(element: ReactElement | ComponentType<any>, option?: {
     /** 标识 默认当前页面 */
     page?: string
     /** 分组 同一个分组内的弹窗 将会以队列的形式显示 */
     group?: string
   }): {
     /** 更新元素 */
-    update: (element: ReactElement) => void
+    update: (element: ReactElement | ComponentType<any>) => void
     /** 移除元素 */
     remove: () => void
     /** key */
@@ -51,7 +45,7 @@ export class TopView extends Component<TopViewProps> {
    * @param component 组件
    * @param props 传递给组件的属性
    */
-  static addContainer(component: Component, props: object): {
+  static addContainer(component: ComponentType<any>, props?: object): {
     /**
      * 移除添加的容器，并不会实时生效，需要在下次渲染时生效
      * @returns
@@ -70,5 +64,5 @@ export class TopView extends Component<TopViewProps> {
    * @param WrappedComponent 页面组件
    * @param props 传递给TopView组件的属性
    */
-  static HOC(WrappedComponent?: ReactNode, props: TopViewProps): ReactNode
+  static HOC(WrappedComponent: ComponentType<any> | ReactElement, props?: TopViewProps): ComponentType<any>
 }

@@ -1,5 +1,6 @@
-import { pxTransform, getSystemInfoSync, showToast } from '@tarojs/taro'
+import { pxTransform, showToast } from '@tarojs/taro'
 import { Platform } from '@/duxapp/utils/rn/util'
+import { getDeviceInfo, getWindowInfo } from './taro'
 
 export const toast = msg => {
   if (!msg) {
@@ -14,11 +15,11 @@ export const toast = msg => {
 
 let systemInfo
 export const isIphoneX = () => {
-  systemInfo = systemInfo || getSystemInfoSync()
+  systemInfo = systemInfo || getDeviceInfo()
   if (process.env.TARO_ENV === 'rn') {
     Platform.OS !== 'android' && systemInfo.safeArea?.bottom < systemInfo.screenHeight
   } else {
-    const phoneMarks = ['iPhone X', 'iPhone 11', 'iPhone 12', 'iPhone 13', 'iPhone 14', 'iPhone 15', 'iPhone 16', 'iPhone 17']
+    const phoneMarks = ['iPhone X', 'iPhone 11', 'iPhone 12', 'iPhone 13', 'iPhone 14', 'iPhone 15', 'iPhone 16', 'iPhone 17', 'iPhone 18']
     const { model = '' } = systemInfo
     for (let i = 0, l = phoneMarks.length; i < l; i++) {
       if ((model || '').startsWith(phoneMarks[i])) return true
@@ -76,15 +77,9 @@ export const px = (val, pxUnit) => {
   }
 }
 
-export const pxNum = (() => {
-  let windowWidth
-  return val => {
-    if (!windowWidth) {
-      windowWidth = getSystemInfoSync().windowWidth
-    }
-    return val / 750 * windowWidth
-  }
-})();
+export const pxNum = val => {
+  return val / 750 * getWindowInfo().windowWidth
+}
 
 export const transformStyle = obj => {
   if (process.env.TARO_ENV === 'rn') {
@@ -97,4 +92,4 @@ export const transformStyle = obj => {
   return Object.keys(obj).map(key => `${key}(${obj[key]})`).join(' ')
 }
 
-export const isPlatformMini = ['weapp', 'tt', 'alipay', 'swan', 'qq', 'jd', 'quickapp'].includes(process.env.TARO_ENV)
+export const isPlatformMini = process.env.TARO_PLATFORM === 'mini'

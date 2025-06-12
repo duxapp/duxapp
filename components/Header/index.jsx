@@ -1,7 +1,7 @@
 import { useMemo, createContext, useContext as useReactContext, useEffect } from 'react'
-import { useDidShow, setNavigationBarTitle, getMenuButtonBoundingClientRect, setNavigationBarColor, getSystemInfoSync } from '@tarojs/taro'
+import { useDidShow, setNavigationBarTitle, getMenuButtonBoundingClientRect, setNavigationBarColor } from '@tarojs/taro'
 import { View, Image, Text } from '@tarojs/components'
-import { getContrastYIQ, route, pages as routePages, px } from '@/duxapp/utils'
+import { getContrastYIQ, route, pages as routePages, px, getWindowInfo } from '@/duxapp/utils'
 import theme from '@/duxapp/config/theme'
 import { getPlatform, isPlatformMini, pxNum } from '@/duxapp/utils/util'
 import { TopView } from '../TopView'
@@ -61,7 +61,7 @@ export const Header = ({
     // 小程序胶囊按钮宽度
     let jiaonangWidth = 0
     // 获取胶囊信息
-    const statusBarHeight = h5 ? 0 : (getSystemInfoSync().statusBarHeight || 0)
+    const statusBarHeight = h5 ? 0 : (getWindowInfo().statusBarHeight || 0)
     if (isPlatformMini) {
       const { width, height, top } = getMenuButtonBoundingClientRect() || {}
       if (width && top) {

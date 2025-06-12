@@ -92,6 +92,74 @@ interface Route {
   back: (num?: string | 'home', data?: AnyObject) => Promise<{}>
 
   /**
+   * 重启程序
+   */
+  relaunch: () => void
+
+  /**
+   * 打开拨号盘
+   * @param tel 要拨打的电话号码
+   */
+  tel: (tel: string) => void
+
+  /**
+   * 打开小程序 APP端项目需要包含wechat模块（H5端不能使用）
+   * @param option 小程序选项
+   */
+  mini: (option: {
+    /**
+     * 小程序APPID
+     * 小程序端使用
+     */
+    appid?: string
+    /**
+     * 小程序原始id
+     * RN端使用
+     */
+    userName?: string
+    /**
+     * 要打开小程序的页面
+     */
+    path?: string
+    /**
+     * 小程序版本
+     * 0正式版 1开发版 2体验版
+     */
+    type?: 0 | 1 | 2
+    /**
+     * 传递给小程序的参数
+     */
+    query: AnyObject
+  }) => void
+
+  /**
+   * 打开一个位置
+   * 小程序启动内置地图
+   * H5端如果注册了jssdk也会启动微信地图，否则启动一个网页打开位置
+   * APP端会启动手机上的百度或者高德APP
+   * 使用的是火星坐标系坐标（高德地图用的坐标系）
+   * @param option 地图参数
+   */
+  mapPoint: (option: {
+    /**
+     * 经度
+     */
+    longitude: number
+    /**
+     * 维度
+     */
+    latitude: number
+    /**
+     * 位置名称
+     */
+    name: string
+    /**
+     * 位置地址
+     */
+    address: string
+  }) => void
+
+  /**
    * 监听路由跳转，可以用于拦截跳转，类似于路由守卫的功能
    * 如果抛出Promise错误将停止跳转
    * @param callback 异步回调函数

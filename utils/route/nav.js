@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import {
   getCurrentPages, getCurrentInstance, makePhoneCall, openLocation,
   navigateBack, navigateTo, navigateToMiniProgram, reLaunch, redirectTo
@@ -16,20 +17,20 @@ class PageBackData {
 
   callback = null
 
-  on = () => {
+  on() {
     return new Promise((resolve, reject) => {
       this.callback = [resolve, reject]
     })
   }
 
-  resolve = res => {
+  resolve(res) {
     if (this.callback) {
       this.callback[0]?.(res)
       this.callback = null
     }
   }
 
-  reject = err => {
+  reject(err) {
     if (this.callback) {
       this.callback[1]?.(err)
       this.callback = null
@@ -47,7 +48,7 @@ class Route {
   /**
    * 在程序启动初始化的时候调用此方法初始化路由
    */
-  init = async () => {
+  async init() {
     const _getCurrentInstance = async (level = 1) => {
       if (level > 20 || process.env.TARO_ENV === 'rn') {
         return { params: {}, path: Object.keys(routerPage)[0] }
@@ -88,7 +89,7 @@ class Route {
    * 小程序show事件初始化
    * @param  {...any} arg
    */
-  showInit = router => {
+  showInit(router) {
     const getData = () => {
       if (process.env.TARO_ENV === 'h5') {
         const [, hash] = window.location.hash.split('#')
@@ -126,7 +127,7 @@ class Route {
   historyUrl = ''
   time = ''
 
-  nav = async (url, data = {}) => {
+  async nav(url, data = {}) {
     if (Route.historyUrl == url && url !== 'back:system' && new Date().getTime() - Route.time < 1000) {
       return
     }
@@ -188,8 +189,6 @@ class Route {
       }
       // 如果是由nav发起的back则不触发事件
       if (option.type === 'navigateBack' && !option.system) {
-        // 在app端打印路由跳转地址
-        process.env.TARO_ENV === 'rn' && console.log(option.path || 'back', option.params)
         // 触发跳转监听事件
         this.navAfterEvent.trigger(option)
       }
@@ -225,7 +224,7 @@ class Route {
    * 页面卸载的时候调用此函数
    * 由系统返回按钮点击返回 或者调用了重定向跳转
    */
-  pageUnmount = () => {
+  pageUnmount() {
     // 重定向导致的页面卸载，不执行关闭方法
     if (this.oldNavType !== 'redirectTo') {
       this.nav('back:system')
@@ -254,7 +253,7 @@ class Route {
    * @param {object} data 跳转参数
    * @returns
    */
-  push = (url, data) => {
+  push(url, data) {
     return this.nav('navigate:' + url, data)
   }
 
@@ -264,7 +263,7 @@ class Route {
    * @param {object} data 跳转参数
    * @returns
    */
-  redirect = (url, data) => {
+  redirect(url, data) {
     return this.nav('redirect:' + url, data)
   }
 
@@ -274,8 +273,39 @@ class Route {
    * @param {object} data 要传到到上一个页面的数据
    * @returns
    */
-  back = (num = 1, data) => {
+  back(num = 1, data) {
     return this.nav('back:' + num, data)
+  }
+
+  /**
+   * 重启程序
+   */
+  relaunch() {
+    return this.nav('relaunch:')
+  }
+
+  /**
+   * 打开拨号界面
+   * @param tel 电话号码
+   */
+  tel(tel) {
+    return this.nav('tel:' + tel)
+  }
+
+  /**
+   * 打开小程序
+   * @param option 小程序参数
+   */
+  mini(option = {}) {
+    const { query, path, ...params } = option
+    return this.nav(`mini:${Object.values(params).join('|')}${path ? '|' + path : ''}`, query)
+  }
+
+  /**
+   * 打开地图位置
+   */
+  mapPoint(option = {}) {
+    return this.nav('map:point', option)
   }
 
   /**
@@ -284,7 +314,7 @@ class Route {
    * @param {object} data 跳转参数
    * @returns
    */
-  getOption = (url, data) => {
+  getOption(url, data) {
     const option = {
       type: '',
       url: '',
@@ -510,7 +540,7 @@ class Route {
    * @param {object} obj
    * @return {object}
    */
-  decodeParams = (params, parse) => {
+  decodeParams(params, parse) {
     if (parse) {
       params = qs.parse(qs.stringify(params), { parseArrays: false })
     }
@@ -546,7 +576,7 @@ class Route {
   /**
    * 获取h5端的参数返回一个对象
    */
-  getQueryVariable = () => {
+  getQueryVariable() {
     if (process.env.TARO_ENV === 'h5') {
       const query = window.location.search.substring(1)
       if (!query) return {}
@@ -559,7 +589,7 @@ class Route {
   /**
    * 获取h5端的Hash参数和Hash值 返回一个对象
    */
-  getHashQueryVariable = () => {
+  getHashQueryVariable() {
     if (process.env.TARO_ENV === 'h5' && window.location.hash) {
       const [hash, query] = window.location.hash.split('?')
       const params = query ? qs.parse(query) : {}
@@ -574,9 +604,9 @@ class Route {
 
   /**
    * 判断指定路由在路径中位置，返回pages和查找结果paths
-   * @param {String} path
+   * @param path
    */
-  getPathPosition = path => {
+  getPathPosition(path) {
     // const pages = getCurrentPages()
     // const paths = []
     // for (let i = 0; i < pages.length; i++) {
@@ -617,7 +647,7 @@ class Route {
     }
   }
 
-  useRoute = () => {
+  useRoute() {
 
     const data = useMemo(() => {
       return deepCopy(this.current[this.current.length - 1]) || { path: '', params: {} }
@@ -650,15 +680,11 @@ const toArrayIfCumulative = obj => {
   return numericKeys.map(key => obj[key])
 }
 
-/**
- * 获取当前页面路由信息
- * @returns {params: {}, path: ''}
- */
-export const useRoute = route.useRoute
+export const useRoute = route.useRoute.bind(route)
 
-export const nav = route.nav
+export const nav = route.nav.bind(route)
 
-export const decodeParams = route.decodeParams
+export const decodeParams = route.decodeParams.bind(route)
 
 export const currentPage = () => {
   let path = ''

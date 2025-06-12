@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import { getStorage, setStorage } from '@tarojs/taro'
 import { useEffect, useMemo, useState } from 'react'
 import { QuickEvent } from './QuickEvent'
@@ -51,7 +52,7 @@ export class Cache {
   }
 
   // 设置数据
-  set = _data => {
+  set(_data) {
     if (typeof _data === 'function') {
       this.data = _data(this.data)
     } else {
@@ -64,13 +65,15 @@ export class Cache {
   }
 
   // 获取数据
-  get = () => this.data
+  get() {
+    return this.data
+  }
 
   // 监听读取了本地数据成功 需要在new之后立马创建监听 否则可能没有回调
   onLocal = this.localEvent.on
 
   // 异步获取数据，会等待本地缓存数据读取成功 返回一个Promise
-  getAsync = async () => {
+  async getAsync() {
     if (this.config.readStatus) {
       return this.data
     }
@@ -124,12 +127,14 @@ export class ObjectManage {
   data = {}
 
   // 监听选中项改变事件
-  onSet = callback => this.quickEvent.on((data, type) => {
-    type !== 'no-cache' && callback(data, type)
-  })
+  onSet(callback) {
+    return this.quickEvent.on((data, type) => {
+      type !== 'no-cache' && callback(data, type)
+    })
+  }
 
   // 替换数据
-  set = data => {
+  set(data) {
     if (typeof data === 'function') {
       this.data = data(this.data)
     } else {
@@ -140,7 +145,7 @@ export class ObjectManage {
   }
 
   // 清除数据
-  clear = () => {
+  clear() {
     this.data = {}
     this.execCallback()
     this.quickEvent.trigger(this.data, 'clear')
@@ -148,7 +153,7 @@ export class ObjectManage {
   }
 
   // 使用数据
-  useData = () => {
+  useData() {
     const [data, setData] = useState(this.data)
 
     const { remove } = useMemo(() => {

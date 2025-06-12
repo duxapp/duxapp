@@ -31,12 +31,7 @@ export function colorDark(color: string, level: number): string
  * @param hexcolor hex颜色 或者rgb颜色
  * 传入一个hex颜色值会自动对比用这个颜色做为背景，文字应该用白色还是黑色
  */
-export function getContrastYIQ(color: string): keyof {
-  /** 黑色 */
-  black
-  /** 白色 */
-  white
-}
+export function getContrastYIQ(color: string): 'black' | 'white'
 
 /**
  * 验证是否是合法的颜色值

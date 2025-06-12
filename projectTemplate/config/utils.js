@@ -1,6 +1,6 @@
 import path from 'path'
 import fs from 'fs'
-import util from 'duxapp-cli/lib/util'
+import userConfigs from './userConfig'
 
 const appRoot = path.join(__dirname, '..')
 
@@ -18,11 +18,7 @@ export const getAlias = () => Object.fromEntries(
     .map(file => ['@/' + file, path.join(appRoot, 'src', file)])
 )
 
-const parseConfig = async (configs, configFile, ...args) => {
-  if (!fs.existsSync(configFile)) {
-    return
-  }
-  let config = require(configFile)
+const parseConfig = async (configs, config, ...args) => {
   if (typeof config === 'function') {
     config = config(...args)
   }
@@ -34,15 +30,13 @@ const parseConfig = async (configs, configFile, ...args) => {
 
 export const getAppConfig = async (type, ...args) => {
 
-  const apps = util.getApps()
+  const configs = [...userConfigs.index, ...userConfigs[type]]
 
-  const configs = []
-  for (let i = 0; i < apps.length; i++) {
-    const appDir = path.join(appRoot, 'src', apps[i])
+  const result = []
 
-    await parseConfig(configs, path.join(appDir, 'taro.config.js'), ...args)
-    await parseConfig(configs, path.join(appDir, `taro.config.${type}.js`), ...args)
+  for (let i = 0; i < configs.length; i++) {
+    await parseConfig(result, configs[i], ...args)
   }
 
-  return configs
+  return result
 }

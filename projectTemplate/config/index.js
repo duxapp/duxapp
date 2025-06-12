@@ -1,5 +1,5 @@
 import { defineConfig } from '@tarojs/cli'
-import { taroPlugin } from 'duxapp-cli/plugins'
+import { taroPlugin } from 'duxapp-cli/cjs/plugins/index'
 import path from 'path'
 import { getAlias, getAppConfig } from './utils'
 
@@ -7,7 +7,7 @@ import devConfig from './dev'
 import prodConfig from './prod'
 
 // https://taro-docs.jd.com/docs/next/config#defineconfig-辅助函数
-export default defineConfig(async (merge, option) => {
+export default defineConfig(async (merge, ...args) => {
   const baseConfig = {
     projectName: 'duxapp',
     date: '2024-1-1',
@@ -111,8 +111,8 @@ export default defineConfig(async (merge, option) => {
     }
   }
   if (process.env.NODE_ENV === 'development') {
-    return merge({}, baseConfig, devConfig, ...(await getAppConfig('dev', merge, option)))
+    return merge({}, baseConfig, devConfig, ...(await getAppConfig('dev', merge, ...args)))
   }
-  return merge({}, baseConfig, prodConfig, ...(await getAppConfig('prod', merge, option)))
+  return merge({}, baseConfig, prodConfig, ...(await getAppConfig('prod', merge, ...args)))
 })
 

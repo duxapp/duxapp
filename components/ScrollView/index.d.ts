@@ -1,5 +1,6 @@
 import { ScrollViewProps } from '@tarojs/components'
 import { ScrollViewHorizontalProps } from './Horizontal'
+import { ComponentType } from 'react'
 
 interface DuxScrollViewProps extends ScrollViewProps {
 
@@ -19,6 +20,6 @@ interface DuxScrollViewProps extends ScrollViewProps {
  * @info 注意滚动组件是使用flex的自动最大宽度实现的 所以外层只能使用flex竖向布局 并且得具有固定高度
  */
 
-export const ScrollView: React.FC<DuxScrollViewProps> & {
-  Horizontal: React.FC<ScrollViewHorizontalProps>
+export const ScrollView: ComponentType<DuxScrollViewProps> & {
+  Horizontal: ComponentType<ScrollViewHorizontalProps>
 }

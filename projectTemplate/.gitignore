@@ -26,10 +26,22 @@ node_modules/
 /package.json
 /yarn.lock
 
+/config/userConfig/
+
 /babel.user.config.js
 /metro.user.config.js
 
 /project.config.json
+
+# Yarn 2+
+.yarn/*
+!.yarn/releases
+!.yarn/plugins
+!.yarn/versions
+.yarn/cache
+.yarn/build-state.yml
+.yarn/install-state.gz
+.yarn/unplugged
 
 # build
 android/app/src/main/assets/index.android.bundle

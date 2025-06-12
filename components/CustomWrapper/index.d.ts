@@ -1,4 +1,4 @@
-import { ComponentType, ReactElement } from 'react'
+import { ComponentType } from 'react'
 import { CustomWrapper as TaroCustomWrapper } from '@tarojs/components'
 
 interface CustomWrapperProps extends TaroCustomWrapper {

@@ -60,4 +60,4 @@ export const transformStyle = (obj: {
 /**
  * 判断是不是各种小程序
  */
-export const isPlatformMini = boolean
+export const isPlatformMini: boolean
