@@ -15,7 +15,11 @@ export default {
   successColor: '#34a853',
   dangerColor: '#ea4335',
   warningColor: '#fbbc05',
+
   pageColor: '#fafbf8',
+  whiteColor: '#fff',
+  blackColor: '#000',
+  lineColor: '#f5f5f5',
 
   //用户自定义颜色1
   customColor1: '#337ab7',
@@ -58,6 +62,11 @@ export default {
     textColor: '#000', // 文本颜色
     showWechat: false, // 微信公众号是否显示header
     showWap: true, // h5是否显示header
+  },
+
+  loading: {
+    dark: '#7a7a7a',
+    blank: '#fff'
   },
 
   topView: {

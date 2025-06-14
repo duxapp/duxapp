@@ -1,7 +1,7 @@
 import { Component } from 'react'
 import classNames from 'classnames'
 import { View } from '@tarojs/components'
-import { px } from '@/duxapp/utils'
+import { duxappTheme, px } from '@/duxapp/utils'
 import './index.scss'
 
 export class Loading extends Component {
@@ -51,8 +51,8 @@ export class Loading extends Component {
     const { style = {}, color = 'dark', className, ...props } = this.props
     const { lines, width, r } = this.state
     const colors = {
-      dark: '#7a7a7a',
-      blank: '#fff'
+      dark: duxappTheme.loading.dark,
+      blank: duxappTheme.loading.blank
     }
     return (
       <View

@@ -2,7 +2,7 @@ import React, { Component, cloneElement, memo, useCallback, createContext, useCo
 import { getCurrentInstance } from '@tarojs/taro'
 import { View } from '@tarojs/components'
 import classNames from 'classnames'
-import { isIphoneX, route } from '@/duxapp/utils'
+import { isIphoneX, route, theme } from '@/duxapp/utils'
 import { QuickEvent } from '@/duxapp/utils/QuickEvent'
 import { KeyboardAvoiding } from '../KeyboardAvoiding'
 import { Status } from './Status'
@@ -263,10 +263,19 @@ const Container = ({ index = 0, children }) => {
 
 const TopViewFunc = ({ pageKey, children, isSafe, isForm, className, ...props }) => {
 
+  const mode = theme.useMode()
+
   return <>
     <WeappRem />
     <View
-      className={classNames('TopView', className, { 'TopView--safe': isSafe && isIphoneX() })}
+      className={classNames(
+        'TopView',
+        className,
+        `duxapp-theme-${mode}`,
+        {
+          'TopView--safe': isSafe && isIphoneX()
+        }
+      )}
       {...props}
     >
       <Status barStyle='dark-content' />

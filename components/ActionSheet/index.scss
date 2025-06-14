@@ -6,6 +6,7 @@
     align-items: center;
     font-size: 32px;
     font-weight: bold;
+    color: $duxappTextColor1;
   }
 
   &__item {
@@ -15,7 +16,7 @@
 
     &__text {
       font-size: 28px;
-      color: #333;
+      color: $duxappTextColor1;
     }
   }
 }

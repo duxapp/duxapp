@@ -1,7 +1,7 @@
 import { Component } from 'react'
 import { View } from '@tarojs/components'
 import { Animated, Easing, StyleSheet } from 'react-native'
-import { px } from '@/duxapp/utils'
+import { duxappTheme, px } from '@/duxapp/utils'
 
 export class Loading extends Component {
   constructor(props) {
@@ -77,8 +77,8 @@ export class Loading extends Component {
     const { style = {}, color = 'dark', ...props } = this.props
     const { lines, width, r } = this.state
     const colors = {
-      dark: '#7a7a7a',
-      blank: '#fff'
+      dark: duxappTheme.loading.dark,
+      blank: duxappTheme.loading.blank
     }
     return (
       <View

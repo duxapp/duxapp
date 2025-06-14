@@ -15,6 +15,11 @@ $duxappSuccessColor: #34a853;
 $duxappDangerColor: #ea4335;
 $duxappWarningColor: #fbbc05;
 $duxappPageColor: #fafbf8;
+
+$duxappWhiteColor: #fff;
+$duxappBlackColor: #000;
+$duxappLineColor: #f5f5f5;
+
 $duxappCustomColor1: #337ab7;
 $duxappCustomColor2: #337ab7;
 $duxappCustomColor3: #337ab7;
