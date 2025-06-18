@@ -8,6 +8,7 @@ import { KeyboardAvoiding } from '../KeyboardAvoiding'
 import { Status } from './Status'
 import { WeappRem } from './WeappRem'
 import './index.scss'
+import '../../userTheme/index.scss'
 
 export class TopView extends Component {
 

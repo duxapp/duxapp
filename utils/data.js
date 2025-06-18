@@ -1,19 +1,21 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import { getStorage, setStorage } from '@tarojs/taro'
+import { getStorage, setStorage, getStorageSync } from '@tarojs/taro'
 import { useEffect, useMemo, useState } from 'react'
 import { QuickEvent } from './QuickEvent'
 
 export class Cache {
   constructor({
-    // 数据key
-    key = '',
-    defaultData
+    key,
+    defaultData,
+    sync
   }) {
-    if (!key) {
-      throw '使用Cache请设置Key'
+    if (!key || typeof key !== 'string') {
+      throw '使用Cache请设置字符串 key'
     }
     this.config = {
-      key
+      key,
+      sync,
+      readStatus: false
     }
     if (defaultData) {
       this.data = defaultData
@@ -21,33 +23,32 @@ export class Cache {
     this.init()
   }
 
-  config = {
-    key: '',
-    readStatus: false
-  }
-
-  localEvent = new QuickEvent()
-
-  data
+  event = new QuickEvent()
 
   async init() {
     try {
-      const res = await getStorage({ key: this.config.key })
-      if (res?.data) {
+      let res
+      const isSync = this.config.sync && !['rn', 'harmony_cpp'].includes(process.env.TARO_ENV)
+      if (isSync) {
+        res = getStorageSync(this.config.key)
+      } else {
+        res = await getStorage({ key: this.config.key })
+      }
+      const data = isSync ? res : res?.data
+      if (data) {
         try {
-          this.data = JSON.parse(res.data)
+          this.data = JSON.parse(data)
         } catch (error) {
-          this.data = res.data
+          this.data = data
         }
         this.config.readStatus = true
-        this.localEvent.trigger(true, this.data)
+        this.event.trigger(true, this.data)
       } else {
         throw '未找到本地存储'
       }
     } catch (error) {
       this.config.readStatus = true
-      this.localEvent.trigger(false, this.data)
-      // console.log('读取缓存失败:' + this.config.key, error)
+      this.event.trigger(false, this.data)
     }
   }
 
@@ -68,22 +69,6 @@ export class Cache {
   get() {
     return this.data
   }
-
-  // 监听读取了本地数据成功 需要在new之后立马创建监听 否则可能没有回调
-  onLocal = this.localEvent.on
-
-  // 异步获取数据，会等待本地缓存数据读取成功 返回一个Promise
-  async getAsync() {
-    if (this.config.readStatus) {
-      return this.data
-    }
-    return new Promise(resolve => {
-      const stop = this.onLocal(() => {
-        stop.remove()
-        resolve(this.data)
-      })
-    }, [])
-  }
 }
 
 export class ObjectManage {
@@ -93,28 +78,26 @@ export class ObjectManage {
     cache,
     // 缓存数据key
     cacheKey = '',
+    cacheSync,
     defaultData
   } = {}) {
     if (defaultData) {
       this.data = defaultData
     }
     if (cache && cacheKey) {
-      this.cache = new Cache({ key: cacheKey, defaultData })
-      this.cache.onLocal((status, _data) => {
-        if (status && _data) {
-          this.data = _data
-          this.quickEvent.trigger(this.data, 'cache')
-        } else {
-          this.quickEvent.trigger(this.data, 'no-cache')
-        }
+      this.cache = new Cache({
+        key: cacheKey,
+        sync: cacheSync,
+        defaultData
       })
-      // this.cache.getAsync()
-      // .then(_data => {
-      //   if (_data && this.data !== _data) {
-      //     this.data = _data
-      //     this.quickEvent.trigger(this.data, 'cache')
-      //   }
-      // })
+      this.cache.event.on((status, data) => {
+        if (status && data) {
+          this.data = data
+          this.event.trigger(this.data, 'cache')
+        } else {
+          this.event.trigger(this.data, 'no-cache')
+        }
+      }, true)
     }
   }
 
@@ -122,15 +105,15 @@ export class ObjectManage {
   cache
 
   // 事件对象
-  quickEvent = new QuickEvent()
+  event = new QuickEvent()
 
   data = {}
 
   // 监听选中项改变事件
-  onSet(callback) {
-    return this.quickEvent.on((data, type) => {
-      type !== 'no-cache' && callback(data, type)
-    })
+  onSet(callback, noCache, onLast) {
+    return this.event.on((data, type) => {
+      (noCache || type !== 'no-cache') && callback(data, type)
+    }, onLast)
   }
 
   // 替换数据
@@ -141,28 +124,45 @@ export class ObjectManage {
       this.data = data
     }
     this.cache?.set(this.data)
-    this.quickEvent.trigger(this.data, 'set')
+    this.event.trigger(this.data, 'set')
+  }
+
+  // 合并并设置数据
+  merge(data) {
+    if (typeof data === 'function') {
+      data = data(this.data)
+    }
+    this.set({
+      ...this.data,
+      ...data
+    })
   }
 
   // 清除数据
   clear() {
     this.data = {}
     this.execCallback()
-    this.quickEvent.trigger(this.data, 'clear')
+    this.event.trigger(this.data, 'clear')
     this.cache?.set(this.data)
   }
 
   // 使用数据
-  useData() {
+  useData(key) {
     const [data, setData] = useState(this.data)
 
     const { remove } = useMemo(() => {
-      return this.onSet(setData)
+      return this.onSet(res => {
+        setData(res)
+      })
     }, [])
 
     useEffect(() => {
       return () => remove()
     }, [remove])
+
+    if (key) {
+      return data[key]
+    }
 
     return data
   }

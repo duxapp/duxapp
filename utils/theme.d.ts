@@ -49,6 +49,13 @@ declare class Theme extends ObjectManage {
   setMode(mode: string | null): void
 
   /**
+   * 判断当前使用的后者传入的主题是否是暗黑模式
+   * 不传入mode参数则判断当前是否正在使用暗黑模式
+   * @param mode 传入模式的话判断传入的模式是不是暗黑模式
+   */
+  useIsDark(mode?: string | null): boolean
+
+  /**
    * 在某些情况下你直接调用主题，在切换主题的时候不会生效，就需要使用这个hook获取主题
    * @param app 指定使用哪个模块的主题
    */

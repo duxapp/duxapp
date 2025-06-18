@@ -1,7 +1,16 @@
 import { defineConfig } from '@tarojs/cli'
 import { resolve } from 'path'
 
+const scss = !['rn'].includes() ? {
+  sass: {
+    resource: [
+      resolve(__dirname, '..', '..', 'src/theme.scss')
+    ]
+  }
+} : {}
+
 export default defineConfig({
+  ...scss,
   mini: {
     webpackChain(chain) {
       rule(chain)

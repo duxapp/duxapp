@@ -1,5 +1,6 @@
-import { onThemeChange, getSystemInfoSync } from '@tarojs/taro'
+import { useMemo } from 'react'
 import { ObjectManage } from './data'
+import {themeUtil} from './rn/util'
 import { userConfig } from '../config/userConfig'
 
 const isObject = value => typeof value === 'object' && !Array.isArray(value)
@@ -26,9 +27,13 @@ class Theme extends ObjectManage {
   constructor() {
     super({
       cache: true,
-      cacheKey: 'duxapp-theme'
+      cacheKey: 'duxapp-theme',
+      cacheSync: true,
+      defaultData: {
+        mode: null
+      }
     })
-    const config = userConfig.option?.duxapp?.themeConfig || {}
+    const config = this.config = userConfig.option?.duxapp?.themeConfig || {}
     config.light ||= 'light'
     config.dark ||= 'dark'
     config.default ||= 'light'
@@ -40,12 +45,9 @@ class Theme extends ObjectManage {
       }
     }
     // 是否支持自动切换
-    const isAuto = config.themes[config.light] && config.themes[config.dark]
+    const isAuto = this.isAuto = config.themes[config.light] && config.themes[config.dark]
 
-    this.config = config
-    this.isAuto = isAuto
-
-    const switchMode = mode => {
+    const switchMode = this.switchMode = mode => {
       this.currentMode = mode
       const option = userConfig.option
       if (option) {
@@ -70,17 +72,21 @@ class Theme extends ObjectManage {
       }
     }
     if (this.isSetMode) {
-      this.quickEvent.on(data => {
+      this.onSet(data => {
         let mode = data?.mode
         if (!mode && isAuto) {
-          mode = config[getSystemInfoSync().theme]
+          mode = config[themeUtil.getTheme()]
         }
         if (!mode) {
           mode = config.default
         }
-        switchMode(mode)
-      })
-      isAuto && onThemeChange(res => {
+        if (!this.appThemes) {
+          this.waitAppThemes = mode
+        } else {
+          switchMode(mode)
+        }
+      }, true, true)
+      isAuto && themeUtil.onThemeChange(res => {
         if (!this.data.mode) {
           switchMode(config[res.theme])
           this.set({
@@ -92,14 +98,16 @@ class Theme extends ObjectManage {
     }
   }
 
-  data = {
-    mode: null
-  }
-
-  isSetMode = !['rn', 'harmony_cpp'].includes(process.env.TARO_ENV)
+  isSetMode = !['harmony_cpp'].includes(process.env.TARO_ENV)
 
   registerAppThemes(themes) {
     this.appThemes = themes
+    if (!this.isSetMode) {
+      this.switchMode(this.config.default)
+    } else if (this.waitAppThemes) {
+      this.switchMode(this.waitAppThemes)
+      this.waitAppThemes = null
+    }
   }
 
   useModes() {
@@ -130,6 +138,13 @@ class Theme extends ObjectManage {
     return this.currentMode
   }
 
+  useIsDark(mode = this.data.mode) {
+    if (!mode) {
+      return this.currentMode === this.config.dark
+    }
+    return mode === this.config.dark
+  }
+
   setMode(mode) {
     if (!this.isSetMode) {
       console.log('当前平台不支持切换主题')
@@ -141,7 +156,7 @@ class Theme extends ObjectManage {
     }
     if (!mode) {
       if (this.isAuto) {
-        this.currentMode = this.config[getSystemInfoSync().theme]
+        this.currentMode = this.config[themeUtil.getTheme()]
       } else {
         this.currentMode = this.config.default
       }
@@ -156,6 +171,9 @@ class Theme extends ObjectManage {
     this.useData()
     return app ? this.appThemes[app] : this.appThemes
   }
+
+  // fix 提供给RN端使用
+  useMemo = useMemo
 }
 
 export const theme = new Theme()

@@ -49,11 +49,6 @@ export default defineConfig(async (merge, ...args) => {
       },
     },
     alias: getAlias(),
-    sass: {
-      resource: [
-        path.resolve(__dirname, '..', 'src/theme.scss')
-      ],
-    },
     mini: {
       postcss: {
         pxtransform: {

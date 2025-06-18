@@ -1,8 +1,13 @@
 export class QuickEvent {
   callbacks = []
 
-  on = callback => {
+  lastEvent
+
+  on = (callback, onLast) => {
     this.callbacks.push(callback)
+    if (this.lastEvent && onLast) {
+      callback(...this.lastEvent)
+    }
     return {
       remove: () => {
         const index = this.callbacks.indexOf(callback)
@@ -15,5 +20,6 @@ export class QuickEvent {
 
   trigger = (...arg) => {
     [...this.callbacks].forEach(callback => callback(...arg))
+    this.lastEvent = [...arg]
   }
 }

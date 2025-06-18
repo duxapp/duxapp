@@ -23,7 +23,8 @@ class PageBackData {
     })
   }
 
-  resolve(res) {
+  // 需要保持箭头函数
+  resolve = res => {
     if (this.callback) {
       this.callback[0]?.(res)
       this.callback = null

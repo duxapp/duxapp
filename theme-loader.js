@@ -3,7 +3,7 @@ const { readFileSync, existsSync } = require('fs')
 const { resolve } = require('path')
 
 module.exports = (() => {
-  if (['rn', 'harmony_cpp'].includes(process.env.TARO_ENV)) {
+  if (['harmony_cpp'].includes(process.env.TARO_ENV)) {
     return v => v
   }
   const duxapp = resolve(process.cwd(), 'dist/duxapp.json')
@@ -12,31 +12,30 @@ module.exports = (() => {
     return v => v
   }
   function replaceScssVars(content, varNames) {
-    const targetVars = new Set(varNames);
+    const targetVars = new Set(varNames)
 
     // 修正后的驼峰转短横线函数，正确处理连续大写
     const toKebabCase = (str) =>
       str
         .replace(/([A-Z]+)([A-Z][a-z])/g, '$1-$2')  // 处理连续大写后跟大写+小写
         .replace(/([a-z])([A-Z])/g, '$1-$2')  // 处理普通驼峰
-        .toLowerCase();
+        .toLowerCase()
 
     // 匹配变量引用（排除定义行和插值语法）
     return content.replace(/([^:\$])\$([a-zA-Z0-9_-]+)/g, (match, prefix, varName) => {
       // 排除 &:hover 等特殊情况
-      if (prefix === '&') return match;
+      if (prefix === '&') return match
 
       // 只替换目标变量
       return targetVars.has(varName)
         ? `${prefix}var(--${toKebabCase(varName)})`
-        : match;
-    });
+        : match
+    })
   }
 
   try {
     const names = JSON.parse(readFileSync(duxapp))?.themeVarNames
     return source => {
-      // console.log('文件内容', replaceScssVars(source, names))
       return replaceScssVars(source, names)
     }
   } catch (error) {

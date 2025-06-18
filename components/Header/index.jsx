@@ -1,4 +1,4 @@
-import { useMemo, createContext, useContext as useReactContext, useEffect } from 'react'
+import { useMemo, createContext, useContext as useReactContext, useEffect, useRef } from 'react'
 import { useDidShow, setNavigationBarTitle, getMenuButtonBoundingClientRect, setNavigationBarColor } from '@tarojs/taro'
 import { View, Image, Text } from '@tarojs/components'
 import { getContrastYIQ, route, pages as routePages, px, getWindowInfo } from '@/duxapp/utils'
@@ -36,6 +36,8 @@ export const Header = ({
 
   const { path } = route.useRoute()
 
+  const { pages, paths } = useMemo(() => route.getPathPosition(Object.keys(routePages)[0]), [])
+
   /**
    * 收集当前页面配置
    */
@@ -53,6 +55,7 @@ export const Header = ({
   }, [])
 
   const option = useMemo(() => {
+
     const rn = process.env.TARO_ENV === 'rn'
     const h5 = process.env.TARO_ENV === 'h5'
     const harmony = process.env.TARO_ENV === 'harmony_cpp'
@@ -73,8 +76,6 @@ export const Header = ({
 
     const current = routePages[path]
 
-    const { pages, paths } = route.getPathPosition(Object.keys(routePages)[0])
-
     // 是否显示header
     const showHeader = rn || isPlatformMini || harmony
       || (getPlatform() === 'wechat' && theme.header.showWechat)
@@ -86,7 +87,6 @@ export const Header = ({
     const showHeight = headerHeight + (showStatus ? 0 : statusBarHeight)
 
     return {
-      onBackClick,
       headerHeight,
       statusBarHeight,
       isBack: pages.length > 1,
@@ -102,7 +102,7 @@ export const Header = ({
       showHeight
     }
 
-  }, [color, onBackClick, path, renderHeader, renderMain, showStatus, style?.backgroundColor])
+  }, [color, pages.length, path, paths, renderHeader, renderMain, showStatus, style?.backgroundColor])
 
   useEffect(() => {
     // 设置状态栏颜色
@@ -118,7 +118,7 @@ export const Header = ({
     }, 100)
   }, [color])
 
-  return <headerContext.Provider value={option}>
+  return <headerContext.Provider value={{ ...option, onBackClick }}>
     {
       option.showHeader ? <>
         {!show && showStatus && <View
