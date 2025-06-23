@@ -61,8 +61,9 @@ export class TopView extends Component<TopViewProps> {
 
   /**
    * 用高阶组件的形式包装页面
-   * @param WrappedComponent 页面组件
+   * 这样使用的用途是可以将整个页面放在一个context下，让部分有此需求的hook生效，例如微信的分享hook
+   * @param Page 页面组件
    * @param props 传递给TopView组件的属性
    */
-  static HOC(WrappedComponent: ComponentType<any> | ReactElement, props?: TopViewProps): ComponentType<any>
+  static page(Page: ComponentType<any> | ReactElement, props?: TopViewProps): ComponentType<any>
 }

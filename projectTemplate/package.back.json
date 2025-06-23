@@ -72,7 +72,7 @@
     "@types/react": "^18.3.12",
     "@types/webpack-env": "^1.18.5",
     "babel-preset-taro": "4.1.1",
-    "duxapp-cli": "~2.5.1",
+    "duxapp-cli": "~2.5.5",
     "eslint": "^9.14.0",
     "eslint-config-taro": "4.1.1",
     "eslint-plugin-import": "^2.31.0",

@@ -696,7 +696,9 @@ export const currentPage = () => {
   } else {
     const _pages = getCurrentPages()
     const current = _pages[_pages.length - 1]
-    path = current.path || current.route
+    if (current) {
+      path = current.path || current.route
+    }
   }
   if (path.startsWith('/')) {
     return path.slice(1)

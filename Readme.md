@@ -17,7 +17,7 @@
 
 使用命令创建项目
 ```bash
-npx duxapp-cli create projectName
+npx duxapp-cli create <projectName>
 ```
 
 projectName 是项目名称，项目初始化后将会自动安装依赖，安装完成就可以打开项目进行开发了，命令执行过程中，你可以选择你需要的模板，当前提供了以下模板选择

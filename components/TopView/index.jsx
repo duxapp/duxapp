@@ -120,7 +120,12 @@ export class TopView extends Component {
     }
   }
 
-  static HOC = (Page, props) => {
+  static HOC = (...args) => {
+    console.warn('即将被弃用:TopView.HOC()，修改为：TopView.page()')
+    return this.page(...args)
+  }
+
+  static page = (Page, props) => {
     const TopViewPage = () => {
       return <TopView {...props}>
         {Page}

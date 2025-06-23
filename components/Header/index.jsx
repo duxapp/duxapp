@@ -1,4 +1,4 @@
-import { useMemo, createContext, useContext as useReactContext, useEffect, useRef } from 'react'
+import { useMemo, createContext, useContext as useReactContext, useEffect } from 'react'
 import { useDidShow, setNavigationBarTitle, getMenuButtonBoundingClientRect, setNavigationBarColor } from '@tarojs/taro'
 import { View, Image, Text } from '@tarojs/components'
 import { getContrastYIQ, route, pages as routePages, px, getWindowInfo } from '@/duxapp/utils'
@@ -18,11 +18,13 @@ const headerContext = createContext({})
 const useContext = () => useReactContext(headerContext)
 
 export const Header = ({
-  color = theme.header.textColor, // 文字及返回按钮颜色 默认自动处理
+  color, // 文字及返回按钮颜色 默认自动处理
   title, // 标题
   navTitle = title, // h5端页面标题
   absolute = false, // 是否使用绝对定位，不占位置
   show = true, // 是否显示配合absolute使用，直接使用则会直接出现
+  transparent,
+  bgColor,
   style,
   renderMain = false, // 是否替换头部中间部分
   renderHeader, // 是否替换头部整个头部
@@ -33,6 +35,12 @@ export const Header = ({
   onBackClick, // 如果存在点击事件 则点击按钮时不会触发返回操作
   ...props
 }) => {
+
+  // 兼容旧的主题字段
+  const isOld = theme.header.textColor
+  if (typeof color === 'undefined') {
+    color = theme.header[isOld ? 'textColor' : 'color']
+  }
 
   const { path } = route.useRoute()
 
@@ -54,55 +62,52 @@ export const Header = ({
     }
   }, [])
 
-  const option = useMemo(() => {
+  // 计算属性
+  const rn = process.env.TARO_ENV === 'rn'
+  const h5 = process.env.TARO_ENV === 'h5'
+  const harmony = process.env.TARO_ENV === 'harmony_cpp'
 
-    const rn = process.env.TARO_ENV === 'rn'
-    const h5 = process.env.TARO_ENV === 'h5'
-    const harmony = process.env.TARO_ENV === 'harmony_cpp'
-
-    let headerHeight = pxNum(88)
-    // 小程序胶囊按钮宽度
-    let jiaonangWidth = 0
-    // 获取胶囊信息
-    const statusBarHeight = h5 ? 0 : (getWindowInfo().statusBarHeight || 0)
-    if (isPlatformMini) {
-      const { width, height, top } = getMenuButtonBoundingClientRect() || {}
-      if (width && top) {
-        jiaonangWidth = width + 10
-        // 动态计算header高度，让header文本和胶囊完全居中
-        headerHeight = height + (top - statusBarHeight) * 2
-      }
+  let headerHeight = pxNum(88)
+  // 小程序胶囊按钮宽度
+  let jiaonangWidth = 0
+  // 获取胶囊信息
+  const statusBarHeight = h5 ? 0 : (getWindowInfo().statusBarHeight || 0)
+  if (isPlatformMini) {
+    const { width, height, top } = getMenuButtonBoundingClientRect() || {}
+    if (width && top) {
+      jiaonangWidth = width + 10
+      // 动态计算header高度，让header文本和胶囊完全居中
+      headerHeight = height + (top - statusBarHeight) * 2
     }
+  }
 
-    const current = routePages[path]
+  const current = routePages[path]
 
-    // 是否显示header
-    const showHeader = rn || isPlatformMini || harmony
-      || (getPlatform() === 'wechat' && theme.header.showWechat)
-      || (getPlatform() === 'wap' && theme.header.showWap)
-      || !!renderMain || !!renderHeader
+  // 是否显示header
+  const showHeader = rn || isPlatformMini || harmony
+    || (getPlatform() === 'wechat' && theme.header.showWechat)
+    || (getPlatform() === 'wap' && theme.header.showWap)
+    || !!renderMain || !!renderHeader
 
-    const bgColor = style?.backgroundColor || theme.header.color
+  const bgc = bgColor || (transparent ? 'transparent' : (style?.backgroundColor || theme.header[isOld ? 'color' : 'bgColor'] || '#fff'))
 
-    const showHeight = headerHeight + (showStatus ? 0 : statusBarHeight)
+  const showHeight = headerHeight + (showStatus ? 0 : statusBarHeight)
 
-    return {
-      headerHeight,
-      statusBarHeight,
-      isBack: pages.length > 1,
-      isBackHome: paths[0] === undefined && !current?.home,
-      jiaonangWidth,
-      rn,
-      harmony,
-      h5,
-      weapp: isPlatformMini,
-      showHeader,
-      bgColor,
-      color,
-      showHeight
-    }
-
-  }, [color, pages.length, path, paths, renderHeader, renderMain, showStatus, style?.backgroundColor])
+  const option = {
+    headerHeight,
+    statusBarHeight,
+    isBack: pages.length > 1,
+    isBackHome: paths[0] === undefined && !current?.home,
+    jiaonangWidth,
+    rn,
+    harmony,
+    h5,
+    weapp: isPlatformMini,
+    showHeader,
+    bgColor: bgc,
+    color,
+    showHeight
+  }
 
   useEffect(() => {
     // 设置状态栏颜色

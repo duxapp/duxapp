@@ -11,6 +11,15 @@ interface HeaderProps extends ViewProps {
    */
   color?: string,
   /**
+   * 是否透明 优先级高于style.backgroundColor
+   * @default false
+   */
+  transparent?: boolean,
+  /**
+   * 指定背景颜色
+   */
+  bgColor?: string,
+  /**
    * 将header设置为绝对定位
    * @default false
    */

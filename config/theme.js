@@ -1,12 +1,6 @@
 /**
  * 默认主题配置
  */
-import { px } from '../utils'
-
-const getConfig = {
-  radiusValue: 16,
-  radiusPxValue: null
-}
 
 export default {
   // General
@@ -41,25 +35,11 @@ export default {
   textSize6: 34,
   textSize7: 36,
 
-  // 公共配置
-  common: {
-    get radius() {
-      if (!getConfig.radiusPxValue) {
-        getConfig.radiusPxValue = px(getConfig.radiusValue)
-      }
-      return getConfig.radiusPxValue
-    },
-    set radius(value) {
-      getConfig.radiusValue = value
-    },
-    get radiusValue() {
-      return getConfig.radiusValue
-    }
-  },
+  radius: 16,
 
   header: {
-    color: '#fff', // 仅支持rgb hex值，请勿使用纯单词 设置为数组将显示一个渐变按钮
-    textColor: '#000', // 文本颜色
+    color: '#000', // 仅支持rgb hex值，请勿使用纯单词 设置为数组将显示一个渐变按钮
+    bgColor: undefined,
     showWechat: false, // 微信公众号是否显示header
     showWap: true, // h5是否显示header
   },

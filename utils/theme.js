@@ -1,7 +1,8 @@
 import { useMemo } from 'react'
 import { ObjectManage } from './data'
-import {themeUtil} from './rn/util'
+import { themeUtil } from './rn/util'
 import { userConfig } from '../config/userConfig'
+import { deepCopy } from './object'
 
 const isObject = value => typeof value === 'object' && !Array.isArray(value)
 
@@ -63,10 +64,15 @@ class Theme extends ObjectManage {
           const defaultTheme = themes[config.default]
           const theme = themes[mode]
 
-
-          if (theme && this.appThemes[app]) {
-            setAppTheme(defaultTheme, this.appThemes[app])
-            mode !== config.default && setAppTheme(theme, this.appThemes[app])
+          const appTheme = this.appThemes[app]
+          if (theme && appTheme) {
+            if (this.copyThemes[app]) {
+              setAppTheme(this.copyThemes[app], appTheme)
+            } else {
+              this.copyThemes[app] = deepCopy(appTheme)
+            }
+            setAppTheme(defaultTheme, appTheme)
+            mode !== config.default && setAppTheme(theme, appTheme)
           }
         })
       }
@@ -99,6 +105,9 @@ class Theme extends ObjectManage {
   }
 
   isSetMode = !['harmony_cpp'].includes(process.env.TARO_ENV)
+
+  // 将系统默认主题配置深度拷贝一份的备份，用于保存一些默认配置
+  copyThemes = {}
 
   registerAppThemes(themes) {
     this.appThemes = themes

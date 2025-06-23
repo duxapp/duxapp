@@ -1,6 +1,6 @@
 import { getWindowInfo, onWindowResize } from '@tarojs/taro'
 import { PageMeta } from '@tarojs/components'
-import { ObjectManage, userConfig } from '@/duxapp/utils'
+import { ObjectManage, duxappTheme } from '@/duxapp/utils'
 
 const WeappRemComp = ({ config }) => {
 
@@ -10,7 +10,7 @@ const WeappRemComp = ({ config }) => {
 }
 
 export const WeappRem = () => {
-  const rem = userConfig.option?.duxapp?.theme?.topView?.weappRem
+  const rem = duxappTheme.topView?.weappRem
   if (process.env.TARO_ENV === 'weapp' && rem) {
     return <WeappRemComp config={rem} />
   }

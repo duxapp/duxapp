@@ -2,7 +2,7 @@ import { View, Text } from '@tarojs/components'
 import { Header, ScrollView, TopView } from '@/duxapp'
 import './index.scss'
 
-export default TopView.HOC(function Duxapp() {
+export default TopView.page(function Duxapp() {
 
   return <>
     <Header title='duxapp' titleCenter />

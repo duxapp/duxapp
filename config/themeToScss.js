@@ -36,10 +36,9 @@ $duxappTextSize4: 30px;
 $duxappTextSize5: 32px;
 $duxappTextSize6: 34px;
 $duxappTextSize7: 36px;
+
+$duxappRadius: 16px;
 `],
-  common: [`
-// 公共属性
-$duxappCommonRadius: 16px;`],
   header: [`
 // Header组件
 $duxappHeaderColor: #fff;
@@ -57,12 +56,6 @@ export default theme => {
       )
     } else {
       switch (key) {
-        case 'common': {
-          if (value.redius) {
-            scssData.common.push(`$duxappCommonRedius: ${value}px;`)
-          }
-          break
-        }
         case 'header': {
           if (value.color) {
             scssData.header.push(`$duxappHeaderColor: ${value.color};`)
