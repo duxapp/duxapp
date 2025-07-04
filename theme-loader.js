@@ -14,6 +14,11 @@ module.exports = (() => {
   function replaceScssVars(content, varNames) {
     const targetVars = new Set(varNames)
 
+    // 过滤主题文件
+    if (content.includes('$duxappPrimaryColor: #337ab7;')) {
+      return content
+    }
+
     // 修正后的驼峰转短横线函数，正确处理连续大写
     const toKebabCase = (str) =>
       str

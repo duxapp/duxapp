@@ -89,7 +89,7 @@ interface Route {
    * @param num 需要关闭的页面数量，默认为1，如果传入 'home' 可以强制返回路由中指定的首页
    * @param data 需要传递给上一个页面的参数，配合页面跳转使用
    */
-  back: (num?: string | 'home', data?: AnyObject) => Promise<{}>
+  back: (num?: number | 'home', data?: AnyObject) => Promise<{}>
 
   /**
    * 重启程序

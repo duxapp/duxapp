@@ -205,10 +205,15 @@ export const HeaderBack = ({
   return (option.isBack || option.isBackHome || show) && <View
     className='Header__nav__left'
     style={option.weapp ? { width: px(80) } : {}}
-    onClick={() => {
+    onClick={async () => {
       if (option.onBackClick) {
-        option.onBackClick()
-        return
+        let res = option.onBackClick(option)
+        if (res instanceof Promise) {
+          res = await res
+        }
+        if (res !== true) {
+          return
+        }
       }
       option.isBack ? route.nav('back:') : option.isBackHome ? route.nav('back:home') : ''
     }}

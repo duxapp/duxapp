@@ -61,6 +61,18 @@ export declare class ObjectManage<T = any> {
   event: QuickEvent
 
   /**
+   * 获取当前唯一实例
+   * 使用这个方法，就不需要 new 一个对象导出
+   * 可以用作优化：在使用时才读取缓存，会在第一次调用 getInstance() 方法的时候初始化对象实例
+   * @example
+   * XX 是你自己创建的类
+   * XX.getInstance().getDataAsync().then(data => {}) // 异步获取数据，因为获取本地缓存是异步的，所以需要使用异步获取，而不是直接读取data
+   * const data = XX.getInstance().useData() // hook中调用数据
+   * XX.getInstance().merge({ test: 1 }) // 合并数据
+   */
+  static getInstance<T extends ObjectManage>(): T
+
+  /**
    * 监听数据变化
    * @param callback 如果cacheSync为true，在小程序端或者H5端这个函数可能会被同步执行(type 为 cache 或者 no-cache 时是同步的)
    * @param noCache 传入 true 才会返回 no-cache 类型
@@ -80,6 +92,9 @@ export declare class ObjectManage<T = any> {
 
   /** 清除数据 */
   clear(): void
+
+  /** 异步获取data数据，主要用于在缓存还未读取之前调用的话，确保返回缓存data */
+  getDataAsync?: () => Promise<T>
 
   /**
    * React Hook：组件中使用数据

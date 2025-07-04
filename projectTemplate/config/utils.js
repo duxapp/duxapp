@@ -11,11 +11,18 @@ const appRoot = path.join(__dirname, '..')
 export const getAlias = () => Object.fromEntries(
   fs
     .readdirSync(path.join(appRoot, 'src'))
-    .filter(file => {
-      const stat = fs.lstatSync(path.join(appRoot, 'src', file))
+    .filter(app => {
+      const stat = fs.lstatSync(path.join(appRoot, 'src', app))
       return stat.isDirectory()
     })
-    .map(file => ['@/' + file, path.join(appRoot, 'src', file)])
+    .map(app => {
+      let realApp = app
+      const config = JSON.parse(fs.readFileSync(path.join(appRoot, 'src', app, 'app.json')))
+      if (config.deprecated?.alias) {
+        realApp = config.deprecated.alias
+      }
+      return ['@/' + app, path.join(appRoot, 'src', realApp)]
+    })
 )
 
 const parseConfig = async (configs, config, ...args) => {

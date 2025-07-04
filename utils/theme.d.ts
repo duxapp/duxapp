@@ -53,6 +53,13 @@ declare class Theme extends ObjectManage {
    * 不传入mode参数则判断当前是否正在使用暗黑模式
    * @param mode 传入模式的话判断传入的模式是不是暗黑模式
    */
+  isDark(mode?: string | null): boolean
+
+  /**
+   * 判断当前使用的后者传入的主题是否是暗黑模式
+   * 不传入mode参数则判断当前是否正在使用暗黑模式
+   * @param mode 传入模式的话判断传入的模式是不是暗黑模式
+   */
   useIsDark(mode?: string | null): boolean
 
   /**

@@ -61,3 +61,19 @@ export const transformStyle = (obj: {
  * 判断是不是各种小程序
  */
 export const isPlatformMini: boolean
+
+/**
+ * 增强版节流函数
+ * @template T 被包装函数的类型
+ * @param fn 需要节流的函数
+ * @param delay 节流时间间隔(毫秒)
+ * @param immediate 是否立即执行第一次调用 (默认为 true)
+ * @returns 节流后的函数
+ */
+export function throttle<T extends (...args: any[]) => any>(
+  fn: T,
+  delay: number,
+  immediate?: boolean
+): {
+  (...args: Parameters<T>): ReturnType<T> | void
+}

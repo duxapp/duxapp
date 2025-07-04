@@ -147,11 +147,16 @@ class Theme extends ObjectManage {
     return this.currentMode
   }
 
-  useIsDark(mode = this.data.mode) {
+  isDark(mode = this.data.mode) {
     if (!mode) {
       return this.currentMode === this.config.dark
     }
     return mode === this.config.dark
+  }
+
+  useIsDark(mode) {
+    this.useData()
+    return this.isDark(mode)
   }
 
   setMode(mode) {

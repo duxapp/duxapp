@@ -17,7 +17,7 @@ let systemInfo
 export const isIphoneX = () => {
   systemInfo = systemInfo || getDeviceInfo()
   if (process.env.TARO_ENV === 'rn') {
-    Platform.OS !== 'android' && systemInfo.safeArea?.bottom < systemInfo.screenHeight
+    return Platform.OS !== 'android' && systemInfo.safeArea?.bottom < systemInfo.screenHeight
   } else {
     const phoneMarks = ['iPhone X', 'iPhone 11', 'iPhone 12', 'iPhone 13', 'iPhone 14', 'iPhone 15', 'iPhone 16', 'iPhone 17', 'iPhone 18']
     const { model = '' } = systemInfo
@@ -93,3 +93,54 @@ export const transformStyle = obj => {
 }
 
 export const isPlatformMini = process.env.TARO_PLATFORM === 'mini'
+
+/**
+ * 增强版节流函数
+ * @param {Function} fn 需要节流的函数
+ * @param {number} delay 节流时间间隔(毫秒)
+ * @param {boolean} [immediate=true] 是否立即执行第一次调用
+ * @return {Function} 节流后的函数
+ */
+export const throttle = (fn, delay, immediate = true) => {
+  let lastExecTime = 0
+  let timer = null
+  let pendingArgs = null
+  let context = null
+
+  const execute = () => {
+    lastExecTime = Date.now()
+    fn.apply(context, pendingArgs)
+    timer = null
+    pendingArgs = null
+    context = null
+  }
+
+  return function (...args) {
+    const now = Date.now()
+    const elapsed = now - lastExecTime
+
+    context = this
+    pendingArgs = args
+
+    // 清除之前的延迟执行
+    if (timer) {
+      clearTimeout(timer)
+      timer = null
+    }
+
+    // 如果是第一次调用且设置立即执行
+    if (immediate && lastExecTime === 0) {
+      execute()
+      return
+    }
+
+    // 如果距离上次执行已超过delay，立即执行
+    if (elapsed > delay) {
+      execute()
+    }
+    // 否则设置延迟执行(保证最后一次调用会被执行)
+    else {
+      timer = setTimeout(execute, delay - elapsed)
+    }
+  }
+}

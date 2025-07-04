@@ -51,9 +51,13 @@ interface HeaderProps extends ViewProps {
   /**
    * 左侧按钮点击事件 点击左侧按钮时
    * 如果存在点击事件 则点击按钮时不会触发返回操作
+   * 返回 true 使用默认操作，返回其他值不执行默认操作
    * @returns
    */
-  onBackClick?: () => void
+  onBackClick?: (option: {
+    isBack: boolean
+    isBackHome: boolean
+  }) => boolean | Promise<boolean>
 }
 
 interface HeaderBackProps {

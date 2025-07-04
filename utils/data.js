@@ -97,6 +97,7 @@ export class ObjectManage {
         } else {
           this.event.trigger(this.data, 'no-cache')
         }
+        this.cacheStatus = true
       }, true)
     }
   }
@@ -108,6 +109,25 @@ export class ObjectManage {
   event = new QuickEvent()
 
   data = {}
+
+  static getInstance() {
+    if (!this.instance) {
+      this.instance = new this()
+    }
+    return this.instance
+  }
+
+  async getDataAsync() {
+    if (!this.cache || this.cacheStatus) {
+      return this.data
+    }
+    return new Promise(resolve => {
+      const { remove } = this.cache.event.on(() => {
+        remove()
+        resolve(this.data)
+      })
+    })
+  }
 
   // 监听选中项改变事件
   onSet(callback, noCache, onLast) {
@@ -141,7 +161,6 @@ export class ObjectManage {
   // 清除数据
   clear() {
     this.data = {}
-    this.execCallback()
     this.event.trigger(this.data, 'clear')
     this.cache?.set(this.data)
   }
