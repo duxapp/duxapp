@@ -171,11 +171,19 @@ const getMedia = async (type, {
         })
       })
     } else {
-      return chooseImage({
+      return chooseMedia({
         count,
+        mediaType: ['image'],
         sourceType,
         sizeType
-      }).then(res => res.tempFiles)
+      }).then(res => {
+        return res.tempFiles.map(item => {
+          return {
+            path: item.tempFilePath,
+            size: item.size
+          }
+        })
+      })
     }
   }
 }

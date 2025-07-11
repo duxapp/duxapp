@@ -313,6 +313,8 @@ declare namespace Upload {
       header: object,
       method: keyof Request.method,
       timeout: number
+      filePath: string
+      name: string
     }, params: Request.RequestOption) => object | Promise<object>): void
     result(callback: (result: object[], params: Request.RequestOption) => object[] | Promise<object[]>): void
     error(callback: (error: {

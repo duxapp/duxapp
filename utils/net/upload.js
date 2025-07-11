@@ -134,7 +134,9 @@ const uploadTempFile = (files, option = {}) => {
   const uploadPromise = new Promise((resolve, reject) => {
     // 让这里的代码在后面执行
     setTimeout(async () => {
-      let requestParams = {
+
+      // 默认参数
+      const requestParams = {
         url: getUrl(option.api || uploadConfig.api, {}, option),
         timeout: option.timeout
       }
@@ -144,23 +146,37 @@ const uploadTempFile = (files, option = {}) => {
         ...option.header
       }
 
-      if (option.middle?.before?.length) {
-        try {
-          requestParams = await execMiddle(option.middle.before, requestParams, option)
-        } catch (error) {
-
-        }
-      }
+      // 收集参数
+      const uploadParams = []
       for (let i = 0; i < files.length; i++) {
         const file = files[i]
         allSize.push([file.size || 0, 0])
 
-        const params = {
+        let params = {
           ...requestParams,
           filePath: file.path,
           name: option.requestField || uploadConfig.requestField,
           withCredentials: false
         }
+        if (option.middle?.before?.length) {
+          try {
+            params = await execMiddle(option.middle.before, params, option)
+            uploadParams.push(params)
+          } catch (error) {
+            reject(error)
+            return
+          }
+        }
+      }
+
+
+      if (uploadParams.length === 0) {
+        reject({ message: '未选择图片', code: resultConfig.errorCode })
+        return
+      }
+
+      // 开始上传
+      uploadParams.forEach((params, i) => {
         const uploadFileRes = uploadFile(params)
         uploadFileRes.progress?.(e => {
           progress(i, e.totalBytesSent)
@@ -185,10 +201,7 @@ const uploadTempFile = (files, option = {}) => {
             }
           }))
         }
-      }
-      if (allUpload.length === 0) {
-        throw { message: '未选择图片', code: resultConfig.errorCode }
-      }
+      })
       startFunc?.()
       Promise.all(allUpload).then(async res => {
         if (option.middle.result?.length) {
