@@ -1,12 +1,13 @@
-import { useCallback, useRef } from 'react'
+import { useRef } from 'react'
 import { View, Text } from '@tarojs/components'
+import classNames from 'classnames'
 import { TopView } from '../TopView'
 import { PullView } from '../PullView'
 import './index.scss'
 
 export const ActionSheet = /*@__PURE__*/ (() => {
   const ActionSheet_ = ({
-    title = '请选择',
+    title,
     list,
     onSelect,
     onClose
@@ -14,39 +15,39 @@ export const ActionSheet = /*@__PURE__*/ (() => {
 
     const pullView = useRef()
 
-    const itemClick = useCallback((item, index) => {
-      setTimeout(() => {
-        onSelect?.({
-          item,
-          index
-        })
-      }, 200)
-      pullView.current.close()
-    }, [onSelect])
-
-    const close = useCallback(() => {
-      onClose?.()
-    }, [onClose])
+    const itemClick = async (item, index) => {
+      await pullView.current.close(false)
+      onSelect({
+        item,
+        index
+      })
+    }
 
     return <>
-      <PullView onClose={close} ref={pullView}>
-        <View className='rt-3 bg-white'>
-          <View className='ActionSheet__title'>{title}</View>
+      <PullView onClose={onClose} ref={pullView}>
+        <View className='ActionSheet'>
+          {!!title && <View className='ActionSheet__title'>{title}</View>}
           {
-            list?.map((item, index) => <View key={item}
-              className='ActionSheet__item'
-              onClick={itemClick.bind(null, item, index)}
+            list?.map((item, index) => <View key={index}
+              className={classNames('ActionSheet__item', !index && 'ActionSheet__item--line')}
+              onClick={() => itemClick(item, index)}
             >
               <Text className='ActionSheet__item__text'>{item}</Text>
             </View>)
           }
+          <View
+            className='ActionSheet__item ActionSheet__item--cancel'
+            onClick={() => pullView.current.close()}
+          >
+            <Text className='ActionSheet__item__text'>取消</Text>
+          </View>
         </View>
       </PullView>
     </>
   }
 
   ActionSheet_.show = ({
-    title = '提示',
+    title,
     list = [],
   } = {}) => {
     return new Promise((resolve, reject) => {

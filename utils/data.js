@@ -92,7 +92,10 @@ export class ObjectManage {
       })
       this.cache.event.on((status, data) => {
         if (status && data) {
-          this.data = data
+          this.data = {
+            ...this.data,
+            ...data
+          }
           this.event.trigger(this.data, 'cache')
         } else {
           this.event.trigger(this.data, 'no-cache')

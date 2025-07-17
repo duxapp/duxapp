@@ -1,4 +1,4 @@
-import React, { Component, cloneElement, memo, useCallback, createContext, useContext } from 'react'
+import React, { Component, cloneElement, memo, useCallback, createContext, useContext, isValidElement, Children } from 'react'
 import { getCurrentInstance } from '@tarojs/taro'
 import { View } from '@tarojs/components'
 import classNames from 'classnames'
@@ -254,12 +254,17 @@ class CreateEle extends Component {
 const Container = ({ index = 0, children }) => {
   const item = TopView.containers[index]
   if (!item) {
-    const Page = children.props.children
-    // 如果传入的页面是一个未初始化的组件则执行这个组件
-    if (typeof Page === 'function') {
-      return cloneElement(children, {}, <Page />)
-    }
-    return children
+    // 执行到最后，执行默认children
+    return Children.map(children, child => {
+      if (child.type === KeyboardAvoiding) {
+        const Page = child.props.children
+        // 如果传入的页面是一个未初始化的组件则执行这个组件
+        if (typeof Page === 'function') {
+          return cloneElement(child, {}, <Page />)
+        }
+      }
+      return child
+    })
   }
   const Item = item.component
   return <Item {...item.props}>
@@ -286,11 +291,11 @@ const TopViewFunc = ({ pageKey, children, isSafe, isForm, className, ...props })
     >
       <Status barStyle='dark-content' />
       <Container>
-        <KeyboardAvoiding isForm={isForm}>
+        <KeyboardAvoiding enabled={!!isForm}>
           {children}
         </KeyboardAvoiding>
+        <CreateEle page={pageKey} />
       </Container>
-      <CreateEle page={pageKey} />
     </View>
   </>
 }

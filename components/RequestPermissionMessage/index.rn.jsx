@@ -23,14 +23,12 @@ export const requestPermissionMessage = async (type, msg) => {
           msg
         }
       ])
-      await asyncTimeOut(100)
-      setTimeout(async () => {
-        if (await check()) {
-          setTimeout(remove, 3000)
-        } else {
-          remove()
-        }
-      }, 200)
+      await asyncTimeOut(300)
+      if (await check()) {
+        setTimeout(remove, 4000)
+      } else {
+        remove()
+      }
     }
   }
 }

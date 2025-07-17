@@ -13,6 +13,8 @@ import { deepCopy } from '../object'
 import { asyncTimeOut, getPlatform } from '../util'
 import { duxappHook } from '../RenderHook'
 
+import alias from '../../../../dist/duxapp-alias-map.json'
+
 class PageBackData {
 
   callback = null
@@ -331,7 +333,8 @@ class Route {
     const [type, page] = urls
 
     let [path, query] = page.split('?')
-    // 可以在url上携带携带参数的跳转
+
+    // 可以在url上携带参数的跳转
     if (query) {
       option.params = {
         ...qs.parse(query),
@@ -452,6 +455,36 @@ class Route {
         console.warn('当前平台不支持启动小程序')
       }
       return false
+    }
+
+    // 支持路由别名跳转
+    if (alias[path]) {
+      path = alias[path]
+    }
+
+    // 支持相对路径
+    if (path.startsWith('./') || path.startsWith('../')) {
+      const currentParts = currentPage().split('/')
+      const pathParts = path.split('/').filter(part => part !== '' && part !== '.')
+
+      let backLevels = 0
+      for (const part of pathParts) {
+        if (part === '..') {
+          backLevels++
+        } else {
+          break
+        }
+      }
+
+      // 确保不会退到根目录以上
+      if (backLevels > currentParts.length) {
+        backLevels = currentParts.length
+      }
+
+      // 构建新路径
+      const newParts = currentParts.slice(0, currentParts.length - backLevels - 1)
+      const remainingParts = pathParts.slice(backLevels)
+      path = '/' + [...newParts, ...remainingParts].join('/')
     }
 
     // 删除路由上的第一个/

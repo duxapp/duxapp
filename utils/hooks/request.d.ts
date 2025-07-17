@@ -42,6 +42,10 @@ declare namespace RequestHooks {
      */
     loading: boolean
     /**
+     * 请求错误信息
+     */
+    error?: any
+    /**
      * 重新加载数据
      * @returns
      */

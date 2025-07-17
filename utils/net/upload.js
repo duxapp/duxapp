@@ -42,15 +42,11 @@ const uploadFile = process.env.TARO_ENV === 'rn'
         // 请求成功
         xhr.onload = () => {
           clearTimeout(timer)
-          if (xhr.status === 200) {
-            resolve({
-              data: xhr.response,
-              errMsg: 'ok',
-              statusCode: 200
-            })
-          } else {
-            reject({ errMsg: 'uploadFile fail: ' + xhr.responseText })
-          }
+          resolve({
+            data: xhr.response,
+            errMsg: 'ok',
+            statusCode: xhr.status
+          })
         }
         // 请求失败
         xhr.onerror = e => {
@@ -150,10 +146,10 @@ const uploadTempFile = (files, option = {}) => {
       const uploadParams = []
       for (let i = 0; i < files.length; i++) {
         const file = files[i]
-        allSize.push([file.size || 0, 0])
 
         let params = {
           ...requestParams,
+          file,
           filePath: file.path,
           name: option.requestField || uploadConfig.requestField,
           withCredentials: false
@@ -167,8 +163,8 @@ const uploadTempFile = (files, option = {}) => {
             return
           }
         }
+        allSize.push([file.size || 0, 0])
       }
-
 
       if (uploadParams.length === 0) {
         reject({ message: '未选择图片', code: resultConfig.errorCode })
@@ -206,7 +202,7 @@ const uploadTempFile = (files, option = {}) => {
       Promise.all(allUpload).then(async res => {
         if (option.middle.result?.length) {
           try {
-            res = await execMiddle(option.middle.result, res)
+            res = await execMiddle(option.middle.result, res, uploadParams)
             resolve(res)
           } catch (error) {
             reject(error)

@@ -1,6 +1,10 @@
 import { ComponentType } from 'react'
 
 interface KeyboardAvoidingProps {
+  /**
+   * 是否开启功能
+   */
+  enabled?: boolean
 }
 
 /**

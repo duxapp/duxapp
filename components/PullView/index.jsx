@@ -98,8 +98,8 @@ export const PullView = forwardRef(({
         transform: transformStyle(side === 'center' ? {
           translateX: '-50%',
           translateY: '-50%',
-          scaleX: 0.4,
-          scaleY: 0.4
+          scaleX: 0.8,
+          scaleY: 0.8
         } : {
           [translate.key]: px(translate.value)
         })
@@ -128,5 +128,5 @@ const siteTranslates = {
   bottom: { key: 'translateY', value: 200 },
   left: { key: 'translateX', value: -200 },
   right: { key: 'translateX', value: 200 },
-  center: { key: 'scale', value: 0.4 }
+  center: { key: 'scale', value: 0.8 }
 }

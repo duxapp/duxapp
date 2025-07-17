@@ -253,7 +253,9 @@ declare namespace Upload {
     /** 图片 */
     'image',
     /** 视频 */
-    'video'
+    'video',
+    /** 全部 */
+    'all'
   }
 
 

@@ -1,8 +1,8 @@
-import { chooseMedia, chooseImage } from '@tarojs/taro'
+import { chooseMedia } from '@tarojs/taro'
 import qs from 'qs'
 import { ActionSheet } from '@/duxapp/components/ActionSheet'
 import { recursionGetValue } from '../object'
-import { Platform, ExpoFS, ExpoImagePicker } from '../rn/util'
+import { ExpoImagePicker } from '../rn/util'
 
 /**
  * 获取请求url
@@ -70,12 +70,12 @@ const execMiddle = async (callbacks, result, params) => {
 
 /**
  *选择文件
- * @param {*} type 选择类型 image图片 video视频
+ * @param {*} type 选择类型 image图片 video视频 all 全部
  * @param {*} param1
  * @returns
  */
-const getMedia = async (type, {
-  // 数量 仅图片有效
+const getMedia = async (type = 'image', {
+  // 数量
   count = 1,
   // 选择来源
   sourceType = ['album', 'camera'],
@@ -89,24 +89,33 @@ const getMedia = async (type, {
   camera = 'back'
 } = {}) => {
 
+  const isCompressed = compressed || (sizeType.length === 1 && sizeType[0] === 'compressed')
+
   if (process.env.TARO_ENV === 'rn') {
-    let _type = sourceType.includes('album') ? 'photo' : 'camera'
+    let source = sourceType.includes('album') ? 'photo' : 'camera'
+    let sourceName = sourceType.includes('album') ? '相册' : '相机'
     if (sourceType.length === 2) {
-      const { index } = await ActionSheet.show({
-        list: ['相机', '相册']
+      const select = await ActionSheet.show({
+        list: ['相册', ...type === 'all' ? ['拍照', '录像'] : ['相机']]
       })
-      _type = index ? 'photo' : 'camera'
+      sourceName = select.item
+      source = select.index ? 'camera' : 'photo'
     }
     const option = {
-      mediaTypes: ExpoImagePicker.MediaTypeOptions[type === 'image' ? 'Images' : 'Videos'],
+      mediaTypes:
+        type === 'image' ? 'images' :
+          type === 'video' ? 'videos' : (
+            sourceName === '相册' ? ['images', 'videos'] :
+              sourceName === '拍照' ? 'images' : 'videos'
+          ),
       allowsMultipleSelection: count > 1,
-      quality: 0.7,
+      quality: isCompressed ? 0.6 : 0.8,
       selectionLimit: count,
       videoMaxDuration: maxDuration,
-      videoQuality: ExpoImagePicker.UIImagePickerControllerQualityType[compressed ? 'Low' : 'Medium']
+      videoQuality: ExpoImagePicker.UIImagePickerControllerQualityType[isCompressed ? 'Low' : 'Medium']
     }
     let promise
-    if (_type === 'photo') {
+    if (source === 'photo') {
       const { granted } = await ExpoImagePicker.requestMediaLibraryPermissionsAsync()
       if (!granted) {
         throw {
@@ -135,56 +144,74 @@ const getMedia = async (type, {
         message: '错误数据：' + assets
       }
     }
-    let sizes
-    if (Platform.OS === 'android') {
-      sizes = await Promise.all(assets
-        .map(item => ExpoFS.getInfoAsync(item.uri.replace('file://', ''))
-          .then(res => res.size)
-        ))
-    }
-    return assets.map((item, index) => ({
+    return assets.map(item => ({
+      type: item.type,
+      mime: item.mimeType,
       path: item.uri,
       width: item.width,
       height: item.height,
-      size: Platform.OS === 'android' ? sizes[index] : item.fileSize,
+      size: item.fileSize,
       duration: item.duration
     }))
   } else {
-    if (type === 'video') {
-      return chooseMedia({
-        count: 1,
-        mediaType: 'video',
-        sourceType,
-        compressed,
-        maxDuration,
-        camera
-      }).then(({ tempFiles }) => {
-        return tempFiles.map(item => {
-          return {
-            path: item.tempFilePath,
-            size: item.size,
-            width: item.width,
-            height: item.height,
-            thumb: item.thumbTempFilePath,
-            duration: item.duration * 1000
-          }
-        })
+    return chooseMedia({
+      count,
+      mediaType: type === 'all' ? ['mix'] : [type],
+      sourceType,
+      sizeType: isCompressed ? ['compressed'] : sizeType,
+      maxDuration,
+      camera
+    }).then(({ tempFiles }) => {
+
+      const getMimeType = filename => {
+        const extension = filename.split('.').pop().toLowerCase()
+
+        const mimeTypes = {
+          // 图片类型
+          'jpg': 'image/jpeg',
+          'jpeg': 'image/jpeg',
+          'png': 'image/png',
+          'gif': 'image/gif',
+          'webp': 'image/webp',
+          'svg': 'image/svg+xml',
+          'bmp': 'image/bmp',
+          'ico': 'image/x-icon',
+          'tif': 'image/tiff',
+          'tiff': 'image/tiff',
+          'avif': 'image/avif',
+
+          // 视频类型
+          'mp4': 'video/mp4',
+          'webm': 'video/webm',
+          'ogg': 'video/ogg',
+          'ogv': 'video/ogg',
+          'mov': 'video/quicktime',
+          'avi': 'video/x-msvideo',
+          'wmv': 'video/x-ms-wmv',
+          'flv': 'video/x-flv',
+          'mkv': 'video/x-matroska',
+          'mpeg': 'video/mpeg',
+          'mpg': 'video/mpeg',
+          '3gp': 'video/3gpp',
+          '3g2': 'video/3gpp2'
+        }
+
+        return mimeTypes[extension] || 'application/octet-stream'
+      }
+
+      return tempFiles.map(item => {
+        return {
+          type: item.fileType,
+          mime: getMimeType(item.tempFilePath),
+          path: item.tempFilePath,
+          size: item.size,
+          width: item.width,
+          height: item.height,
+          thumb: item.thumbTempFilePath,
+          duration: item.duration * 1000
+        }
       })
-    } else {
-      return chooseMedia({
-        count,
-        mediaType: ['image'],
-        sourceType,
-        sizeType
-      }).then(res => {
-        return res.tempFiles.map(item => {
-          return {
-            path: item.tempFilePath,
-            size: item.size
-          }
-        })
-      })
-    }
+    })
   }
 }
 

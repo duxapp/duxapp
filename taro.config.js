@@ -1,5 +1,6 @@
 import { defineConfig } from '@tarojs/cli'
 import { resolve } from 'path'
+import customRoutes from '../../dist/duxapp-alias.json'
 
 const scss = !['rn'].includes() ? {
   sass: {
@@ -19,6 +20,9 @@ export default defineConfig({
   h5: {
     webpackChain(chain) {
       rule(chain)
+    },
+    router: {
+      customRoutes
     }
   }
 })

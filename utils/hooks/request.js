@@ -17,6 +17,8 @@ export const createRequestHooks = request => {
 
       const [status, setStatus] = useState(true)
 
+      const [error, setError] = useState()
+
       const _option = useDeepObject(option)
 
       const resultAction = useCallback(async res => {
@@ -54,9 +56,11 @@ export const createRequestHooks = request => {
           .then(res => {
             res = resultAction(res)
             complete()
+            setError()
             return res
           }).catch(err => {
             complete()
+            setError(err)
             throw err
           })
       }, [_option, resultAction])
@@ -78,6 +82,7 @@ export const createRequestHooks = request => {
         {
           status,
           loading: status,
+          error,
           reload,
           setData
         }
@@ -158,6 +163,9 @@ export const createRequestHooks = request => {
       }, [])
 
       const next = useCallback(() => {
+        if (!currentState.current.init) {
+          return Promise.reject('数据未初始化')
+        }
         if (currentState.current.loadEnd) {
           return Promise.reject('数据已经加载完成')
         }
@@ -185,7 +193,10 @@ export const createRequestHooks = request => {
           return
         }
         currentState.current.requestOption = requestOption
-        reload().catch(() => { })
+        reload().catch(() => { }).finally(() => {
+          // 防止RN端next执行的比useEffect更快
+          currentState.current.init = true
+        })
       }, [requestOption, config?.ready, reload])
 
       return [list, {
