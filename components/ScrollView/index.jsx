@@ -24,7 +24,7 @@ export const ScrollView = ({
       scrollWithAnimation={scrollWithAnimation}
       refresherEnabled={refresh !== undefined}
       refresherThreshold={50}
-      onRefresherrefresh={() => {
+      onRefresherRefresh={() => {
         !refresh && onRefresh?.()
       }}
       refresherTriggered={!!refresh}
