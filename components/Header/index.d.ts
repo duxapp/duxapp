@@ -77,3 +77,9 @@ export const Header: ComponentType<HeaderProps> & {
    */
   Back: ComponentType<HeaderBackProps>
 }
+
+export const getHeaderSize: () => {
+  menuWidth: number
+  headerHeight: number
+  statusBarHeight: number
+}

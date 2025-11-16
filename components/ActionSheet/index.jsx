@@ -1,6 +1,7 @@
 import { useRef } from 'react'
 import { View, Text } from '@tarojs/components'
 import classNames from 'classnames'
+import { getWindowInfo, px } from '@/duxapp/utils'
 import { TopView } from '../TopView'
 import { PullView } from '../PullView'
 import './index.scss'
@@ -23,9 +24,13 @@ export const ActionSheet = /*@__PURE__*/ (() => {
       })
     }
 
+    const center = getWindowInfo().windowWidth >= 600
+
     return <>
-      <PullView onClose={onClose} ref={pullView}>
-        <View className='ActionSheet'>
+      <PullView onClose={onClose} side={center ? 'center' : 'bottom'} ref={pullView}>
+        <View className='ActionSheet'
+          style={center ? { width: 360 } : {}}
+        >
           {!!title && <View className='ActionSheet__title'>{title}</View>}
           {
             list?.map((item, index) => <View key={index}

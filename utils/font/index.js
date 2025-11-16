@@ -15,7 +15,7 @@ export const font = {
     }
   },
   loadLocal: (name, assets) => {
-    loadLocalFont(name, assets)
+    return loadLocalFont(name, assets)
   },
   load: async (name, url, num = 0) => {
     if (num > 5) {
@@ -56,9 +56,7 @@ export const font = {
         !defaultStatus && setStatus(true)
         return
       }
-      if (!font.loadCallbacks[name]) {
-        font.loadCallbacks[name] = []
-      }
+      font.loadCallbacks[name] ||= []
       font.loadCallbacks[name].push(() => setStatus(true))
     }, [name, defaultStatus])
 

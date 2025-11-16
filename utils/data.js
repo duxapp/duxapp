@@ -170,21 +170,21 @@ export class ObjectManage {
 
   // 使用数据
   useData(key) {
-    const [data, setData] = useState(this.data)
+    const [data, setData] = useState(key ? this.data[key] : this.data)
 
     const { remove } = useMemo(() => {
       return this.onSet(res => {
-        setData(res)
+        if (key) {
+          setData(res[key])
+        } else {
+          setData(res)
+        }
       })
-    }, [])
+    }, [key])
 
     useEffect(() => {
       return () => remove()
     }, [remove])
-
-    if (key) {
-      return data[key]
-    }
 
     return data
   }

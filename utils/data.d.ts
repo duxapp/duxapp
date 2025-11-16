@@ -99,6 +99,7 @@ export declare class ObjectManage<T = any> {
   /**
    * React Hook：组件中使用数据
    * @param key 传入参数和指定使用数据的某个字段
+   * 获取单个字段有利于优化渲染，只有这个字段发生变化，才会触发更新
    */
   useData(key?: string): T
 }

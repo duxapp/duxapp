@@ -4,7 +4,7 @@ import { getUrl, execGetObject, execGetChild, execMiddle } from './util'
 import { asyncTimeOut, toast } from '../util'
 import { deepCopy } from '../object'
 
-const bodyType = ['POST', 'PUT', 'DELETE']
+const bodyType = ['POST', 'PUT', 'DELETE', 'PATCH']
 
 const requestReact = async ({ url, data, header, timeout, ...option } = {}) => {
 
@@ -150,7 +150,7 @@ const request = (() => {
         // 中间件处理返回数据
         try {
           let result = await taroRequestTask
-          if(!result.statusCode && result.errMsg === 'request:ok') {
+          if (!result.statusCode && result.errMsg === 'request:ok') {
             result.statusCode = 200
           }
           result = await execMiddle(middle.result, result, origin)

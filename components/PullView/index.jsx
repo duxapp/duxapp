@@ -76,6 +76,8 @@ export const PullView = forwardRef(({
     })
   }, [duration, side])
 
+  const closeEvent = useTouchClose(side, mask, close)
+
   return <Absolute group={group}>
     {masking && <Animated.View
       animation={maskAn}
@@ -88,6 +90,7 @@ export const PullView = forwardRef(({
           }
           close()
         }}
+        {...closeEvent}
       ></View>
     </Animated.View>}
     <Animated.View
@@ -129,4 +132,45 @@ const siteTranslates = {
   left: { key: 'translateX', value: -200 },
   right: { key: 'translateX', value: 200 },
   center: { key: 'scale', value: 0.8 }
+}
+
+const useTouchClose = (side, mask, close) => {
+
+  const startXy = useRef()
+
+  if (side !== 'center' && !mask) {
+    return {
+      onTouchStart: e => {
+        const touch = e.changedTouches[0]
+        startXy.current = {
+          x: touch.pageX,
+          y: touch.pageY,
+          time: Date.now()
+        }
+      },
+      onTouchEnd: e => {
+        const start = startXy.current
+        const touch = e.changedTouches[0]
+        if (Date.now() - start.time > 800) {
+          return
+        }
+        if (touch.pageX === start.x && touch.pageY === start.y) {
+          return
+        }
+        const dx = touch.pageX - start.x
+        const dy = touch.pageY - start.y
+        const isRow = Math.abs(dx) > Math.abs(dy)
+
+        if (side === 'top' && !isRow && dy < -30) {
+          close()
+        } else if (side === 'bottom' && !isRow && dy > 30) {
+          close()
+        } else if (side === 'left' && isRow && dx < -30) {
+          close()
+        } else if (side === 'right' && isRow && dx > 30) {
+          close()
+        }
+      }
+    }
+  }
 }

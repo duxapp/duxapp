@@ -1,4 +1,4 @@
-import { chooseMedia } from '@tarojs/taro'
+import { chooseMedia as chooseMediaTaro } from '@tarojs/taro'
 import qs from 'qs'
 import { ActionSheet } from '@/duxapp/components/ActionSheet'
 import { recursionGetValue } from '../object'
@@ -59,6 +59,9 @@ const execGetChild = (index, res, ...params) => typeof index === 'function' ? in
  * @returns
  */
 const execMiddle = async (callbacks, result, params) => {
+  if (!callbacks?.length) {
+    return result
+  }
   for (let i = 0; i < callbacks.length; i++) {
     result = callbacks[i](result, params)
     if (result instanceof Promise) {
@@ -74,20 +77,22 @@ const execMiddle = async (callbacks, result, params) => {
  * @param {*} param1
  * @returns
  */
-const getMedia = async (type = 'image', {
-  // 数量
-  count = 1,
-  // 选择来源
-  sourceType = ['album', 'camera'],
-  // 图片压缩选项
-  sizeType = ['original', 'compressed'],
-  // 视频压缩选项
-  compressed = false,
-  // 拍摄最大视频时长
-  maxDuration,
-  // 默认拉起的是前置或者后置摄像头。部分 Android 手机下由于系统 ROM 不支持无法生效
-  camera = 'back'
-} = {}) => {
+const chooseMedia = async (type = 'image', options = {}) => {
+
+  const {
+    // 数量
+    count = 1,
+    // 选择来源
+    sourceType = ['album', 'camera'],
+    // 图片压缩选项
+    sizeType = ['original', 'compressed'],
+    // 视频压缩选项
+    compressed = false,
+    // 拍摄最大视频时长
+    maxDuration,
+    // 默认拉起的是前置或者后置摄像头。部分 Android 手机下由于系统 ROM 不支持无法生效
+    camera = 'back'
+  } = options
 
   const isCompressed = compressed || (sizeType.length === 1 && sizeType[0] === 'compressed')
 
@@ -144,7 +149,7 @@ const getMedia = async (type = 'image', {
         message: '错误数据：' + assets
       }
     }
-    return assets.map(item => ({
+    const files = assets.map(item => ({
       type: item.type,
       mime: item.mimeType,
       path: item.uri,
@@ -153,8 +158,9 @@ const getMedia = async (type = 'image', {
       size: item.fileSize,
       duration: item.duration
     }))
+    return execMiddle(chooseMedia.middle?.sort((a, b) => a[1] - b[1]).map(v => v[0]), files, options)
   } else {
-    return chooseMedia({
+    return chooseMediaTaro({
       count,
       mediaType: type === 'all' ? ['mix'] : [type],
       sourceType,
@@ -199,7 +205,7 @@ const getMedia = async (type = 'image', {
         return mimeTypes[extension] || 'application/octet-stream'
       }
 
-      return tempFiles.map(item => {
+      const files = tempFiles.map(item => {
         return {
           type: item.fileType,
           mime: getMimeType(item.tempFilePath),
@@ -211,8 +217,14 @@ const getMedia = async (type = 'image', {
           duration: item.duration * 1000
         }
       })
+      return execMiddle(chooseMedia.middle?.sort((a, b) => a[1] - b[1]).map(v => v[0]), files, options)
     })
   }
+}
+
+const chooseMediaMiddle = (callback, sort = 0) => {
+  chooseMedia.middle ||= []
+  chooseMedia.middle.push([callback, sort])
 }
 
 export {
@@ -220,5 +232,6 @@ export {
   execGetObject,
   execGetChild,
   execMiddle,
-  getMedia
+  chooseMedia,
+  chooseMediaMiddle
 }

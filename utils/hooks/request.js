@@ -80,6 +80,7 @@ export const createRequestHooks = request => {
       return [
         data,
         {
+          data,
           status,
           loading: status,
           error,
@@ -155,7 +156,8 @@ export const createRequestHooks = request => {
           setLoading(false)
           setRefresh(false)
           return _list
-        }).catch(() => {
+        }).catch(error => {
+          console.log('error', error)
           state.loading = false
           setLoading(false)
           setRefresh(false)
@@ -200,6 +202,7 @@ export const createRequestHooks = request => {
       }, [requestOption, config?.ready, reload])
 
       return [list, {
+        list,
         loading,
         currentData: currentState.current,
         refresh,

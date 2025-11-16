@@ -78,7 +78,7 @@ export const px = (val, pxUnit) => {
 }
 
 export const pxNum = val => {
-  return val / 750 * getWindowInfo().windowWidth
+  return val / 750 * Math.min(getWindowInfo().windowWidth, 520)
 }
 
 export const transformStyle = obj => {

@@ -636,43 +636,38 @@ class Route {
     }
   }
 
+  getCurrentPages() {
+
+    const pages = process.env.TARO_ENV === 'harmony_cpp' ? this.current : getCurrentPages()
+
+    return pages.map(page => {
+      if (process.env.TARO_ENV === 'harmony_cpp') {
+        return {
+          path: page.path
+        }
+      } else {
+        let path = page.route.split('?')[0]
+        if (path[0] === '/') {
+          path = path.slice(1)
+        }
+        return {
+          path
+        }
+      }
+    })
+  }
+
   /**
    * 判断指定路由在路径中位置，返回pages和查找结果paths
    * @param path
    */
   getPathPosition(path) {
-    // const pages = getCurrentPages()
-    // const paths = []
-    // for (let i = 0; i < pages.length; i++) {
-    //   let route = pages[i].route.split('?')[0]
-    //   if (route[0] === '/') {
-    //     route = route.substring(1)
-    //   }
-    //   if (route === path) {
-    //     paths.push(route)
-    //   }
-    // }
-    // return {
-    //   pages,
-    //   paths,
-    // }
-
-    const pages = process.env.TARO_ENV === 'harmony_cpp' ? this.current : getCurrentPages()
+    const pages = this.getCurrentPages()
     const paths = []
     for (let i = 0; i < pages.length; i++) {
-      if (process.env.TARO_ENV === 'harmony_cpp') {
-        const item = pages[i]
-        if (item.path === path) {
-          paths.push(item.path)
-        }
-      } else {
-        let route = pages[i].route.split('?')[0]
-        if (route[0] === '/') {
-          route = route.substring(1)
-        }
-        if (route === path) {
-          paths.push(route)
-        }
+      const route = pages[i]
+      if (route.path === path) {
+        paths.push(i)
       }
     }
     return {

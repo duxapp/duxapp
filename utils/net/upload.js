@@ -1,5 +1,5 @@
 import { uploadFile as uploadFileTaro } from '@tarojs/taro'
-import { getUrl, execGetChild, execGetObject, getMedia, execMiddle } from './util'
+import { getUrl, execGetChild, execGetObject, chooseMedia, execMiddle } from './util'
 import { Platform } from '../rn/util'
 
 const uploadFile = process.env.TARO_ENV === 'rn'
@@ -80,7 +80,7 @@ const upload = (
   option
 ) => {
   let uploadTemp
-  const promise = getMedia(type, option).then(res => {
+  const promise = chooseMedia(type, option).then(res => {
     uploadTemp = uploadTempFile(res, option)
       .start(() => {
         callback.start?.()

@@ -92,6 +92,10 @@ declare namespace Request {
     PUT
     /** DELETE请求 */
     DELETE
+    /** PATCH请求 */
+    PATCH
+    /** HEAD请求 */
+    HEAD
   }
 
   interface RequestOption {
@@ -214,30 +218,36 @@ export function getUrl(url: string, data: object, params: Request.RequestOption)
 
 declare namespace Upload {
 
-  /** 上传参数 */
-  interface Option {
+  interface GetMediaOption {
     /**
      * 最大数量
      * 仅在类型为image时有效
      * @default 1
      */
     count?: number
+    /** 选择图片的来源 */
+    sourceType?: (keyof sourceType)[]
+    /** 图片压缩类型 */
+    sizeType?: (keyof sizeType)[]
+    /**
+     * @deprecated 已弃用，请使用 `sizeType` 代替
+     * 视频压缩
+     */
+    compressed?: boolean
+    /** 拍摄时的最大时长 单位秒 */
+    maxDuration?: number
+    /** 默认拉起的是前置或者后置摄像头。部分 Android 手机下由于系统 ROM 不支持无法生效 */
+    camera?: keyof camera
+  }
+
+  /** 上传参数 */
+  interface Option extends Upload.GetMediaOption {
     /** 用户替换默认设置的api */
     api?: string
     /** 用户替换默认的上传字段 */
     requestField?: string | string[] | (() => void)
     /** 用户替换默认的返回值字段 */
     resultField?: string | string[] | (() => void)
-    /** 选择图片的来源 */
-    sourceType?: keyof sourceType[]
-    /** 图片压缩类型 */
-    sizeType?: (keyof sizeType)[]
-    /** 视频压缩 */
-    compressed?: boolean
-    /** 拍摄时的最大时长 单位秒 */
-    maxDuration?: number
-    /** 默认拉起的是前置或者后置摄像头。部分 Android 手机下由于系统 ROM 不支持无法生效 */
-    camera?: keyof camera
     /** 请求配置 */
     config?: RequestConfig
     /** 中间件 */
@@ -291,7 +301,6 @@ declare namespace Upload {
     back
     /** 默认拉起前置摄像头 */
     front
-
   }
 
   /**
@@ -378,6 +387,23 @@ declare namespace Upload {
     uploadTempFile(files: Upload.File[], option: Upload.Option): UploadTask
   }
 }
+
+type FileItem = {
+  path: string
+  size: number,
+  type: 'image' | 'video'
+  mime: string
+  // 视频宽度 视频时生效
+  width: number
+  // 视频高度 视频时生效
+  height: number
+  // 视频时长 毫秒 视频时生效
+  duration: number
+}
+
+export const chooseMedia: (type?: keyof Upload.Type, option?: Upload.GetMediaOption) => Promise<FileItem[]>
+
+export const chooseMediaMiddle: (callback: (files: FileItem[]) => FileItem[], sort?: number) => void
 
 export function createRequest(config: {
   config: RequestConfig,

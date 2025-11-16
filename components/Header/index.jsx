@@ -5,6 +5,7 @@ import { getContrastYIQ, route, pages as routePages, px, getWindowInfo } from '@
 import theme from '@/duxapp/config/theme'
 import { getPlatform, isPlatformMini, pxNum } from '@/duxapp/utils/util'
 import { TopView } from '../TopView'
+import { Status } from './Status'
 
 import back from './images/back.png'
 import backWhite from './images/back-white.png'
@@ -67,19 +68,21 @@ export const Header = ({
   const h5 = process.env.TARO_ENV === 'h5'
   const harmony = process.env.TARO_ENV === 'harmony_cpp'
 
-  let headerHeight = pxNum(88)
-  // 小程序胶囊按钮宽度
-  let jiaonangWidth = 0
-  // 获取胶囊信息
-  const statusBarHeight = h5 ? 0 : (getWindowInfo().statusBarHeight || 0)
-  if (isPlatformMini) {
-    const { width, height, top } = getMenuButtonBoundingClientRect() || {}
-    if (width && top) {
-      jiaonangWidth = width + 10
-      // 动态计算header高度，让header文本和胶囊完全居中
-      headerHeight = height + (top - statusBarHeight) * 2
-    }
-  }
+  const { headerHeight, statusBarHeight, menuWidth } = getHeaderSize()
+
+  // let headerHeight = pxNum(88)
+  // // 小程序胶囊按钮宽度
+  // let menuWidth = 0
+  // // 获取胶囊信息
+  // const statusBarHeight = h5 ? 0 : (getWindowInfo().statusBarHeight || 0)
+  // if (isPlatformMini) {
+  //   const { width, height, top } = getMenuButtonBoundingClientRect() || {}
+  //   if (width && top) {
+  //     menuWidth = width + 10
+  //     // 动态计算header高度，让header文本和胶囊完全居中
+  //     headerHeight = height + (top - statusBarHeight) * 2
+  //   }
+  // }
 
   const current = routePages[path]
 
@@ -98,7 +101,7 @@ export const Header = ({
     statusBarHeight,
     isBack: pages.length > 1,
     isBackHome: paths[0] === undefined && !current?.home,
-    jiaonangWidth,
+    menuWidth,
     rn,
     harmony,
     h5,
@@ -109,11 +112,13 @@ export const Header = ({
     showHeight
   }
 
+  const YIQColor = getContrastYIQ(color)
+
   useEffect(() => {
     // 设置状态栏颜色
     setTimeout(() => {
       setNavigationBarColor({
-        frontColor: getContrastYIQ(color) === 'white' ? '#000000' : '#ffffff',
+        frontColor: YIQColor === 'white' ? '#000000' : '#ffffff',
         backgroundColor: 'transparent',
         animation: {
           duration: 400,
@@ -121,9 +126,10 @@ export const Header = ({
         }
       })
     }, 100)
-  }, [color])
+  }, [YIQColor])
 
   return <headerContext.Provider value={{ ...option, onBackClick }}>
+    <Status barStyle={YIQColor === 'white' ? 'dark-content' : 'light-content'} />
     {
       option.showHeader ? <>
         {!show && showStatus && <View
@@ -152,7 +158,7 @@ export const Header = ({
             {
               renderHeader ?
                 <View
-                  style={{ paddingRight: option.jiaonangWidth, height: option.headerHeight }}
+                  style={{ paddingRight: option.menuWidth, height: option.headerHeight }}
                 >
                   {renderHeader}
                 </View>
@@ -178,7 +184,7 @@ export const Header = ({
                   {(option.isBack || option.isBackHome || !!renderRight) && <View className='Header__nav__right'
                     style={option.weapp
                       ? {
-                        marginRight: option.jiaonangWidth
+                        marginRight: option.menuWidth
                       } : {}
                     }
                   >
@@ -192,6 +198,28 @@ export const Header = ({
         : null
     }
   </headerContext.Provider>
+}
+
+export const getHeaderSize = () => {
+  let headerHeight = pxNum(88)
+  // 小程序胶囊按钮宽度
+  let menuWidth = 0
+  // 获取胶囊信息
+  const statusBarHeight = process.env.TARO_ENV === 'h5' ? 0 : (getWindowInfo().statusBarHeight || 0)
+  if (isPlatformMini) {
+    const { width, height, top } = getMenuButtonBoundingClientRect() || {}
+    if (width && top) {
+      menuWidth = width + 10
+      // 动态计算header高度，让header文本和胶囊完全居中
+      headerHeight = height + (top - statusBarHeight) * 2
+    }
+  }
+
+  return {
+    menuWidth,
+    headerHeight,
+    statusBarHeight
+  }
 }
 
 export const HeaderBack = ({
