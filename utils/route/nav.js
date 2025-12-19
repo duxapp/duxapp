@@ -436,7 +436,7 @@ class Route {
           envVersion: miniProgramTypes[params.type]
         })
       } else if (process.env.TARO_ENV === 'rn') {
-        const [wechat] = duxappHook.getMark('WechatLib')
+        const [wechat] = duxappHook.getMark('ExpoWeChat')
         if (!wechat) {
           console.warn('启动失败，模块依赖中需要包含wechat')
           return false
@@ -447,9 +447,9 @@ class Route {
         }
         const queryString = option.params
         wechat.launchMiniProgram({
-          userName: params.userName,
+          id: params.userName,
           path: params.path + `${queryString ? '?' : ''}${queryString}`,
-          miniProgramType: params.type
+          type: params.type
         })
       } else {
         console.warn('当前平台不支持启动小程序')
@@ -550,6 +550,7 @@ class Route {
     const data = { type: 0 }
 
     // 遍历分割后的部分，按特征匹配
+    const types = ['release', 'test', 'preview']
     parts.forEach(part => {
       part = part.trim()
       if (/^wx[0-9a-fA-F]{16}$/.test(part)) {
@@ -559,7 +560,10 @@ class Route {
         data.userName = part
       }
       else if (/^[123]$/.test(part)) {
-        data.type = parseInt(part, 10)
+        data.type = types[part]
+      }
+      else if (types.includes(part)) {
+        data.type = part
       }
       else if (part.includes('/')) {
         data.path = part

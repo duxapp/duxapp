@@ -161,8 +161,7 @@ export const Header = ({
                   style={{ paddingRight: option.menuWidth, height: option.headerHeight }}
                 >
                   {renderHeader}
-                </View>
-                :
+                </View> :
                 <View
                   className='Header__nav'
                   style={{ height: option.headerHeight }}

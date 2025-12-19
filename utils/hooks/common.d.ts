@@ -1,5 +1,7 @@
 import { ComponentType, ReactNode } from 'react'
 
+type HookResult<T> = T extends PromiseLike<infer U> ? U : T
+
 /**
  * 创建一个全局作用域的 state
  * @param initialState
@@ -50,3 +52,5 @@ export const useDeepObject: (data: any) => any
  * 用户函数组件里面的 forceUpdate
  */
 export const useForceUpdate: () => () => void
+
+export function useLockFn<T extends (...args: any[]) => any>(fn?: T): (...args: Parameters<T>) => Promise<HookResult<ReturnType<T>> | undefined>

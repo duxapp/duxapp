@@ -85,3 +85,30 @@ export const useForceUpdate = () => {
   const [, setState] = useState()
   return useCallback(() => setState(old => !old), [])
 }
+
+export const useLockFn = fn => {
+  const lockRef = useRef(false)
+  const fnRef = useRef(fn)
+  fnRef.current = fn
+
+  const callbackRef = useRef()
+  if (!callbackRef.current) {
+    callbackRef.current = async (...args) => {
+      if (lockRef.current) {
+        return
+      }
+      lockRef.current = true
+      try {
+        const res = fnRef.current?.(...args)
+        if (res && typeof res.then === 'function') {
+          return await res
+        }
+        return res
+      } finally {
+        lockRef.current = false
+      }
+    }
+  }
+
+  return callbackRef.current
+}

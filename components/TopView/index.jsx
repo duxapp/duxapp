@@ -6,7 +6,7 @@ import { isIphoneX, route, theme } from '@/duxapp/utils'
 import { QuickEvent } from '@/duxapp/utils/QuickEvent'
 import { KeyboardAvoiding } from '../KeyboardAvoiding'
 import { WeappRem } from './WeappRem'
-import { Block } from './Block'
+import { Block } from '../Block'
 import './index.scss'
 import '../../userTheme/index.scss'
 
