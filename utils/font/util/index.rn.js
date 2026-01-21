@@ -4,4 +4,6 @@ export const loadFont = async (name, url) => {
   return await loadAsync(name, url)
 }
 
-export const loadLocalFont = loadFont
+export const loadLocalFont = (name, url) => {
+  loadAsync(name, url)
+}

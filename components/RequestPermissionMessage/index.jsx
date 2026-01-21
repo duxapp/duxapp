@@ -1,3 +1,3 @@
-export const requestPermissionMessage = async (type, message) => true
+export const requestPermissionMessage = async () => true
 
 requestPermissionMessage.types = {}

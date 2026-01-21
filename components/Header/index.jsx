@@ -1,7 +1,8 @@
-import { useMemo, createContext, useContext as useReactContext, useEffect } from 'react'
+/* eslint-disable no-undef */
+import { useMemo, createContext, useContext as useReactContext, useEffect, useState, useRef } from 'react'
 import { useDidShow, setNavigationBarTitle, getMenuButtonBoundingClientRect, setNavigationBarColor } from '@tarojs/taro'
 import { View, Image, Text } from '@tarojs/components'
-import { getContrastYIQ, route, pages as routePages, px, getWindowInfo } from '@/duxapp/utils'
+import { getContrastYIQ, route, pages as routePages, px, getWindowInfo, useWindowInfo } from '@/duxapp/utils'
 import theme from '@/duxapp/config/theme'
 import { getPlatform, isPlatformMini, pxNum } from '@/duxapp/utils/util'
 import { TopView } from '../TopView'
@@ -68,21 +69,7 @@ export const Header = ({
   const h5 = process.env.TARO_ENV === 'h5'
   const harmony = process.env.TARO_ENV === 'harmony_cpp'
 
-  const { headerHeight, statusBarHeight, menuWidth } = getHeaderSize()
-
-  // let headerHeight = pxNum(88)
-  // // 小程序胶囊按钮宽度
-  // let menuWidth = 0
-  // // 获取胶囊信息
-  // const statusBarHeight = h5 ? 0 : (getWindowInfo().statusBarHeight || 0)
-  // if (isPlatformMini) {
-  //   const { width, height, top } = getMenuButtonBoundingClientRect() || {}
-  //   if (width && top) {
-  //     menuWidth = width + 10
-  //     // 动态计算header高度，让header文本和胶囊完全居中
-  //     headerHeight = height + (top - statusBarHeight) * 2
-  //   }
-  // }
+  const { headerHeight, statusBarHeight, menuWidth } = useHeaderSize()
 
   const current = routePages[path]
 
@@ -219,6 +206,50 @@ export const getHeaderSize = () => {
     headerHeight,
     statusBarHeight
   }
+}
+
+const useHeaderSize = () => {
+  const [size, setSize] = useState(() => getHeaderSize())
+
+  const info = useWindowInfo()
+
+  const init = useRef(false)
+
+  useEffect(() => {
+    if (init.current) {
+      return
+    }
+    init.current = true
+    setSize(getHeaderSize())
+  }, [info])
+
+  // const [show, setShow] = useState(true)
+
+  // useDidShow(() => {
+  //   setShow(true)
+  // })
+
+  // useDidHide(() => {
+  //   setShow(false)
+  // })
+
+  // useEffect(() => {
+  //   if (process.env.TARO_ENV === 'weapp' && show && wx.onMenuButtonBoundingClientRectWeightChange) {
+  //     const listener = ({ width, height, top }) => {
+  //       setSize(old => ({
+  //         ...old,
+  //         menuWidth: width + 10,
+  //         headerHeight: height + (top - statusBarHeight) * 2
+  //       }))
+  //     }
+  //     wx.onMenuButtonBoundingClientRectWeightChange(listener)
+  //     return () => {
+  //       wx.offMenuButtonBoundingClientRectWeightChange(listener)
+  //     }
+  //   }
+  // }, [show])
+
+  return size
 }
 
 export const HeaderBack = ({

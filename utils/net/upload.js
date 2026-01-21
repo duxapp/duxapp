@@ -278,25 +278,70 @@ export const createUpload = (() => {
     }
 
     const sortMiddle = list => {
-      return list.map(item => {
-        if (typeof item === 'function') {
-          return [item, 0]
-        }
-        return item
-      })
+      return list.filter(v => v)
+        .map(item => {
+          if (typeof item === 'function') {
+            return [item, 0]
+          }
+          if (Array.isArray(item)) {
+            return [item[0], typeof item[1] === 'number' ? item[1] : 0]
+          }
+          return null
+        })
+        .filter(v => v)
         .sort(([, a], [, b]) => a - b)
         .map(v => v[0])
+    }
+
+    const normalizeMiddleInput = input => {
+      if (!input) return []
+      if (typeof input === 'function') return [input]
+      if (Array.isArray(input)) {
+        const isTuple = typeof input[0] === 'function' && (typeof input[1] === 'number' || input[1] === 'only') && input.length === 2
+        return isTuple ? [input] : input
+      }
+      return [input]
+    }
+
+    const pickMiddle = (input, globalList, localList) => {
+      const paramItems = normalizeMiddleInput(input).map(item => {
+        if (typeof item === 'function') {
+          return { callback: item, sort: 0, only: null }
+        }
+        if (Array.isArray(item)) {
+          const callback = item[0]
+          const mark = item[1]
+          return {
+            callback,
+            sort: typeof mark === 'number' ? mark : 0,
+            only: mark === 'only' ? mark : null
+          }
+        }
+        return null
+      }).filter(v => v)
+
+      // 仅对通过参数直接传入的 middle 生效：传入字符串标识时，只使用该一个中间件
+      const onlyItem = [...paramItems].reverse().find(v => v.only)
+      if (onlyItem) {
+        return [onlyItem.callback]
+      }
+
+      return sortMiddle([
+        ...globalList,
+        ...localList,
+        ...paramItems.map(v => [v.callback, v.sort]),
+      ])
     }
 
     const getOption = option => {
       return {
         config: config?.config,
+        ...option,
         middle: {
-          before: sortMiddle([...globalMiddle.before, ...middle.before]),
-          result: sortMiddle([...globalMiddle.result, ...middle.result]),
-          error: sortMiddle([...globalMiddle.error, ...middle.error])
+          before: pickMiddle(option?.middle?.before, globalMiddle.before, middle.before),
+          result: pickMiddle(option?.middle?.result, globalMiddle.result, middle.result),
+          error: pickMiddle(option?.middle?.error, globalMiddle.error, middle.error)
         },
-        ...option
       }
     }
 

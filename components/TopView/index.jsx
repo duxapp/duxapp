@@ -5,7 +5,7 @@ import classNames from 'classnames'
 import { isIphoneX, route, theme } from '@/duxapp/utils'
 import { QuickEvent } from '@/duxapp/utils/QuickEvent'
 import { KeyboardAvoiding } from '../KeyboardAvoiding'
-import { WeappRem } from './WeappRem'
+import { PageMeta } from './PageMeta'
 import { Block } from '../Block'
 import './index.scss'
 import '../../userTheme/index.scss'
@@ -138,6 +138,7 @@ export class TopView extends Component {
     setConfig: () => { }
   })
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   static useContext = () => useContext(this.context)
 
   constructor(props) {
@@ -279,12 +280,12 @@ const Container = ({ index = 0, children }) => {
   </Item>
 }
 
-const TopViewFunc = ({ pageKey, children, isSafe, isForm, className, ...props }) => {
+const TopViewFunc = ({ pageKey, children, isSafe, isForm, className, pageMetaProps, ...props }) => {
 
   const mode = theme.useMode()
 
   return <>
-    <WeappRem />
+    <PageMeta {...pageMetaProps} />
     <View
       className={classNames(
         'TopView',

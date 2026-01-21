@@ -42,6 +42,7 @@ export class RenderHook {
 
   Render = ({ mark, children, option, max }) => {
 
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const [element, markItem] = useMemo(() => {
       const _markItem = this.elements[mark] || {}
       const _element = _markItem.self?.length

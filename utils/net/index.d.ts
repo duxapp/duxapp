@@ -1,3 +1,5 @@
+import type Taro from '@tarojs/taro'
+
 interface RequestConfig {
   /**
    * 请求配置
@@ -98,13 +100,17 @@ declare namespace Request {
     HEAD
   }
 
-  interface RequestOption {
+  /**
+   * 透传到 `Taro.request` 的其他参数（如：`dataType`、`responseType`、`enableChunked` 等）。
+   * 内部会覆盖 `url` / `data` / `header` / `method` / `timeout`。
+   */
+  interface RequestOption extends Partial<Omit<Taro.request.Option<any>, 'url' | 'data' | 'header' | 'method' | 'timeout'>> {
     /** 请求链接 相对地址 */
     url: string
     /** 附加header */
-    header?: object
+    header?: Taro.request.Option<any>['header']
     /** 请求数据 根据method会加在对应位置 */
-    data?: object
+    data?: Taro.request.Option<any>['data']
     /** 请求类型 */
     method?: keyof method
     /** 请求超时时间（ms） 默认30000 */
@@ -131,8 +137,29 @@ declare namespace Request {
     /** 请求配置 用于覆盖默认配置 */
     config?: RequestConfig,
     /** 中间件 用于覆盖默认配置的中间件 */
-    middle?: middle
+    middle?: {
+      before?: MiddleInput<BeforeCallback>
+      result?: MiddleInput<ResultCallback>
+      error?: MiddleInput<ErrorCallback>
+    }
   }
+
+  type BeforeCallback = Parameters<middle['before']>[0]
+  type ResultCallback = Parameters<middle['result']>[0]
+  type ErrorCallback = Parameters<middle['error']>[0]
+
+  /** 中间件排序值：值越小越先执行 */
+  type MiddleSort = number
+
+  /**
+   * 中间件排他标识：
+   * 仅当通过 `request({ middle: ... })` 直接传入时生效；
+   * 传入后，该阶段只使用这一个中间件，排除其他所有中间件。
+   */
+  type MiddleOnly = 'only'
+
+  type MiddleItem<T> = T | [T, MiddleSort] | [T, MiddleOnly]
+  type MiddleInput<T> = MiddleItem<T> | MiddleItem<T>[]
 
 
   interface middle {
@@ -159,12 +186,34 @@ declare namespace Request {
 
 
 
-  interface RequestTask extends Promise<RequestTask> {
+  type TaroRequestTask<T = any> = Taro.request.RequestTask<T>
+
+  interface RequestTask<T = any> extends Promise<T> {
     /** 取消请求 */
     abort(): void
+    /**
+     * 监听 HTTP Response Header 事件（小程序端可用）
+     * https://developers.weixin.qq.com/miniprogram/dev/api/network/request/RequestTask.onHeadersReceived.html
+     */
+    onHeadersReceived?: TaroRequestTask['onHeadersReceived']
+    /**
+     * 取消监听 HTTP Response Header 事件（小程序端可用）
+     * https://developers.weixin.qq.com/miniprogram/dev/api/network/request/RequestTask.offHeadersReceived.html
+     */
+    offHeadersReceived?: TaroRequestTask['offHeadersReceived']
+    /**
+     * 监听 Transfer-Encoding Chunk Received 事件（小程序端可用）
+     * https://developers.weixin.qq.com/miniprogram/dev/api/network/request/RequestTask.onChunkReceived.html
+     */
+    onChunkReceived?: TaroRequestTask['onChunkReceived']
+    /**
+     * 移除 Transfer-Encoding Chunk Received 事件监听（小程序端可用）
+     * https://developers.weixin.qq.com/miniprogram/dev/api/network/request/RequestTask.offChunkReceived.html
+     */
+    offChunkReceived?: TaroRequestTask['offChunkReceived']
   }
 
-  interface ThrottleRequestTask extends Promise<ThrottleRequestTask> {
+  interface ThrottleRequestTask<T = any> extends Promise<T> {
 
   }
 
@@ -184,7 +233,7 @@ declare namespace Request {
      * })
      * ```
      */
-    request(option: string | RequestOption): RequestTask
+    request<T = any>(option: string | RequestOption): RequestTask<T>
 
     /**
      * 发起一个节流请求函数
@@ -202,7 +251,7 @@ declare namespace Request {
      * })
      * ```
      */
-    throttleRequest(option: RequestOption, mark?: string): ThrottleRequestTask
+    throttleRequest<T = any>(option: RequestOption, mark?: string): ThrottleRequestTask<T>
   }
 
 }
@@ -251,7 +300,11 @@ declare namespace Upload {
     /** 请求配置 */
     config?: RequestConfig
     /** 中间件 */
-    middle?: middle
+    middle?: {
+      before?: MiddleInput<BeforeCallback>
+      result?: MiddleInput<ResultCallback>
+      error?: MiddleInput<ErrorCallback>
+    }
     /** 请求超时 */
     timeout?: number
   }
@@ -333,6 +386,23 @@ declare namespace Upload {
       message: string
     } | object, params: Request.RequestOption) => object | Promise<object>): void
   }
+
+  type BeforeCallback = Parameters<middle['before']>[0]
+  type ResultCallback = Parameters<middle['result']>[0]
+  type ErrorCallback = Parameters<middle['error']>[0]
+
+  /** 中间件排序值：值越小越先执行 */
+  type MiddleSort = number
+
+  /**
+   * 中间件排他标识：
+   * 仅当通过 `upload(type, { middle: ... })` / `uploadTempFile(files, { middle: ... })` 直接传入时生效；
+   * 传入后，该阶段只使用这一个中间件，排除其他所有中间件。
+   */
+  type MiddleOnly = 'only'
+
+  type MiddleItem<T> = T | [T, MiddleSort] | [T, MiddleOnly]
+  type MiddleInput<T> = MiddleItem<T> | MiddleItem<T>[]
 
 
   namespace uploadTask {

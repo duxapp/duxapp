@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { toast } from '../util'
+import { duxappLang } from '../lang'
 import { loadFont, loadLocalFont } from './util'
 import { networkVerify } from '../rn'
 import { Platform } from '../rn/util'
@@ -19,7 +20,7 @@ export const font = {
   },
   load: async (name, url, num = 0) => {
     if (num > 5) {
-      return toast(name + ' 字体加载失败，请确认网络环境，重启后重试')
+      return toast(duxappLang.t('font.loadFail', { params: { name }, defaultValue: name + ' 字体加载失败，请确认网络环境，重启后重试' }))
     }
     try {
       if (!font.isLocalFont(name)) {

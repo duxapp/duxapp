@@ -1,5 +1,5 @@
 import { getLocation } from '@tarojs/taro'
-import { Platform, PermissionsAndroid } from '../rn/util'
+import { duxappLang } from '../lang'
 
 const PI = Math.PI
 const x_pi = PI * 3000.0 / 180.0
@@ -130,7 +130,7 @@ export const getLocationBase = (enableHighAccuracy = false) => {
   const pormise = new Promise(async (resolve, reject) => {
     if (process.env.TARO_ENV === 'rn') {
       if (!getLocationBase.rn) {
-        return reject({ message: 'RN端不支持获取定位' })
+        return reject({ message: duxappLang.t('map.location.rnNotSupported') })
       }
       getLocationBase.rn(enableHighAccuracy).then(resolve).catch(reject)
     } else {
@@ -154,7 +154,7 @@ export const getLocationBase = (enableHighAccuracy = false) => {
         resolve(getRes(res))
       }).catch(error => {
         console.log('定位失败', error)
-        reject({ message: '获取定位失败', error })
+        reject({ message: duxappLang.t('map.location.failed'), error })
       })
       // enableHighAccuracy && getLocation({
       //   type,
@@ -163,6 +163,8 @@ export const getLocationBase = (enableHighAccuracy = false) => {
     }
 
   })
+  // 预留给外部监听定位变化（当前实现不会主动触发）
+  // eslint-disable-next-line no-unused-vars
   let changeFunc
   pormise.onChange = func => {
     changeFunc = func

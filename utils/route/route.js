@@ -106,7 +106,7 @@ const { pages, registerPages, pagesTransfer, routes } = (() => {
         })
         .flat()
         // 排序
-        .reduce((prev, current, index, arr) => {
+        .reduce((prev, current) => {
           if (current[1]?.home) {
             prev[0].push(current)
           } else {

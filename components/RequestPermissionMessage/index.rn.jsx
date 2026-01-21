@@ -1,6 +1,6 @@
 import { Text, View } from '@tarojs/components'
 import { Platform, PermissionsAndroid } from 'react-native'
-import { asyncTimeOut, getWindowInfo, px, userConfig } from '@/duxapp/utils'
+import { asyncTimeOut, duxappLang, getWindowInfo, px, userConfig } from '@/duxapp/utils'
 import { TopView } from '../TopView'
 
 /**
@@ -36,6 +36,9 @@ export const requestPermissionMessage = async (type, msg) => {
 const Message = ({ msg, type }) => {
   const permissions = userConfig.option?.duxappReactNative?.permissions || {}
   const { statusBarHeight = 0 } = getWindowInfo()
+  const t = duxappLang.useT()
+  const name = t(`permission.${type.type}.name`, { defaultValue: type.name })
+  const text = msg || permissions[type.type] || t(`permission.${type.type}.message`, { defaultValue: type.message })
   return <View
     className='absolute gap-1 p-3 r-2 z-1 bg-primary'
     style={{
@@ -44,8 +47,8 @@ const Message = ({ msg, type }) => {
       right: px(32)
     }}
   >
-    <Text className='text-s4 Text-bold text-c4'>{type.name}权限使用说明</Text>
-    <Text className='text-s2 text-c4'>{msg || permissions[type.type] || type.message}</Text>
+    <Text className='text-s4 Text-bold text-c4'>{t('permission.tipTitle', { params: { name }, defaultValue: `${name}权限使用说明` })}</Text>
+    <Text className='text-s2 text-c4'>{text}</Text>
   </View>
 }
 

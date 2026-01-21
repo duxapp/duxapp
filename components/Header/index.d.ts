@@ -61,7 +61,10 @@ interface HeaderProps extends ViewProps {
 }
 
 interface HeaderBackProps {
-
+  /**
+   * 强制显示返回区域（用于有右侧按钮但没有可返回页面的场景）
+   */
+  show?: boolean
 }
 
 /**
@@ -77,6 +80,11 @@ export const Header: ComponentType<HeaderProps> & {
    */
   Back: ComponentType<HeaderBackProps>
 }
+
+/**
+ * Header 的返回区域组件（等同于 `Header.Back`）
+ */
+export const HeaderBack: ComponentType<HeaderBackProps>
 
 export const getHeaderSize: () => {
   menuWidth: number

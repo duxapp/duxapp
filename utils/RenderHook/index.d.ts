@@ -1,3 +1,5 @@
+import { ReactNode } from 'react'
+
 export class RenderHook {
   /**
    * 注册钩子
@@ -14,12 +16,12 @@ export class RenderHook {
     mark: string
     /** 传递给插入此钩子的组件的参数 */
     option?: {
-      [any]: any
+      [key: string]: any
     }
     /** 最多允许显示多少个插入的钩子 */
     max?: number
-    children?: JSX.Element
-  }) => JSX.Element
+    children?: ReactNode
+  }) => ReactNode
 
   /**
    * hook获取添加的钩子

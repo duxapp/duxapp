@@ -70,7 +70,7 @@ export declare class ObjectManage<T = any> {
    * const data = XX.getInstance().useData() // hook中调用数据
    * XX.getInstance().merge({ test: 1 }) // 合并数据
    */
-  static getInstance<T extends ObjectManage>(): T
+  static getInstance<T>(this: new (...args: any[]) => T): T
 
   /**
    * 监听数据变化

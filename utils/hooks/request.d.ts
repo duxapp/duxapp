@@ -116,6 +116,10 @@ declare namespace RequestHooks {
          */
     loading: boolean
     /**
+     * 列表数据
+     */
+    list: any[]
+    /**
      * 是否正在下拉刷新
      */
     refresh: boolean
@@ -123,12 +127,34 @@ declare namespace RequestHooks {
      * 获取下一页数据
      * @returns
      */
-    next: () => void
+    next: () => Promise<any>
     /**
      * 跳转到第一个页并重新加载数据
      * @returns
      */
     reload: () => Promise<{}>
+
+    /**
+     * 当前状态（只读）
+     */
+    currentData: {
+      /**
+       * 当前页面
+       */
+      page: number
+      /**
+       * 是否加载完成
+       */
+      loadEnd: boolean
+      /**
+       * 是否正在加载中
+       */
+      loading: boolean
+    }
+    /**
+     * 是否加载完成
+     */
+    loadEnd: boolean
 
     /**
      * 设置列表数据 useState 返回的第二个值

@@ -1,10 +1,10 @@
 export function recursionGetValue(
-  keys: string[] | string,
-  data: string[] | object,
-  childKey: string,
-  splice: boolean
+  keys?: string[] | string,
+  data?: any,
+  childKey?: string,
+  splice?: boolean
 ): any
 
-export function deepCopy(data: object | any): object | any
+export function deepCopy<T>(data: T): T
 
-export function deepEqua(data: object | any): object | any
+export function deepEqua(data1: any, data2: any): boolean

@@ -1,4 +1,4 @@
-import { createAnimation, Animation as TaroAnimation } from '@tarojs/taro'
+import { Animation as TaroAnimation } from '@tarojs/taro'
 import { ViewProps } from '@tarojs/components'
 import { ComponentType } from 'react'
 

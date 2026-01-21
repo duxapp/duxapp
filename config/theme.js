@@ -15,6 +15,9 @@ export default {
   blackColor: '#000',
   lineColor: '#f5f5f5',
 
+  shadowWidth: 8,
+  shadowColor: 'rgba(0, 0, 0, 0.05)',
+
   //用户自定义颜色1
   customColor1: '#337ab7',
   customColor2: '#337ab7',

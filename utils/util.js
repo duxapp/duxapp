@@ -1,6 +1,6 @@
 import { pxTransform, showToast } from '@tarojs/taro'
-import { Platform } from '@/duxapp/utils/rn/util'
 import { getDeviceInfo, getWindowInfo } from './taro'
+import duxappTheme from '../config/theme'
 
 export const toast = msg => {
   if (!msg) {
@@ -13,19 +13,29 @@ export const toast = msg => {
   })
 }
 
-let systemInfo
-export const isIphoneX = () => {
-  systemInfo = systemInfo || getDeviceInfo()
-  if (process.env.TARO_ENV === 'rn') {
-    return Platform.OS !== 'android' && systemInfo.safeArea?.bottom < systemInfo.screenHeight
-  } else {
-    const phoneMarks = ['iPhone X', 'iPhone 11', 'iPhone 12', 'iPhone 13', 'iPhone 14', 'iPhone 15', 'iPhone 16', 'iPhone 17', 'iPhone 18']
-    const { model = '' } = systemInfo
-    for (let i = 0, l = phoneMarks.length; i < l; i++) {
-      if ((model || '').startsWith(phoneMarks[i])) return true
-    }
-    return false
+const getBottomSafeAreaHeightFromInfo = () => {
+  const info = getWindowInfo()
+  const screenHeight = typeof info?.screenHeight === 'number'
+    ? info.screenHeight
+    : (typeof info?.windowHeight === 'number' ? info.windowHeight : NaN)
+  const safeAreaBottom = typeof info?.safeArea?.bottom === 'number' ? info.safeArea.bottom : NaN
+
+  if (!Number.isFinite(screenHeight) || !Number.isFinite(safeAreaBottom)) {
+    return 0
   }
+
+  return Math.max(0, screenHeight - safeAreaBottom)
+}
+
+/**
+ * 获取底部安全区域高度（屏幕底部不可用的那部分，例如 iPhone 刘海屏的 home indicator 区域）
+ */
+export const getBottomSafeAreaHeight = () => {
+  return getBottomSafeAreaHeightFromInfo()
+}
+
+export const isIphoneX = () => {
+  return getBottomSafeAreaHeightFromInfo() > 0
 }
 
 export const asyncTimeOut = time => {
@@ -78,7 +88,49 @@ export const px = (val, pxUnit) => {
 }
 
 export const pxNum = val => {
-  return val / 750 * Math.min(getWindowInfo().windowWidth, 520)
+  if (!pxNum.max) {
+    let max = 525
+    if (process.env.TARO_ENV === 'weapp') {
+      let config = duxappTheme.topView?.weappRem
+
+      if (config) {
+        config = {
+          maxSize: 28,
+          maxSizePhone: 22,
+          ...config,
+        }
+        const maxFontSize = isDesktop({ includeIPad: true }) ? config.maxSize : config.maxSizePhone
+        // 对齐 `PageMeta` 中的计算：size = 40 * screenWidth / 750，然后 clamp 到 maxFontSize
+        // 因此将换算宽度上限转换为 screenWidth 的上限：screenWidth = maxFontSize * 750 / 40
+        if (typeof maxFontSize === 'number' && Number.isFinite(maxFontSize) && maxFontSize > 0) {
+          max = maxFontSize * 750 / 40
+        }
+      }
+    }
+    pxNum.max = max
+  }
+  return val / 750 * Math.min(getWindowInfo().windowWidth, pxNum.max)
+}
+
+export const isDesktop = (options) => {
+  const includeIPad = typeof options === 'boolean' ? options : !!options?.includeIPad
+
+  if (!isDesktop.deviceInfo) {
+    isDesktop.deviceInfo = getDeviceInfo()
+  }
+
+  const platform = String(isDesktop.deviceInfo.platform || '').toLowerCase()
+
+  if (platform === 'windows' || platform === 'mac' || platform === 'ohos_pc') {
+    return true
+  }
+
+  const model = String(isDesktop.deviceInfo.model || '')
+  if (includeIPad && /ipad/i.test(model)) {
+    return true
+  }
+
+  return false
 }
 
 export const transformStyle = obj => {

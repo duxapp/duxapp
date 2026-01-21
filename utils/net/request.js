@@ -115,6 +115,23 @@ const request = (() => {
     const middle = params.middle || {}
 
     let loadingClose
+    let taroRequestTask
+    let abortRequested = false
+    const isMini = process.env.TARO_PLATFORM === 'mini'
+    const chunkCallbacks = new Set()
+    const headersCallbacks = new Set()
+    const syncMiniListeners = () => {
+      if (!isMini || !taroRequestTask) return
+      chunkCallbacks.forEach(cb => taroRequestTask?.onChunkReceived?.(cb))
+      headersCallbacks.forEach(cb => taroRequestTask?.onHeadersReceived?.(cb))
+      if (abortRequested) {
+        taroRequestTask?.abort?.()
+      }
+    }
+    const setTaroRequestTask = task => {
+      taroRequestTask = task
+      syncMiniListeners()
+    }
     const requestTask = (new Promise(async (resolve, reject) => {
       if (middle.before?.length) {
         try {
@@ -124,7 +141,10 @@ const request = (() => {
           return
         }
       }
-      taroRequestTask = (['h5', 'rn'].includes(process.env.TARO_ENV) ? requestReact : taroRequest)({
+      const nextTask = (['h5', 'rn'].includes(process.env.TARO_ENV) ? requestReact : taroRequest)({
+        ...params,
+        timeout,
+        ...requestParams,
         url: `${requestParams.url}${Object.keys(requestParams.query).length ? '?' + qs.stringify(requestParams.query) : ''}`,
         data: !requestParams.body
           ? ''
@@ -132,9 +152,9 @@ const request = (() => {
             ? JSON.stringify(requestParams.body)
             : qs.stringify(requestParams.body),
         header: requestParams.header,
-        method: requestParams.method,
-        timeout
+        method: requestParams.method
       })
+      setTaroRequestTask(nextTask)
       if (!requestParams.url) {
         reject({ message: '请求URL错误', code: resultConfig.errorCode })
         return
@@ -201,8 +221,40 @@ const request = (() => {
       err.url = requestParams?.url
       throw err
     })
-    let taroRequestTask
-    requestTask.abort = () => taroRequestTask?.abort()
+    requestTask.abort = () => {
+      abortRequested = true
+      taroRequestTask?.abort?.()
+    }
+    if (isMini) {
+      requestTask.onChunkReceived = callback => {
+        if (typeof callback !== 'function') return
+        chunkCallbacks.add(callback)
+        taroRequestTask?.onChunkReceived?.(callback)
+      }
+      requestTask.onHeadersReceived = callback => {
+        if (typeof callback !== 'function') return
+        headersCallbacks.add(callback)
+        taroRequestTask?.onHeadersReceived?.(callback)
+      }
+      requestTask.offChunkReceived = callback => {
+        if (typeof callback === 'function') {
+          chunkCallbacks.delete(callback)
+          taroRequestTask?.offChunkReceived?.(callback)
+          return
+        }
+        chunkCallbacks.clear()
+        taroRequestTask?.offChunkReceived?.()
+      }
+      requestTask.offHeadersReceived = callback => {
+        if (typeof callback === 'function') {
+          headersCallbacks.delete(callback)
+          taroRequestTask?.offHeadersReceived?.(callback)
+          return
+        }
+        headersCallbacks.clear()
+        taroRequestTask?.offHeadersReceived?.()
+      }
+    }
     return requestTask
   }
 })();
@@ -275,14 +327,59 @@ export const createRequest = (() => {
     }
 
     const sortMiddle = list => {
-      return list.map(item => {
-        if (typeof item === 'function') {
-          return [item, 0]
-        }
-        return item
-      })
+      return list
+        .map(item => {
+          if (typeof item === 'function') {
+            return [item, 0]
+          }
+          if (Array.isArray(item)) {
+            return [item[0], typeof item[1] === 'number' ? item[1] : 0]
+          }
+          return null
+        })
+        .filter(v => v)
         .sort(([, a], [, b]) => a - b)
         .map(v => v[0])
+    }
+
+    const normalizeMiddleInput = input => {
+      if (!input) return []
+      if (typeof input === 'function') return [input]
+      if (Array.isArray(input)) {
+        const isTuple = typeof input[0] === 'function' && (typeof input[1] === 'number' || input[1] === 'only') && input.length === 2
+        return isTuple ? [input] : input
+      }
+      return [input]
+    }
+
+    const pickMiddle = (input, globalList, localList) => {
+      const paramItems = normalizeMiddleInput(input).map(item => {
+        if (typeof item === 'function') {
+          return { callback: item, sort: 0, only: null }
+        }
+        if (Array.isArray(item)) {
+          const callback = item[0]
+          const mark = item[1]
+          return {
+            callback,
+            sort: typeof mark === 'number' ? mark : 0,
+            only: mark === 'only' ? mark : null
+          }
+        }
+        return null
+      }).filter(v => v)
+
+      // 仅对通过参数直接传入的 middle 生效：传入字符串标识时，只使用该一个中间件
+      const onlyItem = [...paramItems].reverse().find(v => v.only)
+      if (onlyItem) {
+        return [onlyItem.callback]
+      }
+
+      return sortMiddle([
+        ...paramItems.map(v => [v.callback, v.sort]),
+        ...globalList,
+        ...localList
+      ])
     }
 
     const getParams = params => {
@@ -290,9 +387,9 @@ export const createRequest = (() => {
         config: config?.config,
         ...(typeof params === 'string' ? { url: params } : params),
         middle: {
-          before: sortMiddle([...(params.middle?.before || []), ...globalMiddle.before, ...middle.before]),
-          result: sortMiddle([...(params.middle?.result || []), ...globalMiddle.result, ...middle.result]),
-          error: sortMiddle([...(params.middle?.error || []), ...globalMiddle.error, ...middle.error])
+          before: pickMiddle(params.middle?.before, globalMiddle.before, middle.before),
+          result: pickMiddle(params.middle?.result, globalMiddle.result, middle.result),
+          error: pickMiddle(params.middle?.error, globalMiddle.error, middle.error)
         },
       }
     }

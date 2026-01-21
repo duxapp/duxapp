@@ -4,6 +4,10 @@
  */
 export const font: {
   /**
+   * 判断是否为本地字体（仅内部使用为主）
+   */
+  isLocalFont: (name: string) => boolean | undefined
+  /**
    * 加载一个本地字体 仅RN端支持
    * @param name 字体名称
    * @param assets 字体资源路径
@@ -14,7 +18,7 @@ export const font: {
    * @param name 字体名称
    * @param url 字体地址
    */
-  load: (name: string, url: string) => void
+  load: (name: string, url: string) => Promise<void>
   /**
    * 判断远程字体加载状态，配合 load 方法使用
    * @param name 字体名称

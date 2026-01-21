@@ -3,6 +3,7 @@ import qs from 'qs'
 import { ActionSheet } from '@/duxapp/components/ActionSheet'
 import { recursionGetValue } from '../object'
 import { ExpoImagePicker } from '../rn/util'
+import { duxappLang } from '../lang'
 
 /**
  * 获取请求url
@@ -98,20 +99,34 @@ const chooseMedia = async (type = 'image', options = {}) => {
 
   if (process.env.TARO_ENV === 'rn') {
     let source = sourceType.includes('album') ? 'photo' : 'camera'
-    let sourceName = sourceType.includes('album') ? '相册' : '相机'
+    let sourceName = sourceType.includes('album') ? 'album' : 'camera'
     if (sourceType.length === 2) {
+      const albumLabel = duxappLang.t('media.source.album')
+      const cameraLabel = duxappLang.t('media.source.camera')
+      const photoLabel = duxappLang.t('media.source.photo')
+      const videoLabel = duxappLang.t('media.source.video')
+
+      const list = type === 'all'
+        ? [albumLabel, photoLabel, videoLabel]
+        : [albumLabel, cameraLabel]
+
       const select = await ActionSheet.show({
-        list: ['相册', ...type === 'all' ? ['拍照', '录像'] : ['相机']]
+        list
       })
-      sourceName = select.item
-      source = select.index ? 'camera' : 'photo'
+      if (type === 'all') {
+        sourceName = select.index === 0 ? 'album' : select.index === 1 ? 'photo' : 'video'
+        source = select.index === 0 ? 'photo' : 'camera'
+      } else {
+        sourceName = select.index === 0 ? 'album' : 'camera'
+        source = select.index ? 'camera' : 'photo'
+      }
     }
     const option = {
       mediaTypes:
         type === 'image' ? 'images' :
           type === 'video' ? 'videos' : (
-            sourceName === '相册' ? ['images', 'videos'] :
-              sourceName === '拍照' ? 'images' : 'videos'
+            sourceName === 'album' ? ['images', 'videos'] :
+              sourceName === 'photo' ? 'images' : 'videos'
           ),
       allowsMultipleSelection: count > 1,
       quality: isCompressed ? 0.6 : 0.8,
@@ -124,7 +139,7 @@ const chooseMedia = async (type = 'image', options = {}) => {
       const { granted } = await ExpoImagePicker.requestMediaLibraryPermissionsAsync()
       if (!granted) {
         throw {
-          message: '申请相册权限被拒绝'
+          message: duxappLang.t('media.perm.albumDenied')
         }
       }
       promise = ExpoImagePicker.launchImageLibraryAsync(option)
@@ -132,7 +147,7 @@ const chooseMedia = async (type = 'image', options = {}) => {
       const { granted } = await ExpoImagePicker.requestCameraPermissionsAsync()
       if (!granted) {
         throw {
-          message: '申请摄像头权限被拒绝'
+          message: duxappLang.t('media.perm.cameraDenied')
         }
       }
       option.cameraType = camera === 'back' ? 'back' : 'front'
@@ -141,12 +156,12 @@ const chooseMedia = async (type = 'image', options = {}) => {
     const { canceled, assets } = await promise
     if (canceled) {
       throw {
-        message: '取消选择'
+        message: duxappLang.t('common.cancelSelect')
       }
     }
     if (!Array.isArray(assets)) {
       throw {
-        message: '错误数据：' + assets
+        message: duxappLang.t('media.error.invalidData', { params: { data: String(assets) } })
       }
     }
     const files = assets.map(item => ({

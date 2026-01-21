@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import { getStorage, setStorage, getStorageSync } from '@tarojs/taro'
 import { useEffect, useMemo, useState } from 'react'
+import { getStorage, setStorage, getStorageSync } from './taro'
 import { QuickEvent } from './QuickEvent'
 
 export class Cache {
@@ -28,7 +28,7 @@ export class Cache {
   async init() {
     try {
       let res
-      const isSync = this.config.sync && !['rn', 'harmony_cpp'].includes(process.env.TARO_ENV)
+      const isSync = this.config.sync && !['harmony_cpp'].includes(process.env.TARO_ENV)
       if (isSync) {
         res = getStorageSync(this.config.key)
       } else {
@@ -113,6 +113,32 @@ export class ObjectManage {
 
   data = {}
 
+  _pendingNotify = false
+  _pendingNotifyToken = 0
+  _pendingCacheWrite = false
+  _pendingType = 'set'
+
+  _scheduleNotify(type = 'set') {
+    this._pendingType = type
+    this._pendingCacheWrite = true
+    if (this._pendingNotify) {
+      return
+    }
+    this._pendingNotify = true
+    const token = ++this._pendingNotifyToken
+    Promise.resolve().then(() => {
+      if (token !== this._pendingNotifyToken) {
+        return
+      }
+      this._pendingNotify = false
+      if (this._pendingCacheWrite) {
+        this._pendingCacheWrite = false
+        this.cache?.set(this.data)
+      }
+      this.event.trigger(this.data, this._pendingType)
+    })
+  }
+
   static getInstance() {
     if (!this.instance) {
       this.instance = new this()
@@ -146,8 +172,7 @@ export class ObjectManage {
     } else {
       this.data = data
     }
-    this.cache?.set(this.data)
-    this.event.trigger(this.data, 'set')
+    this._scheduleNotify()
   }
 
   // 合并并设置数据
@@ -164,8 +189,7 @@ export class ObjectManage {
   // 清除数据
   clear() {
     this.data = {}
-    this.event.trigger(this.data, 'clear')
-    this.cache?.set(this.data)
+    this._scheduleNotify('clear')
   }
 
   // 使用数据

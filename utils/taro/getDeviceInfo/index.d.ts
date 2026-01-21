@@ -1,1 +1,1 @@
-export { getDeviceInfo } from '@tarojs/taro'
+export const getDeviceInfo: () => ReturnType<typeof import('@tarojs/taro').getDeviceInfo>

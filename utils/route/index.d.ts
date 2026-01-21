@@ -195,6 +195,24 @@ export const routes: {
 }
 
 /**
+ * 注册路由表（框架初始化使用）
+ */
+export const registerPages: (route: any, userConfig: any) => void
+
+/**
+ * 路由转换表
+ */
+export const pagesTransfer: {
+  default: Record<string, string>
+  start: Record<string, string>
+}
+
+/**
+ * 对路径进行路由转换
+ */
+export const pageTransfer: (path: string, params?: AnyObject) => { path: string, params: AnyObject }
+
+/**
  * 同步获取当前页面路径
  */
 export const currentPage: () => string

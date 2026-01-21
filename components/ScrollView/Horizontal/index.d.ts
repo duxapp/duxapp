@@ -1,5 +1,8 @@
 import { ComponentType } from 'react'
 import { ScrollViewProps } from '@tarojs/components/types/ScrollView'
 
-interface ScrollViewHorizontalProps extends ScrollViewProps {}
+export interface ScrollViewHorizontalProps extends ScrollViewProps {
+  className?: string
+}
 
+export const Horizontal: ComponentType<ScrollViewHorizontalProps>

@@ -1,6 +1,7 @@
 import { Linking, Platform } from 'react-native'
 import { bdDecrypt } from '../util'
 import { toast } from '../../util'
+import { duxappLang } from '../../lang'
 //transit 公交
 //navigation 导航（百度）
 //driving 驾车
@@ -52,11 +53,11 @@ export default class RoutePlan {
       const list = [[], []]
       const maps = [
         {
-          title: '高德地图',
+          title: duxappLang.t('map.provider.amap'),
           onPress: () => startMap('amap')
         },
         {
-          title: '百度地图',
+          title: duxappLang.t('map.provider.baidu'),
           onPress: () => startMap('baidu')
         }
       ]
@@ -64,7 +65,7 @@ export default class RoutePlan {
         res[i] && (list[0].push(maps[i].title), list[1].push(maps[i]))
       }
       if (list[0].length === 0) {
-        toast('没有合适的地图APP')
+        toast(duxappLang.t('map.toast.noApp'))
       } else {
         list[1][0].onPress()
       }
@@ -90,7 +91,7 @@ export default class RoutePlan {
       base += `sourceApplication=${data.sourceApplication || 'test'}`
       //起点经纬度不传，则自动将用户当前位置设为起点
       if (!data.dlat || !data.dlon) {
-        reject('需要终点经纬度')
+        reject(duxappLang.t('map.nav.needDestination'))
       } else {
         if (data.slon && data.slat) {
           base += `&slat=${data.slat}&slon=${data.slon}`
@@ -103,9 +104,9 @@ export default class RoutePlan {
         }
         base += `&dlat=${data.dlat}&dlon=${data.dlon}&dev=0&t=${data.mode ? (data.mode.amap || 0) : 0}`
         Linking.openURL(base).then(() => {
-          resolve('打开成功')
+          resolve(duxappLang.t('map.nav.openSuccess'))
         }).catch(() => {
-          reject('暂无安装高德地图')
+          reject(duxappLang.t('map.nav.noAmap'))
         })
       }
     });
@@ -127,9 +128,9 @@ export default class RoutePlan {
     return new Promise((resolve, reject) => {
       //起点经纬度不传，则自动将用户当前位置设为起点
       if (!data.dlat || !data.dlon) {
-        reject('需要终点经纬度')
+        reject(duxappLang.t('map.nav.needDestination'))
       } else if (!data.dname && !data.dlon && !data.slat) {
-        reject('需要传终点名称或者经纬度')
+        reject(duxappLang.t('map.nav.needDestinationName'))
       } else {
         if (data.slon && data.slat) {
           base += `origin=name:${data.sname}|latlng:${data.slat},${data.slon}`
@@ -144,9 +145,9 @@ export default class RoutePlan {
         }
         base += `&mode=${data.mode ? (data.mode.baidu || 'driving') : 'driving'}`
         Linking.openURL(base).then(() => {
-          resolve('打开成功')
+          resolve(duxappLang.t('map.nav.openSuccess'))
         }).catch(() => {
-          reject('暂无安装百度地图')
+          reject(duxappLang.t('map.nav.noBaidu'))
         })
       }
     });

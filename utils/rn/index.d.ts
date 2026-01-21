@@ -7,7 +7,7 @@ export const useLaunch: (callback: () => void) => void
  * ios端奇怪的网络权限，在APP首次启动的时候无法获得网络
  * 将这个方法加入网络请求的中间件(请求拦截器)中，可以让请求获得正确的结果
  */
-export const networkVerify: <K>(params: K) => Promise<K>
+export const networkVerify: <K = void>(params?: K) => K | Promise<K>
 
 /**
  * RN 安卓端使用这个钩子，可以阻止返回按钮关闭页面

@@ -1,4 +1,5 @@
 import { ComponentType, Component, CSSProperties, ReactElement } from 'react'
+import { PageMetaProps } from '@tarojs/components'
 
 interface TopViewProps {
   /**
@@ -15,6 +16,8 @@ interface TopViewProps {
   style: CSSProperties
   /** 样式类名 */
   className: string
+  /** 传递给小程序端专用组件 PageMeta 的属性 */
+  pageMetaProps?: PageMetaProps
 }
 
 /**

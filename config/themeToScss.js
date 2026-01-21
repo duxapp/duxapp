@@ -20,6 +20,9 @@ $duxappWhiteColor: #fff;
 $duxappBlackColor: #000;
 $duxappLineColor: #f5f5f5;
 
+$duxappShadowWidth: 8px;
+$duxappShadowColor: rgba(0, 0, 0, 0.05);
+
 $duxappCustomColor1: #337ab7;
 $duxappCustomColor2: #337ab7;
 $duxappCustomColor3: #337ab7;

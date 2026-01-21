@@ -54,3 +54,13 @@ export const useDeepObject: (data: any) => any
 export const useForceUpdate: () => () => void
 
 export function useLockFn<T extends (...args: any[]) => any>(fn?: T): (...args: Parameters<T>) => Promise<HookResult<ReturnType<T>> | undefined>
+
+/**
+ * 页面是否处于显示状态（Taro useDidShow/useDidHide）
+ */
+export const usePageShow: () => boolean
+
+/**
+ * 获取窗口信息，并在窗口变化/页面显示时刷新
+ */
+export const useWindowInfo: () => ReturnType<typeof import('@tarojs/taro').getSystemInfoSync>

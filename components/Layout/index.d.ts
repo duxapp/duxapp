@@ -1,6 +1,28 @@
 import { ComponentType } from 'react'
 import { ViewProps } from '@tarojs/components'
 
+export interface LayoutRect {
+  width: number
+  height: number
+  left: number
+  top: number
+  right?: number
+  bottom?: number
+}
+
+/**
+ * 获取节点布局信息
+ * @param select 选择器
+ * @param getAll 是否获取全部匹配节点
+ * @param scope 查询作用域（小程序/H5）
+ */
+export const getRect: (
+  select: string,
+  getAll?: boolean,
+  scope?: any,
+  num?: number
+) => Promise<LayoutRect | LayoutRect[]>
+
 interface LayoutProps extends ViewProps {
   /**
    * 重载组件的 key，用于重新计算布局尺寸
@@ -8,16 +30,7 @@ interface LayoutProps extends ViewProps {
    */
   reloadKey?: string | number;
   /** 在布局发生变化时的回调函数 */
-  onLayout?: (layout: {
-    /** 宽度 */
-    width: number
-    /** 高度 */
-    height: number
-    /** 距离屏幕左侧的位置 */
-    left: number
-    /** 距离屏幕顶部的位置 */
-    top: number
-  }) => void
+  onLayout?: (layout: LayoutRect) => void
 }
 
 /**

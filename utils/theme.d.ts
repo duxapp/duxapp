@@ -1,3 +1,5 @@
+import { ObjectManage } from './data'
+
 interface AppThemes {
   [app: string]: Record<string, any>
 }
@@ -39,6 +41,13 @@ declare class Theme extends ObjectManage {
    * 如果 saveMode 传入true是获取当前保存的主题，如果是跟随系统的话会返回 `null`，如果不传这个参数，会返回实际正在使用的主题
    * @param saveMode 是否获取当前纯属的主题而不是真实使用的主题
    */
+  getMode(saveMode?: boolean): string | null
+
+  /**
+   * 获取当前正在使用的主题
+   * 如果 saveMode 传入true是获取当前保存的主题，如果是跟随系统的话会返回 `null`，如果不传这个参数，会返回实际正在使用的主题
+   * @param saveMode 是否获取当前纯属的主题而不是真实使用的主题
+   */
   useMode(saveMode?: boolean): string | null
 
   /**
@@ -67,6 +76,12 @@ declare class Theme extends ObjectManage {
    * @param app 指定使用哪个模块的主题
    */
   useTheme(app?: string): Record<string, any> | AppThemes
+
+  /**
+   * 监听真实生效主题变化（非保存的 mode）
+   * @param callback 主题变化回调
+   */
+  onChange(callback: (mode: string | null) => void, onLast?: boolean): { remove: () => void }
 }
 
 export const theme: Theme

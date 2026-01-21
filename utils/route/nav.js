@@ -202,12 +202,19 @@ class Route {
       }
       // 保存当前的跳转方式
       this.oldNavType = option.type
-      const navs = { navigateBack, navigateTo, reLaunch, redirectTo }
-      await navs[option.type]({
-        ...(option.type === 'navigateBack'
-          ? { delta: option.delta }
-          : { url: option.url })
-      })
+      const navs = { navigateTo, reLaunch, redirectTo }
+      if (option.type === 'navigateBack') {
+        const { length } = this.getCurrentPages()
+        if (!length || length <= 1) {
+          await this.nav('back:home')
+          return
+        } else {
+          await navigateBack({ delta: option.delta })
+        }
+      } else {
+        await navs[option.type]({ url: option.url })
+      }
+
       return {
         backData: () => {
           if (option.type === 'navigateTo') {
@@ -514,7 +521,7 @@ class Route {
         option.type = 'navigateBack'
         if (option.delta === 'home') {
           // 返回到主页
-          const { length } = getCurrentPages()
+          const { length } = this.getCurrentPages()
           option.delta = length - 1
           const current = currentPage()
           const index = Object.keys(routerPage).find(key => !routerPage[key].disable)

@@ -43,19 +43,29 @@ export const bdEncrypt: (gcjLat: number, gcjLon: number) => {
  * BD-09 to GCJ-02
  * 百度坐标转火星坐标(高德)
  */
-export const bdDecrypt: (gcjLat: number, gcjLon: number) => {
+export const bdDecrypt: (bdLat: number, bdLon: number) => {
   lat: number
   lng: number
+}
+
+interface LocationResult {
+  latitude: number
+  longitude: number
+  [key: string]: any
+}
+
+interface LocationTask<T = LocationResult> extends Promise<T> {
+  /**
+   * 预留给外部监听定位变化（当前实现不会主动触发）
+   */
+  onChange: (callback: (res: T) => void) => LocationTask<T>
 }
 
 /**
  * 获取经纬度信息
  * 返回的坐标系为 gcj02(火星坐标系)
  */
-export const getLocationBase: (enableHighAccuracy: boolean) => {
-  latitude: number
-  longitude: number
-}
+export const getLocationBase: (enableHighAccuracy?: boolean) => LocationTask<LocationResult>
 
 export const AppMap: {
   /**

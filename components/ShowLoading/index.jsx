@@ -1,26 +1,22 @@
 import { View, Text } from '@tarojs/components'
-import { px, currentPage, getWindowInfo } from '@/duxapp/utils'
+import { currentPage, duxappLang, transformStyle } from '@/duxapp/utils'
 import { TopView } from '../TopView'
 import { Loading } from '../Loading'
 
 import './index.scss'
 
-const getSize = size => {
-  const { windowWidth } = getWindowInfo()
-  return 750 / windowWidth * size
-}
-
 const ShowLoading = ({
-  text = '请稍后',
+  text = duxappLang.t('common.loading'),
   mask
 }) => {
-  const { windowWidth, windowHeight } = getWindowInfo()
 
   return <>
     {mask && <View className='ShowLoading__mask' />}
     <View className='ShowLoading' style={{
-      left: px(getSize(windowWidth) / 2 - 100),
-      top: px(getSize(windowHeight) / 2 - 100),
+      transform: transformStyle({
+        translateX: '-50%',
+        translateY: '-50%'
+      })
     }}
     >
       <Loading color='blank' size={64} />

@@ -3,6 +3,7 @@ import base64 from 'crypto-js/enc-base64'
 import { useDidShow } from '@tarojs/taro'
 import { useDeepObject } from './common'
 import { ObjectManage } from '../data'
+import { duxappLang } from '../lang'
 
 export const createRequestHooks = request => {
   return {
@@ -166,13 +167,13 @@ export const createRequestHooks = request => {
 
       const next = useCallback(() => {
         if (!currentState.current.init) {
-          return Promise.reject('数据未初始化')
+          return Promise.reject(duxappLang.t('request.notInit'))
         }
         if (currentState.current.loadEnd) {
-          return Promise.reject('数据已经加载完成')
+          return Promise.reject(duxappLang.t('request.loadEnd'))
         }
         if (currentState.current.loading) {
-          return Promise.reject('请稍后 正在加载中')
+          return Promise.reject(duxappLang.t('request.loading'))
         }
         currentState.current.page++
         return getList()
@@ -180,7 +181,7 @@ export const createRequestHooks = request => {
 
       const reload = useCallback(() => {
         if (currentState.current.loading) {
-          return Promise.reject('请稍后 正在加载中')
+          return Promise.reject(duxappLang.t('request.loading'))
         }
         if (currentState.current.loadEnd) {
           currentState.current.loadEnd = false

@@ -1,6 +1,8 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { useDidHide, useDidShow, onWindowResize, offWindowResize } from '@tarojs/taro'
 import { QuickEvent } from '../QuickEvent'
 import { deepEqua } from '../object'
+import { getWindowInfo } from '../taro'
 
 export const createGlobalState = defaultData => {
 
@@ -111,4 +113,42 @@ export const useLockFn = fn => {
   }
 
   return callbackRef.current
+}
+
+export const usePageShow = () => {
+
+  const [show, setShow] = useState(true)
+
+  useDidShow(() => {
+    setShow(true)
+  })
+
+  useDidHide(() => {
+    setShow(false)
+  })
+
+  return show
+}
+
+export const useWindowInfo = () => {
+
+  const [info, setInfo] = useState(() => getWindowInfo())
+
+  const show = usePageShow()
+
+  useEffect(() => {
+    if (show) {
+      const callback = () => setInfo(getWindowInfo())
+      onWindowResize(callback)
+
+      setInfo(old => {
+        const _info = getWindowInfo()
+        return deepEqua(old, _info) ? old : _info
+      })
+
+      return () => offWindowResize(callback)
+    }
+  }, [show])
+
+  return info
 }

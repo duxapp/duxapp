@@ -3,6 +3,7 @@ import { ObjectManage } from './data'
 import { themeUtil } from './rn/util'
 import { userConfig } from '../config/userConfig'
 import { deepCopy } from './object'
+import { QuickEvent } from './QuickEvent'
 
 const isObject = value => typeof value === 'object' && !Array.isArray(value)
 
@@ -49,7 +50,7 @@ class Theme extends ObjectManage {
     const isAuto = this.isAuto = config.themes[config.light] && config.themes[config.dark]
 
     const switchMode = this.switchMode = mode => {
-      this.currentMode = mode
+      this.setCurrentMode(mode)
       const option = userConfig.option
       if (option) {
         Object.keys(option).forEach(app => {
@@ -109,6 +110,17 @@ class Theme extends ObjectManage {
   // 将系统默认主题配置深度拷贝一份的备份，用于保存一些默认配置
   copyThemes = {}
 
+  modeEvent = new QuickEvent()
+
+  setCurrentMode(mode) {
+    if (mode && this.currentMode !== mode) {
+      this.currentMode = mode
+      this.modeEvent.trigger(mode)
+    } else {
+      this.currentMode = mode
+    }
+  }
+
   registerAppThemes(themes) {
     this.appThemes = themes
     if (!this.isSetMode) {
@@ -135,6 +147,13 @@ class Theme extends ObjectManage {
       })
     }
     return modes
+  }
+
+  getMode(saveMode) {
+    if (saveMode) {
+      return this.data.mode
+    }
+    return this.currentMode
   }
 
   useMode(saveMode) {
@@ -170,9 +189,9 @@ class Theme extends ObjectManage {
     }
     if (!mode) {
       if (this.isAuto) {
-        this.currentMode = this.config[themeUtil.getTheme()]
+        this.setCurrentMode(this.config[themeUtil.getTheme()])
       } else {
-        this.currentMode = this.config.default
+        this.setCurrentMode(this.config.default)
       }
     }
     this.set({
@@ -184,6 +203,14 @@ class Theme extends ObjectManage {
   useTheme(app) {
     this.useData()
     return app ? this.appThemes[app] : this.appThemes
+  }
+
+  /**
+   * 监听真实生效主题变化（非保存的 mode）。
+   * @param {(mode: string) => void} callback
+   */
+  onChange(callback) {
+    return this.modeEvent.on(callback)
   }
 
   // fix 提供给RN端使用
