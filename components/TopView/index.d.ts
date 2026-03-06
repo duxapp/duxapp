@@ -16,7 +16,7 @@ interface TopViewProps {
   style: CSSProperties
   /** 样式类名 */
   className: string
-  /** 传递给小程序端专用组件 PageMeta 的属性 */
+  /** 传递给 PageMeta 的属性；小程序端完整支持，RN 端支持 pageOrientation（portrait | landscape）并在横屏时隐藏状态栏 */
   pageMetaProps?: PageMetaProps
 }
 

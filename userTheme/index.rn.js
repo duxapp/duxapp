@@ -2,7 +2,7 @@ import { pxTransform } from '@tarojs/runtime-rn'
 
 export default {
   "light": {
-    "duxappPrimaryColor": "#f03a22",
+    "duxappPrimaryColor": "#2c2960",
     "duxappSecondaryColor": "#1976D2",
     "duxappSuccessColor": "#34a853",
     "duxappDangerColor": "#ea4335",
@@ -42,11 +42,11 @@ export default {
     "duxuiButtonLPadding": pxTransform(40),
     "duxuiButtonLHeight": pxTransform(90),
     "duxuiTabBarNameColor": "#373D52",
-    "duxuiTabBarNameHoverColor": "#f03a22",
+    "duxuiTabBarNameHoverColor": "#2c2960",
     "duxuiTabLineWidth": pxTransform(40),
     "duxuiTabLineHeight": pxTransform(8),
     "duxuiTabLineRadius": pxTransform(4),
-    "duxuiAvatarColor": "#f03a22",
+    "duxuiAvatarColor": "#2c2960",
     "duxuiAvatarBgColor": "#eee",
     "duxuiAvatarIconSize": pxTransform(56),
     "duxuiAvatarSSize": pxTransform(48),
@@ -59,7 +59,7 @@ export default {
     "duxuiFormItemLabelWidth": pxTransform(140)
   },
   "dark": {
-    "duxappPrimaryColor": "#f03a22",
+    "duxappPrimaryColor": "#4d45df",
     "duxappSecondaryColor": "#1976D2",
     "duxappSuccessColor": "#34a853",
     "duxappDangerColor": "#ea4335",
@@ -99,11 +99,11 @@ export default {
     "duxuiButtonLPadding": pxTransform(40),
     "duxuiButtonLHeight": pxTransform(90),
     "duxuiTabBarNameColor": "#888",
-    "duxuiTabBarNameHoverColor": "#f03a22",
+    "duxuiTabBarNameHoverColor": "#2c2960",
     "duxuiTabLineWidth": pxTransform(40),
     "duxuiTabLineHeight": pxTransform(8),
     "duxuiTabLineRadius": pxTransform(4),
-    "duxuiAvatarColor": "#f03a22",
+    "duxuiAvatarColor": "#4d45df",
     "duxuiAvatarBgColor": "#eee",
     "duxuiAvatarIconSize": pxTransform(56),
     "duxuiAvatarSSize": pxTransform(48),

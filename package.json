@@ -8,7 +8,9 @@
     "**/*.css",
     "**/*.scss",
     "**/*.js",
-    "**/*.ts"
+    "**/*.ts",
+    "**/*.jsx",
+    "**/*.tsx"
   ],
   "scripts": {
     "build:weapp": "duxapp build --type weapp",

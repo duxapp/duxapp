@@ -1,6 +1,9 @@
 import { Request } from '../net'
 
 declare namespace RequestHooks {
+  type UseRequestOption = string | Request.RequestOption
+  type ReloadOption = string | Partial<Omit<Request.RequestOption, 'config' | 'middle'>>
+
   interface RequestConfig {
     /**
        * 返回数据的回调，你在函数中返回的数据将作为此hook的结果
@@ -47,9 +50,13 @@ declare namespace RequestHooks {
     error?: any
     /**
      * 重新加载数据
+     * 可传入临时参数覆盖 `useRequest` 的原始参数
+     * - 除 `data` / `header` 外，其他字段为浅覆盖
+     * - `data` / `header` 会与原参数做一层合并
+     * - 不支持临时传入 `config` / `middle`
      * @returns
      */
-    reload: () => Promise<{}>
+    reload: (option?: ReloadOption) => Promise<{}>
     /**
      * 同useState()返回的的第二个参数
      * @param value
@@ -130,9 +137,13 @@ declare namespace RequestHooks {
     next: () => Promise<any>
     /**
      * 跳转到第一个页并重新加载数据
+     * 可传入临时参数覆盖 `usePageData` 的原始参数
+     * - 除 `data` / `header` 外，其他字段为浅覆盖
+     * - `data` / `header` 会与原参数做一层合并
+     * - 不支持临时传入 `config` / `middle`
      * @returns
      */
-    reload: () => Promise<{}>
+    reload: (option?: ReloadOption) => Promise<{}>
 
     /**
      * 当前状态（只读）
@@ -164,7 +175,7 @@ declare namespace RequestHooks {
   }
 }
 
-export function createRequestHooks(request: () => Promist<any>): {
+export function createRequestHooks(request: (option: RequestHooks.UseRequestOption) => Promise<any>): {
   /**
    * request请求封装成hook
    * @param option 请求函数的参数
@@ -172,12 +183,12 @@ export function createRequestHooks(request: () => Promist<any>): {
    * @returns
    */
   useRequest: (
-    option: Request.RequestOption,
-    config: RequestHooks.RequestConfig
+    option: RequestHooks.UseRequestOption,
+    config?: RequestHooks.RequestConfig
   ) => [any, RequestHooks.RequestResult]
 
   usePageData: (
-    url: Request.RequestOption,
-    option?: RequestHooks.PageDataConfig
+    option: RequestHooks.UseRequestOption,
+    config?: RequestHooks.PageDataConfig
   ) => [any[], RequestHooks.PageDataResult]
 }

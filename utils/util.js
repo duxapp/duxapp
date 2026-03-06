@@ -79,9 +79,23 @@ export const stopPropagation = e => {
   e?.stopPropagation?.()
 }
 
+const getPxBaseWidth = () => {
+  const info = getWindowInfo()
+  if (process.env.TARO_ENV !== 'rn') {
+    return info.windowWidth
+  }
+
+  return Math.min(info.windowWidth, info.windowHeight)
+}
+
 export const px = (val, pxUnit) => {
   if (process.env.TARO_ENV === 'rn') {
-    return pxTransform(val) + (pxUnit ? 'px' : 0)
+    const baseWidth = getPxBaseWidth()
+    const result = val / 750 * baseWidth
+    if (pxUnit) {
+      return result + 'px'
+    }
+    return result
   } else {
     return pxTransform(val)
   }
@@ -109,7 +123,7 @@ export const pxNum = val => {
     }
     pxNum.max = max
   }
-  return val / 750 * Math.min(getWindowInfo().windowWidth, pxNum.max)
+  return val / 750 * Math.min(getPxBaseWidth(), pxNum.max)
 }
 
 export const isDesktop = (options) => {

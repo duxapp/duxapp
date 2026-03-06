@@ -223,7 +223,7 @@ const chooseMedia = async (type = 'image', options = {}) => {
       const files = tempFiles.map(item => {
         return {
           type: item.fileType,
-          mime: getMimeType(item.tempFilePath),
+          mime: process.env.TARO_ENV === 'h5' ? item.fileType : getMimeType(item.tempFilePath),
           path: item.tempFilePath,
           size: item.size,
           width: item.width,

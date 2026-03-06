@@ -5,6 +5,37 @@ import { useDeepObject } from './common'
 import { ObjectManage } from '../data'
 import { duxappLang } from '../lang'
 
+const isPlainObject = data => data && typeof data === 'object' && !Array.isArray(data)
+
+const mergeLevelOneObject = (base, current) => {
+  if (typeof current === 'undefined') {
+    return base
+  }
+  if (isPlainObject(base) && isPlainObject(current)) {
+    return {
+      ...base,
+      ...current
+    }
+  }
+  return current
+}
+
+const createReloadOption = (option, tempOption) => {
+  if (typeof tempOption === 'undefined') {
+    return option
+  }
+  const baseOption = typeof option === 'string' ? { url: option } : (option || {})
+  const currentOption = typeof tempOption === 'string' ? { url: tempOption } : (tempOption || {})
+  // reload 仅支持临时覆盖请求参数，不允许动态传入 config / middle
+  const { config, middle, ...current } = currentOption
+  return {
+    ...baseOption,
+    ...current,
+    data: mergeLevelOneObject(baseOption.data, current.data),
+    header: mergeLevelOneObject(baseOption.header, current.header)
+  }
+}
+
 export const createRequestHooks = request => {
   return {
     useRequest: (option, config) => {
@@ -35,7 +66,7 @@ export const createRequestHooks = request => {
         return _data
       }, [_option])
 
-      const reload = useCallback(() => {
+      const reload = useCallback((tempOption) => {
         if (!_option || _config.current.status) {
           return Promise.reject()
         }
@@ -46,7 +77,7 @@ export const createRequestHooks = request => {
           init.current = true
           setStatus(false)
         }
-        return request(_option)
+        return request(createReloadOption(_option, tempOption))
           .catch(err => {
             if (_config.current?.onError) {
               return _config.current?.onError(err)
@@ -106,7 +137,7 @@ export const createRequestHooks = request => {
       currentState.current.config = config
       currentState.current.list = list
 
-      const getList = useCallback(() => {
+      const getList = useCallback((tempOption) => {
         const state = currentState.current
         // 使用传入的数据 不通过接口加载
         state.loading = true
@@ -114,13 +145,14 @@ export const createRequestHooks = request => {
         if (state.page === 1) {
           setRefresh(true)
         }
+        const mergedRequestOption = createReloadOption(state.requestOption, tempOption)
         let _option = {
-          ...state.requestOption,
+          ...mergedRequestOption,
           data: {
-            ...state.requestOption?.data,
+            ...mergedRequestOption?.data,
             page: state.page
           },
-          toast: state.requestOption?.toast ?? true
+          toast: mergedRequestOption?.toast ?? true
         }
         if (currentState.current.config?.onRequestOption) {
           _option = currentState.current.config.onRequestOption(_option, state)
@@ -179,7 +211,7 @@ export const createRequestHooks = request => {
         return getList()
       }, [getList])
 
-      const reload = useCallback(() => {
+      const reload = useCallback((tempOption) => {
         if (currentState.current.loading) {
           return Promise.reject(duxappLang.t('request.loading'))
         }
@@ -188,7 +220,7 @@ export const createRequestHooks = request => {
           setLoadEnd(false)
         }
         currentState.current.page = 1
-        return getList()
+        return getList(tempOption)
       }, [getList])
 
       useEffect(() => {

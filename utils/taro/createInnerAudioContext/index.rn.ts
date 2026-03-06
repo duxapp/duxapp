@@ -4,6 +4,7 @@ import { isUrl } from '@tarojs/taro-rn/src/utils'
 
 /**
  * InnerAudioContext 实例，可通过 wx.createInnerAudioContext 接口获取实例。
+ * 建议复用实例或使用池化策略，避免短时间内频繁创建导致音频会话被系统回收。
  */
 class InnerAudioContext {
   private _src: string
@@ -11,16 +12,16 @@ class InnerAudioContext {
   private _autoplay = false
   // private
   private player: AudioPlayer
-  private onCanplayCallback: () => void
-  private onEndedCallback: () => void
-  private onErrorCallback: (error: any) => void
-  private onPauseCallback: () => void
-  private onPlayCallback: () => void
-  private onSeekedCallback: () => void
-  private onSeekingCallback: () => void
-  private onStopCallback: () => void
-  private onTimeUpdateCallback: () => void
-  private onWaitingCallback: () => void
+  private onCanplayCallbacks: Array<() => void> = []
+  private onEndedCallbacks: Array<() => void> = []
+  private onErrorCallbacks: Array<(error: any) => void> = []
+  private onPauseCallbacks: Array<() => void> = []
+  private onPlayCallbacks: Array<() => void> = []
+  private onSeekedCallbacks: Array<() => void> = []
+  private onSeekingCallbacks: Array<() => void> = []
+  private onStopCallbacks: Array<() => void> = []
+  private onTimeUpdateCallbacks: Array<() => void> = []
+  private onWaitingCallbacks: Array<() => void> = []
 
   // 标记状态，用于事件回调
   private status = {
@@ -29,31 +30,36 @@ class InnerAudioContext {
     isLoaded: false
   }
 
-  constructor() {
-    this.player = createAudioPlayer()
+  constructor({ useWebAudioImplement = false }) {
+    this.player = createAudioPlayer(null, {
+      downloadFirst: useWebAudioImplement
+    })
     this.player.addListener('playbackStatusUpdate', this._onPlaybackStatusUpdate)
   }
 
   _onPlaybackStatusUpdate = (status: AudioStatus) => {
+    if (!this.player) {
+      return
+    }
     if (!this.player.loop && status.didJustFinish && Date.now() - this.status.endTime > 10) {
       this.status.endTime = Date.now()
-      this.onEndedCallback && this.onEndedCallback()
+      this.onEndedCallbacks.forEach(callback => callback())
     }
 
     // 监听音频播放进度更新事件
-    this.onTimeUpdateCallback && this.onTimeUpdateCallback()
+    this.onTimeUpdateCallbacks.forEach(callback => callback())
 
     if (this.status.isBuffering !== status.isBuffering) {
       this.status.isBuffering = status.isBuffering
-      if (this.onWaitingCallback && status.isBuffering) {
-        this.onWaitingCallback()
+      if (status.isBuffering) {
+        this.onWaitingCallbacks.forEach(callback => callback())
       }
     }
 
     if (this.status.isLoaded !== status.isLoaded) {
       this.status.isLoaded = status.isLoaded
-      if (this.onCanplayCallback && status.isLoaded) {
-        this.onCanplayCallback()
+      if (status.isLoaded) {
+        this.onCanplayCallbacks.forEach(callback => callback())
       }
     }
   }
@@ -140,18 +146,23 @@ class InnerAudioContext {
     await this.player.seekTo(this._startTime || 0)
 
     this.player.play()
-    this.onPlayCallback && this.onPlayCallback()
+    this.onPlayCallbacks.forEach(callback => callback())
   }
 
   /**
    *  播放
    */
   async play() {
-    if (!this.autoplay) {
+    // if (!this.autoplay) {
+    //   this._firstPlay()
+    // } else {
+    //   this.player.play()
+    // }
+    if (!this.autoplay && !this.status.isLoaded) {
       this._firstPlay()
-    } else {
-      this.player.play()
+      return
     }
+    this.player.play()
   }
 
   /**
@@ -159,7 +170,7 @@ class InnerAudioContext {
    */
   pause() {
     this.player.pause()
-    this.onPauseCallback && this.onPauseCallback()
+    this.onPauseCallbacks.forEach(callback => callback())
   }
 
   /**
@@ -169,9 +180,9 @@ class InnerAudioContext {
     try {
       this.player.pause()
       await this.player.seekTo(0)
-      this.onStopCallback && this.onStopCallback()
+      this.onStopCallbacks.forEach(callback => callback())
     } catch (error) {
-      this.onErrorCallback && this.onErrorCallback(error)
+      this.onErrorCallbacks.forEach(callback => callback(error))
     }
   }
 
@@ -181,11 +192,11 @@ class InnerAudioContext {
    */
   async seek(position: number) {
     try {
-      this.onSeekingCallback && this.onSeekingCallback()
+      this.onSeekingCallbacks.forEach(callback => callback())
       await this.player.seekTo(position)
-      this.onSeekedCallback && this.onSeekedCallback()
+      this.onSeekedCallbacks.forEach(callback => callback())
     } catch (error) {
-      this.onErrorCallback && this.onErrorCallback(error)
+      this.onErrorCallbacks.forEach(callback => callback(error))
     }
   }
 
@@ -193,8 +204,11 @@ class InnerAudioContext {
    * 销毁当前实例
    */
   destroy() {
+    this.player.removeAllListeners('playbackStatusUpdate')
     this.player.pause()
     this.player.remove()
+    this.player.release()
+    this.player = null
   }
 
   /**
@@ -202,14 +216,18 @@ class InnerAudioContext {
    * @param callback
    */
   onCanplay(callback: () => void) {
-    this.onCanplayCallback = callback
+    this.onCanplayCallbacks.push(callback)
   }
 
   /**
    * 取消监听音频进入可以播放状态的事件
    */
-  offCanplay() {
-    this.onCanplayCallback = undefined
+  offCanplay(callback?: () => void) {
+    if (!callback) {
+      this.onCanplayCallbacks = []
+      return
+    }
+    this.onCanplayCallbacks = this.onCanplayCallbacks.filter(item => item !== callback)
   }
 
   /**
@@ -217,15 +235,19 @@ class InnerAudioContext {
    * @param callback
    */
   onPlay(callback: () => void) {
-    this.onPlayCallback = callback
+    this.onPlayCallbacks.push(callback)
   }
 
   /**
    * 取消监听音频播放事件
    * @param callback
    */
-  offPlay() {
-    this.onPlayCallback = undefined
+  offPlay(callback?: () => void) {
+    if (!callback) {
+      this.onPlayCallbacks = []
+      return
+    }
+    this.onPlayCallbacks = this.onPlayCallbacks.filter(item => item !== callback)
   }
 
   /**
@@ -233,14 +255,18 @@ class InnerAudioContext {
    * @param callback
    */
   onPause(callback: () => void) {
-    this.onPauseCallback = callback
+    this.onPauseCallbacks.push(callback)
   }
 
   /**
    * 取消监听音频暂停事件
    */
-  offPause() {
-    this.onPauseCallback = undefined
+  offPause(callback?: () => void) {
+    if (!callback) {
+      this.onPauseCallbacks = []
+      return
+    }
+    this.onPauseCallbacks = this.onPauseCallbacks.filter(item => item !== callback)
   }
 
   /**
@@ -248,14 +274,18 @@ class InnerAudioContext {
    * @param callback
    */
   onStop(callback: () => void) {
-    this.onStopCallback = callback
+    this.onStopCallbacks.push(callback)
   }
 
   /**
    *  取消监听音频停止事件
    */
-  offStop() {
-    this.onStopCallback = undefined
+  offStop(callback?: () => void) {
+    if (!callback) {
+      this.onStopCallbacks = []
+      return
+    }
+    this.onStopCallbacks = this.onStopCallbacks.filter(item => item !== callback)
   }
 
   /**
@@ -263,14 +293,18 @@ class InnerAudioContext {
    * @param callback
    */
   onEnded(callback: () => void) {
-    this.onEndedCallback = callback
+    this.onEndedCallbacks.push(callback)
   }
 
   /**
    * 取消监听音频自然播放至结束的事件
    */
-  offEnded() {
-    this.onEndedCallback = undefined
+  offEnded(callback?: () => void) {
+    if (!callback) {
+      this.onEndedCallbacks = []
+      return
+    }
+    this.onEndedCallbacks = this.onEndedCallbacks.filter(item => item !== callback)
   }
 
   /**
@@ -278,14 +312,18 @@ class InnerAudioContext {
    * @param callback
    */
   onTimeUpdate(callback: () => void) {
-    this.onTimeUpdateCallback = callback
+    this.onTimeUpdateCallbacks.push(callback)
   }
 
   /**
    * 取消监听音频播放进度更新事件
    */
-  offTimeUpdate() {
-    this.onTimeUpdateCallback = undefined
+  offTimeUpdate(callback?: () => void) {
+    if (!callback) {
+      this.onTimeUpdateCallbacks = []
+      return
+    }
+    this.onTimeUpdateCallbacks = this.onTimeUpdateCallbacks.filter(item => item !== callback)
   }
 
   /**
@@ -293,14 +331,18 @@ class InnerAudioContext {
    * @param callback
    */
   onError(callback: (error: any) => void) {
-    this.onErrorCallback = callback
+    this.onErrorCallbacks.push(callback)
   }
 
   /**
    * 取消监听音频播放错误事件
    */
-  offError() {
-    this.onErrorCallback = undefined
+  offError(callback?: (error: any) => void) {
+    if (!callback) {
+      this.onErrorCallbacks = []
+      return
+    }
+    this.onErrorCallbacks = this.onErrorCallbacks.filter(item => item !== callback)
   }
 
   /**
@@ -308,14 +350,18 @@ class InnerAudioContext {
    * @param callback
    */
   onWaiting(callback: () => void) {
-    this.onWaitingCallback = callback
+    this.onWaitingCallbacks.push(callback)
   }
 
   /**
    * 取消监听音频加载中事件
    */
-  offWaiting() {
-    this.onWaitingCallback = undefined
+  offWaiting(callback?: () => void) {
+    if (!callback) {
+      this.onWaitingCallbacks = []
+      return
+    }
+    this.onWaitingCallbacks = this.onWaitingCallbacks.filter(item => item !== callback)
   }
 
   /**
@@ -323,14 +369,18 @@ class InnerAudioContext {
    * @param callback
    */
   onSeeking(callback: () => void) {
-    this.onSeekingCallback = callback
+    this.onSeekingCallbacks.push(callback)
   }
 
   /**
    * 取消监听音频进行跳转操作的事件
    */
-  offSeeking() {
-    this.onSeekingCallback = undefined
+  offSeeking(callback?: () => void) {
+    if (!callback) {
+      this.onSeekingCallbacks = []
+      return
+    }
+    this.onSeekingCallbacks = this.onSeekingCallbacks.filter(item => item !== callback)
   }
 
   /**
@@ -338,20 +388,24 @@ class InnerAudioContext {
    * @param callback
    */
   onSeeked(callback: () => void) {
-    this.onSeekedCallback = callback
+    this.onSeekedCallbacks.push(callback)
   }
 
   /**
    * 取消监听音频完成跳转操作的事件
    */
-  offSeeked() {
-    this.onSeekedCallback = undefined
+  offSeeked(callback?: () => void) {
+    if (!callback) {
+      this.onSeekedCallbacks = []
+      return
+    }
+    this.onSeekedCallbacks = this.onSeekedCallbacks.filter(item => item !== callback)
   }
 }
 
 /**
  * 创建 audio 上下文 AudioContext 对象。
  */
-export function createInnerAudioContext(): InnerAudioContext {
-  return new InnerAudioContext()
+export function createInnerAudioContext(option: { useWebAudioImplement?: boolean } = {}): InnerAudioContext {
+  return new InnerAudioContext(option)
 }

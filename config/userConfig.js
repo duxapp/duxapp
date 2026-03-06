@@ -1,4 +1,4 @@
-import userConfig from '../../../configs/circuit'
+import userConfig from '../../../configs/circuit1'
 
 export {
   userConfig
